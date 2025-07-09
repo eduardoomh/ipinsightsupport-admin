@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider   = "prisma-client-js"
+  js_target = "esnext"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String    @id @default(cuid())
+  name               String
+  email              String    @unique
+  password           String // Hasheada con bcrypt
+  phone              String
+  is_admin           Boolean   @default(false)
+  is_active          Boolean   @default(true)
+  is_account_manager Boolean   @default(false)
+  rate_type          Float
+  last_login         DateTime? // Fecha del último login (opcional)
+  avatar             String?  @db.VarChar(512) // URL del avatar en CDN
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("users")
+}
+
+model Client {
+  id        String   @id @default(cuid()) // cuid() genera un hash único
+  name      String
+  email     String   @unique
+  phone     String
+  company   String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("clients")
+}

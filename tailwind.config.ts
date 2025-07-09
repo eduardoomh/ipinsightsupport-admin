@@ -5,6 +5,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
+        montserrat: ["Montserrat", 'sans-serif'],
+        inter: ["Inter", 'sans-serif'],
         sans: [
           "Inter",
           "ui-sans-serif",
@@ -15,6 +17,10 @@ export default {
           "Segoe UI Symbol",
           "Noto Color Emoji",
         ],
+      },
+      colors: {
+        primary: "#00abff",
+        secondary: "#f8fafc",
       },
     },
   },

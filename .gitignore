@@ -3,3 +3,8 @@ node_modules
 /.cache
 /build
 .env
+
+/generated/prisma
+
+.DS_Store
+public/.DS_Store
