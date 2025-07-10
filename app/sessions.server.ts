@@ -6,7 +6,7 @@ if (!sessionSecret) throw new Error("SESSION_SECRET is required");
 export const sessionStorage = createCookieSessionStorage({
   cookie: {
     name: "__session",
-    secure: process.env.NODE_ENV === "production",
+    secure: false, //process.env.NODE_ENV === "production",
     secrets: [sessionSecret],
     sameSite: "lax",
     path: "/",

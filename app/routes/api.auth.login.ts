@@ -4,6 +4,8 @@ import { prisma } from "~/config/prisma.server";
 import bcrypt from "bcryptjs";
 import { LoginSchema } from "~/utils/schemas/loginSchema";
 import { getSession, commitSession } from "~/config/session.server";
+import jwt from 'jsonwebtoken';
+const JWT_SECRET = process.env.JWT_SECRET!;
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
@@ -37,12 +39,27 @@ export const action: ActionFunction = async ({ request }) => {
   // Crear sesión
   const session = await getSession(request);
   session.set("userId", user.id);
+  session.set("role", user.is_admin ? 'ADMIN' : 'USER')
+  const {password: passw, ...userFound} = user
 
-  return new Response(JSON.stringify({ success: true }), {
-    status: 200,
-    headers: {
-      "Set-Cookie": await commitSession(session),
-      "Content-Type": "application/json",
+    const token = jwt.sign(
+    {
+      ...userFound
     },
-  });
+    JWT_SECRET,
+    {
+      expiresIn: "7d",
+    }
+  );
+
+  return new Response(
+    JSON.stringify({ success: true, token }),
+    {
+      status: 200,
+      headers: { 
+        "Set-Cookie": await commitSession(session),
+        "Content-Type": "application/json" 
+      },
+    }
+  );
 };

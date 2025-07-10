@@ -19,9 +19,13 @@ export default {
         ],
       },
       colors: {
-        primary: "#00abff",
+        primary: "#01ABE8",
         secondary: "#f8fafc",
+        light_gray: "#FBFCFD",
       },
+      backgroundImage:{
+        soft_diagonal: 'linear-gradient(to bottom right, #FBFCFD, #EDEDED)',
+      }
     },
   },
   plugins: [],
