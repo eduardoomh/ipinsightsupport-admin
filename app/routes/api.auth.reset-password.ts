@@ -2,10 +2,9 @@ import type { ActionFunction } from "@remix-run/node";
 import { prisma } from "~/config/prisma.server";
 import bcrypt from "bcryptjs";
 
-// POST /api/auth/change-password
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
-  const userId = formData.get("userId") as string;
+  const userId = formData.get("id") as string;
   const newPassword = formData.get("password") as string;
 
   if (!userId || !newPassword) {

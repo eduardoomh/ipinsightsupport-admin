@@ -10,8 +10,8 @@ const resend = new Resend(process.env.RESEND_API_KEY || "re_test_placeholder");
 
 export const action: ActionFunction = async ({ request }) => {
   try {
-    const body = await request.json();
-    const email = body.email;
+    const formData = await request.formData();
+    const email = formData.get("email")?.toString() || "";
 
     if (!email) {
       return new Response(JSON.stringify({ error: "Email is required" }), {
@@ -31,7 +31,7 @@ export const action: ActionFunction = async ({ request }) => {
 
     const tokenPayload = {
       email: user.email,
-      userId: user.id,
+      id: user.id,
     };
 
     const token = jwt.sign(tokenPayload, process.env.JWT_SECRET || "changeme", {
@@ -53,12 +53,15 @@ export const action: ActionFunction = async ({ request }) => {
       html,
     });
 
-    return new Response(JSON.stringify({ message: "Correo enviado con éxito" }), {
+    return new Response(JSON.stringify({ 
+      message: "Email sent successfully",
+      success: true
+    }), {
       status: 200,
     });
   } catch (error) {
     console.error("Forgot password error:", error);
-    return new Response(JSON.stringify({ error: "Error interno del servidor" }), {
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
     });
   }

@@ -40,6 +40,8 @@ export const action: ActionFunction = async ({ request }) => {
   const session = await getSession(request);
   session.set("userId", user.id);
   session.set("role", user.is_admin ? 'ADMIN' : 'USER')
+
+  /*
   const {password: passw, ...userFound} = user
 
     const token = jwt.sign(
@@ -51,9 +53,12 @@ export const action: ActionFunction = async ({ request }) => {
       expiresIn: "7d",
     }
   );
-
+*/
   return new Response(
-    JSON.stringify({ success: true, token }),
+    JSON.stringify({ 
+      success: true, //token 
+      message: "Login succesfully"
+    }),
     {
       status: 200,
       headers: { 

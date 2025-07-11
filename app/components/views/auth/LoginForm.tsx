@@ -5,11 +5,7 @@ import { FC, useState } from "react";
 import InputContainer from "./InputContainer";
 const { Title } = Typography;
 
-interface Props {
-    navigation: any;
-}
-
-const LoginForm: FC<Props> = ({ navigation }) => {
+const LoginForm: FC = () => {
     const [loading, setLoading] = useState(false)
     const [openModal, setOpenModal] = useState(false)
     const [messageApi, contextHolder] = message.useMessage();
@@ -37,7 +33,6 @@ const LoginForm: FC<Props> = ({ navigation }) => {
         e.preventDefault();
         setLoading(true)
         const formData = new FormData(e.currentTarget);
-
         const response = await fetch("/api/auth/login", {
             method: "POST",
             body: formData,
@@ -46,13 +41,36 @@ const LoginForm: FC<Props> = ({ navigation }) => {
 
         const data = await response.json();
 
-        if (data.success && data.token) {
-            localStorage.setItem("token", data.token);
+        if (data.success) {
             messageApi.success("Login successful");
             setLoading(false)
-            navigate("/dashboard");
+            navigate("/");
         } else {
             messageApi.error(data.error || "Login failed");
+            setLoading(false)
+        }
+
+    };
+
+
+    const handleRecoveryEmail = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setLoading(true)
+        const formData = new FormData(e.currentTarget);
+        const response = await fetch("/api/auth/forgot-password", {
+            method: "POST",
+            body: formData,
+            credentials: "include",
+        });
+
+        const data = await response.json();
+        console.log(data)
+        if (data.success) {
+            messageApi.success("Email sent successfully");
+            setLoading(false)
+            setOpenModal(false)
+        } else {
+            messageApi.error(data.error || "The email was not sent");
             setLoading(false)
         }
 
@@ -107,32 +125,33 @@ const LoginForm: FC<Props> = ({ navigation }) => {
                 open={openModal}
                 onOk={() => setOpenModal(false)}
                 onCancel={() => setOpenModal(false)}
-                footer={
+                footer={<></>}
+            >
+                <Form method="post" className="space-y-4" onSubmit={handleRecoveryEmail}>
+                    <Typography>
+                        Enter the email address linked to your account and you will receive an email with a link to reset your password.
+                    </Typography>
+
+                    <Input
+                        name="email"
+                        type="email"
+                        placeholder="Type your email"
+                        prefix={<MailOutlined />}
+                        size="large"
+                        required
+                        className="mt-4 mb-4"
+                    />
                     <Button
                         type="primary"
                         htmlType="submit"
                         size="large"
                         className="bg-primary border border-[#4C87BE] hover:bg-[#4C87BE] transition-colors duration-200"
+                        loading={loading}
                         block
                     >
                         Send recovery email
                     </Button>
-                }
-            >
-                <Typography>
-                    Enter the email address linked to your account and you will receive an email with a link to reset your password.
-                </Typography>
-
-                <Input
-                    name="email"
-                    type="email"
-                    placeholder="Type your email"
-                    prefix={<MailOutlined />}
-                    size="large"
-                    required
-                    className="mt-4 mb-4"
-                />
-
+                </Form>
             </Modal>
         </div>
     )

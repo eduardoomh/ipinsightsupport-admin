@@ -1,21 +1,7 @@
 import type { LoaderFunction } from "@remix-run/node";
 import { redirect, json } from "@remix-run/node";
-import { getSession } from "~/sessions.server";
-import { Form, useLoaderData, useNavigate } from "@remix-run/react";
-import { useEffect } from "react";
-import { base64UrlDecode } from "~/utils/sessions/base64UrlDecode";
+import { Form } from "@remix-run/react";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
-
-interface LoaderData {
-  userId: any;
-  role: any;
-}
-
-interface SessionPayload {
-  userId?: string;
-  role?: string;
-}
-
 
 export const loader: LoaderFunction = async ({ request }) => {
 
