@@ -21,7 +21,12 @@ export default {
       colors: {
         primary: "#01ABE8",
         secondary: "#f8fafc",
-        light_gray: "#FBFCFD",
+        light_gray: "#F3F5F6",
+        high_gray: "#AEB3B5",
+        base_gray: "#F3F5F6",
+        high_blue: "#00AAE7",
+        light_blue: "#E6F5FB",
+
       },
       backgroundImage:{
         soft_diagonal: 'linear-gradient(to bottom right, #FBFCFD, #EDEDED)',

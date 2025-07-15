@@ -3,6 +3,8 @@ import { base64UrlDecode } from "./base64UrlDecode";
 interface SessionPayload {
     userId?: string;
     role?: string;
+    email?: string;
+    name?: string;
 }
 
 export async function getSessionFromCookie(request: Request): Promise<SessionPayload | null> {

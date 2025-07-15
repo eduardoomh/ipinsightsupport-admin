@@ -1,6 +1,5 @@
 import { json, LoaderFunction } from "@remix-run/node";
 import { redirect, useLoaderData } from "@remix-run/react";
-import { Card } from "antd";
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 
@@ -17,11 +16,11 @@ export const loader: LoaderFunction = async ({ request }) => {
   return json({ userId, role, name, email });
 };
 
-export default function Index() {
+export default function StatusReport() {
   const { name, role, email, userId } = useLoaderData<typeof loader>();
   return (
     <DashboardLayout
-      title={`Welcome ${name}`}
+      title={`Status Report`}
       user={{
         id: userId,
         name,
@@ -29,8 +28,7 @@ export default function Index() {
         role
       }}
     >
-      <p>Home section</p>
-
+      <p>Home</p>
     </DashboardLayout>
   );
 }
