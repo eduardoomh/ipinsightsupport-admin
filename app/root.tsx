@@ -45,7 +45,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 itemSelectedColor: "#E6F5FB",
                 itemSelectedBg: "#00AAE7",
                 itemHoverColor: "#000",
-                itemHoverBg: "#d8f2fc",
+                itemHoverBg: "#c3e9f8",
                 subMenuItemBg: "transparent"
               },
             },

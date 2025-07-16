@@ -22,7 +22,7 @@ const DashboardLayout: FC<PropsWithChildren<DashboardLayoutProps>> = ({ children
             <div className="bg-light_blue overflow-y-auto w-screen flex flex-col">
                 <HeaderLayout user={user} title={title} />
                 <div className="px-12 py-8 bg-white h-auto flex-1">
-                    <h1 className="text-2xl font-bold mb-8">{title}</h1>
+                    <h1 className="text-2xl font-bold mb-8 pb-4 border-b-2 border-high_blue">{title}</h1>
                     {children}
                 </div>
             </div>

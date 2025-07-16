@@ -17,11 +17,11 @@ export const loader: LoaderFunction = async ({ request }) => {
   return json({ userId, role, name, email });
 };
 
-export default function StatusReport() {
+export default function UserProfile() {
   const { name, role, email, userId } = useLoaderData<typeof loader>();
   return (
     <DashboardLayout
-      title={`Status Report`}
+      title={`Profile`}
       user={{
         id: userId,
         name,

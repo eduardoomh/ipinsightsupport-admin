@@ -49,7 +49,7 @@ const Sidebar = () => {
 
             {/* Botón para colapsar */}
             <button
-                className="w-full py-4 flex justify-center items-center hover:bg-gray-100"
+                className="w-full py-4 rounded-md flex justify-center items-center hover:bg-base_blue"
                 onClick={toggleCollapsed}
             >
                 {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}

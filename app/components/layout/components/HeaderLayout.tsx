@@ -1,4 +1,4 @@
-import { DownSquareOutlined, SearchOutlined } from "@ant-design/icons"
+import { DownSquareOutlined, SearchOutlined, DownOutlined } from "@ant-design/icons"
 import { Avatar, Button, Popover, Input } from "antd"
 import { FC, useState } from "react";
 import UserMenu from "~/components/Menus/UserMenu"
@@ -31,7 +31,7 @@ const HeaderLayout: FC<Props> = ({ user, title }) => {
                 enterButton={
                     <Button
                         icon={<SearchOutlined />}
-                        style={{ backgroundColor: "#00AAE7", color: "#fff" }}
+                        style={{ backgroundColor: "#c3e9f8", color: "#00AAE7", border: "1px solid #00AAE7"}}
                     />
                 }
                 size="middle"
@@ -48,8 +48,10 @@ const HeaderLayout: FC<Props> = ({ user, title }) => {
 
             >
                 <div className="flex items-center gap-2 cursor-pointer">
-                    <Avatar size={36} className="bg-high_blue">A</Avatar>
-                    <DownSquareOutlined style={{ fontSize: "1.5rem" }} />
+                    <Avatar size={36} className="bg-base_blue border-high_blue text-high_blue">
+                        {user.name.charAt(0)}
+                    </Avatar>
+                    <DownOutlined style={{ fontSize: "1rem" }} />
                 </div>
             </Popover>
         </div>

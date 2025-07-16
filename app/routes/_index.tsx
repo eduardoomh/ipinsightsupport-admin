@@ -1,6 +1,7 @@
 import { json, LoaderFunction } from "@remix-run/node";
 import { redirect, useLoaderData } from "@remix-run/react";
 import { Card } from "antd";
+import EmptyPage from "~/components/basics/EmptyPage";
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 
@@ -29,7 +30,7 @@ export default function Index() {
         role
       }}
     >
-      <p>Home section</p>
+      <EmptyPage />
 
     </DashboardLayout>
   );

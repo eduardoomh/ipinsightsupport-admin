@@ -25,6 +25,7 @@ export default {
         high_gray: "#AEB3B5",
         base_gray: "#F3F5F6",
         high_blue: "#00AAE7",
+        base_blue: "#c3e9f8",
         light_blue: "#E6F5FB",
 
       },

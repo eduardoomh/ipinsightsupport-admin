@@ -21,7 +21,7 @@ export default function StatusReport() {
   const { name, role, email, userId } = useLoaderData<typeof loader>();
   return (
     <DashboardLayout
-      title={`Status Report`}
+      title={`Settings`}
       user={{
         id: userId,
         name,
