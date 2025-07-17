@@ -1,0 +1,99 @@
+import React from 'react';
+import { Link, useLocation } from "@remix-run/react";
+import {
+    ContainerOutlined,
+    DesktopOutlined,
+    MailOutlined,
+    PieChartOutlined,
+} from '@ant-design/icons';
+import type { MenuProps } from 'antd';
+import { Menu } from 'antd';
+
+type MenuItem = Required<MenuProps>['items'][number];
+
+const items: MenuItem[] = [
+    {
+        key: 'home',
+        icon: <PieChartOutlined />,
+        label: <Link to="/admin/home">Home</Link>,
+    },
+    {
+        key: 'clients',
+        icon: <PieChartOutlined />,
+        label: <Link to="/admin/clients">Clients</Link>,
+    },
+    {
+        key: 'schedule', // ✅ corregido
+        icon: <DesktopOutlined />,
+        label: <Link to="/admin/schedule">Schedule</Link>,
+    },
+    {
+        key: 'retainers', // ✅ corregido
+        icon: <DesktopOutlined />,
+        label: <Link to="/admin/retainers">Retainers</Link>,
+    },
+    {
+        key: 'admin-work-entries',
+        icon: <ContainerOutlined />,
+        label: <Link to="/admin/work-entries">Work entries</Link>,
+    },
+    {
+        key: 'advanced',
+        label: 'Advanced',
+        icon: <MailOutlined />,
+        children: [
+            {
+                key: 'advanced-users',
+                label: <Link to="/admin/advanced/users">Users</Link>,
+            },
+            {
+                key: 'advanced-clients',
+                label: <Link to="/admin/advanced/clients">Clients</Link>
+            },
+            {
+                key: 'advanced-logs',
+                label: <Link to="/admin/advanced/logs">Logs</Link>
+            },
+        ],
+    },
+    {
+        key: 'admin-status-report',
+        icon: <ContainerOutlined />,
+        label: <Link to="/admin/status-report">Status report</Link>,
+    }
+];
+
+const pathToKey: Record<string, string> = {
+    "/admin/home": "home",
+    "/admin/clients": "clients",
+    "/admin/schedule": "schedule",
+    "/admin/retainers": "retainers",
+    "/admin/work-entries": "admin-work-entries",
+    "/admin/advanced/users": "advanced-users",
+    "/admin/advanced/clients": "advanced-clients",
+    "/admin/advanced/logs": "advanced-logs",
+    "/admin/status-report": "admin-status-report",
+};
+
+type Props = {
+    collapsed: boolean;
+};
+
+const AdminMenu: React.FC<Props> = ({ collapsed }) => {
+    const location = useLocation();
+    const selectedKey = pathToKey[location.pathname] || 'home';
+
+    return (
+        <Menu
+            selectedKeys={[selectedKey]}
+            defaultOpenKeys={['advanced']}
+            mode="inline"
+            inlineCollapsed={collapsed}
+            items={items}
+            className="bg-light_blue"
+            style={{ border: 0, width: '100%' }}
+        />
+    );
+};
+
+export default AdminMenu;

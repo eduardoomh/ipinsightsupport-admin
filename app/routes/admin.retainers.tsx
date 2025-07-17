@@ -14,10 +14,10 @@ export const loader: LoaderFunction = async ({ request }) => {
   return null;
 };
 
-export default function StatusReport() {
+export default function StatusRetainers() {
   return (
         <DashboardLayout
-          title={`Settings`}
+          title={`Retainers`}
         >
           <NoData />
         </DashboardLayout>

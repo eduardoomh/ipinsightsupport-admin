@@ -1,16 +1,21 @@
 import {
+  json,
   Links,
   Meta,
   Outlet,
+  redirect,
   Scripts,
   ScrollRestoration,
-  useNavigate,
-  useNavigation,
+  useLoaderData,
+  useLocation
 } from "@remix-run/react";
-import type { LinksFunction } from "@remix-run/node";
+import type { LinksFunction, LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
 
 import "./tailwind.css";
 import { ConfigProvider } from "antd";
+import { UserContext } from "./context/UserContext";
+import { AppModeProvider } from "./context/AppModeContext";
+import { getSessionFromCookie } from "./utils/sessions/getSessionFromCookie";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -25,7 +30,31 @@ export const links: LinksFunction = () => [
   },
 ];
 
+export async function loader({ request }: LoaderFunctionArgs) {
+  const url = new URL(request.url);
+  const pathname = url.pathname;
+
+  const isPublic = ["/login"].includes(pathname);
+
+  if (isPublic) {
+    return json({ user: null });
+  }
+
+  const session = await getSessionFromCookie(request);
+  if (!session) {
+    console.log("🟥 No hay sesión, redireccionando a /login");
+    return redirect("/login");
+  }
+
+  const { userId, role, name, email } = session;
+  return json({ user: { userId, role, name, email } });
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
+  const data = useLoaderData<typeof loader>();
+  const isPublic = location.pathname === "/login";
+
   return (
     <html lang="en">
       <head>
@@ -51,7 +80,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
             },
           }}
         >
-          {children}
+          {
+            isPublic ? (
+              <>
+                {children}
+              </>
+            ) : (
+              <UserContext.Provider value={data.user}>
+                <AppModeProvider>
+                  {children}
+                </AppModeProvider>
+              </UserContext.Provider>
+            )
+          }
         </ConfigProvider>
         <ScrollRestoration />
         <Scripts />

@@ -14,10 +14,10 @@ export const loader: LoaderFunction = async ({ request }) => {
   return null;
 };
 
-export default function StatusReport() {
+export default function AdminSchedule() {
   return (
         <DashboardLayout
-          title={`Settings`}
+          title={`Schedule`}
         >
           <NoData />
         </DashboardLayout>
