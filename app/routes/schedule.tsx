@@ -4,6 +4,8 @@ import { redirect, useLoaderData } from "@remix-run/react";
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 import ClientOnly from "~/components/ClientOnly";
+import { UserContext } from "~/context/UserContext";
+import { AppModeProvider } from "~/context/AppModeContext";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSessionFromCookie(request);
@@ -16,26 +18,28 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function Schedule() {
-  const { name, role, email, userId } = useLoaderData<typeof loader>();
+  const user = useLoaderData<typeof loader>();
   const [CalendarComponent, setCalendarComponent] = useState<React.FC | null>(null);
 
   useEffect(() => {
     // Esto lo ejecuta solo en el cliente
-    import("~/components/views/schedule/Calendar").then((mod) => {
+    import("~/components/views/schedule/Calendar2").then((mod) => {
       setCalendarComponent(() => mod.default);
     });
   }, []);
 
   return (
-    <DashboardLayout
-      title={`The Schedule`}
-      user={{ id: userId, name, email, role }}
-    >
-      {CalendarComponent && (
-        <ClientOnly>
-          <CalendarComponent />
-        </ClientOnly>
-      )}
-    </DashboardLayout>
+    <UserContext.Provider value={user}>
+      <AppModeProvider>
+        <DashboardLayout
+          title={`The Schedule`}>
+          {CalendarComponent && (
+            <ClientOnly>
+              <CalendarComponent />
+            </ClientOnly>
+          )}
+        </DashboardLayout>
+      </AppModeProvider>
+    </UserContext.Provider>
   );
 }

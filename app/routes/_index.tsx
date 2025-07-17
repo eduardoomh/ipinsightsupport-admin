@@ -1,8 +1,9 @@
 import { json, LoaderFunction } from "@remix-run/node";
 import { redirect, useLoaderData } from "@remix-run/react";
-import { Card } from "antd";
 import EmptyPage from "~/components/basics/EmptyPage";
 import DashboardLayout from "~/components/layout/DashboardLayout";
+import { AppModeProvider } from "~/context/AppModeContext";
+import { UserContext } from "~/context/UserContext";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -19,19 +20,17 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function Index() {
-  const { name, role, email, userId } = useLoaderData<typeof loader>();
-  return (
-    <DashboardLayout
-      title={`Welcome ${name}`}
-      user={{
-        id: userId,
-        name,
-        email,
-        role
-      }}
-    >
-      <EmptyPage />
+  const user = useLoaderData<typeof loader>();
 
-    </DashboardLayout>
+  return (
+    <UserContext.Provider value={user}>
+      <AppModeProvider>
+        <DashboardLayout
+          title={`Welcome ${user.name}`}>
+          <EmptyPage />
+
+        </DashboardLayout>
+      </AppModeProvider>
+    </UserContext.Provider>
   );
 }

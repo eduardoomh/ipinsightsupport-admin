@@ -22,6 +22,7 @@
     "antd": "^5.26.4",
     "bcryptjs": "^3.0.2",
     "date-fns": "^4.1.0",
+    "dayjs": "^1.11.13",
     "dnd-kit": "^0.0.2",
     "isbot": "^4.1.0",
     "jsonwebtoken": "^9.0.2",

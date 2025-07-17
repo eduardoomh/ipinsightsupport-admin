@@ -41,6 +41,9 @@ importers:
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
+      dayjs:
+        specifier: ^1.11.13
+        version: 1.11.13
       dnd-kit:
         specifier: ^0.0.2
         version: 0.0.2

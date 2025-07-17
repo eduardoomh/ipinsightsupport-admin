@@ -13,3 +13,29 @@ body {
   color: inherit !important;
   background-color: transparent !important;
 }
+
+.custom-table .ant-table-thead > tr > th {
+  background-color: #00AAE7; /* Azul por defecto de Ant Design */
+  color: white;
+  font-weight: bold;
+}
+
+/* In your CSS file (e.g., src/styles/calendarOverrides.css) */
+
+/* Target the ::before pseudo-element responsible for the border on "today's date" */
+:where(.css-dev-only-do-not-override-i2edbd).ant-picker-calendar .ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner::before {
+  /* Remove the border */
+  border-color: transparent !important;
+  box-shadow: none !important; /* Also remove any potential box-shadow that might create a similar effect */
+}
+
+/* You might also want to ensure the background remains transparent for the inner cell itself */
+/* This prevents any default Ant Design background on inner cells, including "today's date" */
+.ant-picker-calendar .ant-picker-cell .ant-picker-cell-inner {
+  background-color: transparent !important;
+}
+
+/* And if you want to remove the default hover background when NOT dragging */
+.ant-picker-cell:hover:not(.ant-picker-cell-selected):not(.ant-picker-cell-range-start):not(.ant-picker-cell-range-end):not(.ant-picker-cell-today) {
+  background-color: transparent !important;
+}

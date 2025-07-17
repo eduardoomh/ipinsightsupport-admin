@@ -3,10 +3,12 @@ import { UserOutlined, MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/
 import { Tag } from "antd"
 import { useMediaQuery } from "react-responsive"
 import MainMenu from "./Menus/MainMenu"
+import { useAppMode } from "~/context/AppModeContext"
 
 const Sidebar = () => {
     const isMobile = useMediaQuery({ query: "(max-width: 800px)" });
     const [collapsed, setCollapsed] = useState(false)
+    const { mode } = useAppMode();
 
     useEffect(() => {
         setCollapsed(isMobile);
@@ -36,9 +38,9 @@ const Sidebar = () => {
                 {!collapsed && (
                     <Tag
                         icon={<UserOutlined />}
-                        className="bg-light_blue border-high_blue text-high_blue w-24 h-6 flex items-center text-l mb-8"
+                        className="bg-light_blue border-high_blue text-high_blue w-28 h-6 flex items-center text-l mb-8"
                     >
-                        User Mode
+                       {mode === 'user' ? 'User Mode' : 'Admin Mode'}
                     </Tag>
                 )}
 

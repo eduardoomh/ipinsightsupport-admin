@@ -6,6 +6,7 @@ import {
 } from "@ant-design/icons";
 import { Form, Link, useLocation } from "@remix-run/react";
 import { FC } from "react";
+import { useAppMode } from "~/context/AppModeContext";
 
 interface Props {
   user: {
@@ -15,6 +16,7 @@ interface Props {
 }
 
 const UserMenu: FC<Props> = ({ user }) => {
+  const { mode, setMode } = useAppMode();
   const location = useLocation();
   const pathname = location.pathname;
 
@@ -26,15 +28,15 @@ const UserMenu: FC<Props> = ({ user }) => {
       <div className="px-4 pb-3 text-black-100 text-sm">{user.email}</div>
       <hr className="border-t border-[var(--high_blue)] mb-1" />
 
-      <Link
-        to="/admin"
+      <div
+      onClick={() => setMode('admin')}
         className={`px-4 py-2 flex items-center cursor-pointer text-black ${
           pathname.startsWith("/admin") ? "bg-high_blue text-white hover:text-white" : "hover:bg-base_blue hover:text-black text-black"
         }`}
       >
         <CrownOutlined className="mr-2" />
-        Admin Mode
-      </Link>
+       {mode === 'user' ? "Admin mode" : "User Mode"}
+      </div>
 
       <Link
         to="/user/profile"

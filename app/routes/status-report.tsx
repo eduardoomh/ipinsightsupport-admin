@@ -2,6 +2,8 @@ import { json, LoaderFunction } from "@remix-run/node";
 import { redirect, useLoaderData } from "@remix-run/react";
 import EmptyPage from "~/components/basics/EmptyPage";
 import DashboardLayout from "~/components/layout/DashboardLayout";
+import { AppModeProvider } from "~/context/AppModeContext";
+import { UserContext } from "~/context/UserContext";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -18,18 +20,16 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function StatusReport() {
-  const { name, role, email, userId } = useLoaderData<typeof loader>();
+  const user = useLoaderData<typeof loader>();
   return (
-    <DashboardLayout
-      title={`Status Report`}
-      user={{
-        id: userId,
-        name,
-        email,
-        role
-      }}
-    >
-      <EmptyPage />
-    </DashboardLayout>
+    <UserContext.Provider value={user}>
+      <AppModeProvider>
+        <DashboardLayout
+          title={`Status Report`}
+        >
+          <EmptyPage />
+        </DashboardLayout>
+      </AppModeProvider>
+    </UserContext.Provider>
   );
 }

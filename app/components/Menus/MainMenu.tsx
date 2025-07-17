@@ -33,7 +33,7 @@ const items: MenuItem[] = [
             },
             {
                 key: 'personal-entries',
-                label: <Link to="/personal-entries">Personal entries</Link>,
+                label: <Link to="/personal-entries">Personal entries</Link>
             },
         ],
     },
