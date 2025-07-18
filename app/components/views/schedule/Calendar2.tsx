@@ -36,12 +36,12 @@ interface Task {
 }
 
 const initialTasks: Task[] = [
-  { id: "1", content: "Reunión con equipo" },
-  { id: "2", content: "Enviar informe" },
-  { id: "3", content: "Llamar a cliente" },
-  { id: "4", content: "Preparar presentación" },
-  { id: "5", content: "Revisar código" },
-  { id: "6", content: "Entrenamiento equipo" },
+  { id: "1", content: "Team meeting" },
+  { id: "2", content: "Send report" },
+  { id: "3", content: "Call client" },
+  { id: "4", content: "Prepare presentation" },
+  { id: "5", content: "Review code" },
+  { id: "6", content: "Team training" },
 ];
 
 type CalendarTasks = {
@@ -344,7 +344,7 @@ export default function AntCalendarDnd() {
 
         {/* Bloque de "Tareas disponibles" */}
         <div style={{ marginTop: '24px', padding: '16px', backgroundColor: '#fafafa', borderRadius: '8px', border: '1px solid #d9d9d9' }}>
-          <Title level={4} style={{ marginBottom: '16px', color: '#555' }}>Tareas disponibles:</Title>
+          <Title level={4} style={{ marginBottom: '16px', color: '#555' }}>Tasks:</Title>
            <SortableContext
               id="task-pool"
               items={taskPool.map((task) => task.id)}
@@ -356,7 +356,7 @@ export default function AntCalendarDnd() {
                         minHeight: '80px',
                         width: '100%',
                         padding: '8px',
-                        backgroundColor: isOverTaskPool ? '#e6f7ff' : '#f0f2f5',
+                       
                         borderRadius: '4px',
                         transition: 'background-color 0.2s ease',
                         border: isOverTaskPool ? '1px dashed #1890ff' : '1px solid transparent',

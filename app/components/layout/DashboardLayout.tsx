@@ -22,11 +22,16 @@ const DashboardLayout: FC<PropsWithChildren<DashboardLayoutProps>> = ({ children
     const toggleCollapsed = () => setCollapsed(!collapsed)
 
     return (
-        <main className="bg-light_blue overflow-y-auto w-screen h-screen flex flex-col flex-1">
-            <HeaderLayout user={user as any} title={title} toggleCollapsed={toggleCollapsed} collapsed={collapsed} />
-            <div className="flex h-screen">
+        <main className="bg-light_blue w-screen h-screen flex flex-col flex-1">
+            <HeaderLayout
+                user={user as any}
+                title={title}
+                toggleCollapsed={toggleCollapsed}
+                collapsed={collapsed}
+            />
+            <div className="flex flex-1 min-h-0"> {/* 👈 clave para scroll interno */}
                 <Sidebar collapsed={collapsed} toggleCollapsed={toggleCollapsed} />
-                <div className="px-12 py-8 bg-white flex-1">
+                <div className="px-12 py-8 bg-white flex-1 overflow-y-auto">
                     <h1 className="text-2xl font-bold mb-8 pb-4 border-b-2 border-high_blue">{title}</h1>
                     {children}
                 </div>
