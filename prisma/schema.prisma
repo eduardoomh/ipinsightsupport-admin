@@ -27,8 +27,10 @@ model User {
   last_login         DateTime? // Fecha del último login (opcional)
   avatar             String?  @db.VarChar(512) // URL del avatar en CDN
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  work_entries      WorkEntry[] @relation("UserWorkEntry")
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
   @@map("users")
 }
 
@@ -38,8 +40,36 @@ model Client {
   email     String   @unique
   phone     String
   company   String
+  
+  work_entries WorkEntry[] @relation("ClientWorkEntry")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@map("clients")
+}
+
+enum RateType {
+  engineering
+  architecture
+  senior_architecture
+}
+
+model WorkEntry {
+  id            String       @id @default(cuid())
+  billed_on     DateTime
+  created_at    DateTime  @default(now())
+  hours_billed  Float
+  hours_spent   Float
+  hourly_rate   Float
+  summary       String    @db.Text // Campo largo para texto enriquecido
+  rate_type     RateType
+
+  // Relaciones
+  client_id     String
+  client        Client    @relation("ClientWorkEntry", fields: [client_id], references: [id])
+
+  user_id    String
+  user       User      @relation("UserWorkEntry", fields: [user_id], references: [id])
+
+  @@map("work_entries")
 }

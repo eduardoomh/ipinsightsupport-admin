@@ -10,9 +10,13 @@ interface DataType {
   client: {
     company: string;
   };
+  user: {
+    name: string;
+  }
   hours_billed: number;
   hours_spent: number;
   summary: string;
+  hourly_rate: number;
   created_at: string;
 }
 
@@ -21,7 +25,7 @@ interface Props {
   onDelete?: (id: string) => void;
 }
 
-const AllEntriesTable: FC<Props> = ({ entries }) => {
+const AdminWorkEntriesTable: FC<Props> = ({ entries }) => {
   const [expandedRowKey, setExpandedRowKey] = useState<string | null>(null);
 
   const columns: TableColumnsType<DataType> = [
@@ -29,6 +33,10 @@ const AllEntriesTable: FC<Props> = ({ entries }) => {
       title: "Billed Date",
       dataIndex: "billed_on",
       render: (value: string) => dayjs(value).format("YYYY-MM-DD"),
+    },
+    {
+      title: "User",
+      dataIndex: ["user", "name"],
     },
     {
       title: "Client",
@@ -48,6 +56,11 @@ const AllEntriesTable: FC<Props> = ({ entries }) => {
       title: "Submitted",
       dataIndex: "created_at",
       render: (value: string) => dayjs(value).format("YYYY-MM-DD HH:mm"),
+    },
+    {
+      title: "Hourly rate",
+      dataIndex: "hourly_rate",
+      render: (value: string) => `$${value}`,
     },
     {
       title: "Actions",
@@ -83,4 +96,4 @@ const AllEntriesTable: FC<Props> = ({ entries }) => {
   );
 };
 
-export default AllEntriesTable;
+export default AdminWorkEntriesTable;
