@@ -1,15 +1,14 @@
 import {
-  json,
   Links,
   Meta,
   Outlet,
-  redirect,
   Scripts,
   ScrollRestoration,
   useLoaderData,
   useLocation
 } from "@remix-run/react";
-import type { LinksFunction, LoaderFunction, LoaderFunctionArgs } from "@remix-run/node";
+import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 
 import "./tailwind.css";
 import { ConfigProvider } from "antd";
@@ -17,19 +16,7 @@ import { UserContext } from "./context/UserContext";
 import { AppModeProvider } from "./context/AppModeContext";
 import { getSessionFromCookie } from "./utils/sessions/getSessionFromCookie";
 
-export const links: LinksFunction = () => [
-  { rel: "preconnect", href: "https://fonts.googleapis.com" },
-  {
-    rel: "preconnect",
-    href: "https://fonts.gstatic.com",
-    crossOrigin: "anonymous",
-  },
-  {
-    rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
-  },
-];
-
+// 🧠 Loader del root
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const pathname = url.pathname;
@@ -50,11 +37,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return json({ user: { userId, role, name, email } });
 }
 
+// 🧱 Layout principal (NO USA HOOKS AQUÍ)
 export function Layout({ children }: { children: React.ReactNode }) {
-  const location = useLocation();
-  const data = useLoaderData<typeof loader>();
-  const isPublic = location.pathname === "/login";
-
   return (
     <html lang="en">
       <head>
@@ -64,36 +48,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <ConfigProvider
-          theme={{
-            token: {
-              borderRadius: 4
-            },
-            components: {
-              Menu: {
-                itemSelectedColor: "#E6F5FB",
-                itemSelectedBg: "#00AAE7",
-                itemHoverColor: "#000",
-                itemHoverBg: "#c3e9f8",
-                subMenuItemBg: "transparent"
-              },
-            },
-          }}
-        >
-          {
-            isPublic ? (
-              <>
-                {children}
-              </>
-            ) : (
-              <UserContext.Provider value={data.user}>
-                <AppModeProvider>
-                  {children}
-                </AppModeProvider>
-              </UserContext.Provider>
-            )
-          }
-        </ConfigProvider>
+        <ClientWrapper>
+          {children}
+        </ClientWrapper>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -101,6 +58,41 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+// ✅ Hooks van en componente que solo se ejecuta en cliente
+function ClientWrapper({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
+  const data = useLoaderData<typeof loader>();
+  const isPublic = location.pathname === "/login";
+
+  return (
+    <ConfigProvider
+      theme={{
+        token: { borderRadius: 4 },
+        components: {
+          Menu: {
+            itemSelectedColor: "#E6F5FB",
+            itemSelectedBg: "#00AAE7",
+            itemHoverColor: "#000",
+            itemHoverBg: "#c3e9f8",
+            subMenuItemBg: "transparent"
+          }
+        }
+      }}
+    >
+      {isPublic ? (
+        <>{children}</>
+      ) : (
+        <UserContext.Provider value={data?.user}>
+          <AppModeProvider>
+            {children}
+          </AppModeProvider>
+        </UserContext.Provider>
+      )}
+    </ConfigProvider>
+  );
+}
+
+// 🔁 Render de rutas
 export default function App() {
   return <Outlet />;
 }

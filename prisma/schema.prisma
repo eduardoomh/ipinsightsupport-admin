@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider   = "prisma-client-js"
+  provider  = "prisma-client-js"
   js_target = "esnext"
 }
 
@@ -23,28 +23,42 @@ model User {
   is_admin           Boolean   @default(false)
   is_active          Boolean   @default(true)
   is_account_manager Boolean   @default(false)
-  rate_type          Float
+  type               RateType  @default(engineering)
   last_login         DateTime? // Fecha del último login (opcional)
-  avatar             String?  @db.VarChar(512) // URL del avatar en CDN
+  avatar             String?   @db.VarChar(512) // URL del avatar en CDN
 
-  work_entries      WorkEntry[] @relation("UserWorkEntry")
+  work_entries          WorkEntry[]           @relation("UserWorkEntry")
+  schedule_entries      ScheduleEntry[]       @relation("UserScheduleEntry")
+  retainers             Retainer[]            @relation("CreatedByUserRetainer")
+  team_members          TeamMember[]          @relation("UserTeamMember")
+  client_status_history ClientStatusHistory[] @relation("ChangedByUserStatusHistory")
 
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("users")
 }
 
 model Client {
-  id        String   @id @default(cuid()) // cuid() genera un hash único
-  name      String
-  email     String   @unique
-  phone     String
-  company   String
-  
-  work_entries WorkEntry[] @relation("ClientWorkEntry")
+  id                             String       @id @default(cuid()) // cuid() genera un hash único
+  company                        String
+  currentStatus                  ClientStatus @default(ADHOC)
+  timezone                       Timezone     @default(CENTRAL)
+  remainingFunds                 Float        @default(0.0)
+  most_recent_work_entry         DateTime?
+  most_recent_retainer_activated DateTime?
+
+  contacts              Contact[]             @relation("ClientContacts") 
+  work_entries          WorkEntry[]           @relation("ClientWorkEntry")
+  schedule_entries      ScheduleEntry[]       @relation("ClientScheduleEntry")
+  client_retainers      Retainer[]            @relation("clientRetainer")
+  team_members          TeamMember[]          @relation("ClientTeamMember")
+  rates                 ClientRates?          @relation("ClientRates")
+  client_status_history ClientStatusHistory[] @relation("ClientStatusHistory")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
   @@map("clients")
 }
 
@@ -55,21 +69,157 @@ enum RateType {
 }
 
 model WorkEntry {
-  id            String       @id @default(cuid())
-  billed_on     DateTime
-  created_at    DateTime  @default(now())
-  hours_billed  Float
-  hours_spent   Float
-  hourly_rate   Float
-  summary       String    @db.Text // Campo largo para texto enriquecido
-  rate_type     RateType
+  id           String   @id @default(cuid())
+  billed_on    DateTime
+  created_at   DateTime @default(now())
+  hours_billed Float
+  hours_spent  Float
+  hourly_rate  Float
+  summary      String   @db.Text // Campo largo para texto enriquecido
+  rate_type    RateType
 
   // Relaciones
-  client_id     String
-  client        Client    @relation("ClientWorkEntry", fields: [client_id], references: [id])
+  client_id String
+  client    Client @relation("ClientWorkEntry", fields: [client_id], references: [id])
 
-  user_id    String
-  user       User      @relation("UserWorkEntry", fields: [user_id], references: [id])
+  user_id String
+  user    User   @relation("UserWorkEntry", fields: [user_id], references: [id])
 
   @@map("work_entries")
+}
+
+model ScheduleEntry {
+  id     String    @id @default(cuid())
+  date   DateTime
+  status DayStatus
+  note   String?   @db.Text
+
+  client_id String?
+  client    Client? @relation("ClientScheduleEntry", fields: [client_id], references: [id])
+
+  user_id String
+  user    User   @relation("UserScheduleEntry", fields: [user_id], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("schedule_entries")
+}
+
+enum DayStatus {
+  available
+  partial
+  unavailable
+  meeting
+}
+
+model Contact {
+  id    String @id @default(cuid())
+  name  String
+  email String @unique
+  phone String
+
+  client_id String?
+  client    Client? @relation("ClientContacts", fields: [client_id], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("contacts")
+}
+
+model Retainer {
+  id             String   @id @default(cuid())
+  amount         Float
+  date_activated DateTime
+  note           String?  @db.Text
+  is_credit      Boolean  @default(false)
+
+  client_id String
+  client    Client @relation("clientRetainer", fields: [client_id], references: [id])
+
+  created_by_id String
+  created_by    User   @relation("CreatedByUserRetainer", fields: [created_by_id], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("retainers")
+}
+
+model TeamMember {
+  id String @id @default(cuid())
+
+  // Relaciones
+  client_id String
+  client    Client @relation("ClientTeamMember", fields: [client_id], references: [id])
+
+  user_id String
+  user    User   @relation("UserTeamMember", fields: [user_id], references: [id])
+
+  // Enum para el rol en el equipo
+  role TeamRole
+
+  // Enum para el tipo de tarifa asignada
+  rate_type RateType
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([client_id, user_id]) // evitar duplicados
+  @@map("team_members")
+}
+
+enum TeamRole {
+  on_team
+  technical_lead
+}
+
+model ClientRates {
+  id       String @id @default(uuid())
+  client   Client @relation("ClientRates", fields: [clientId], references: [id], onDelete: Cascade)
+  clientId String @unique
+
+  engineeringRate        Decimal
+  architectureRate       Decimal
+  seniorArchitectureRate Decimal
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("client_rates")
+}
+
+model ClientStatusHistory {
+  id          String       @id @default(uuid())
+  client      Client       @relation("ClientStatusHistory", fields: [clientId], references: [id], onDelete: Cascade)
+  clientId    String
+  status      ClientStatus
+  changedAt   DateTime     @default(now())
+  changedBy   User?        @relation("ChangedByUserStatusHistory", fields: [changedById], references: [id])
+  changedById String?
+  note        String
+
+  @@map("client_status_history")
+}
+
+enum ClientStatus {
+  ADHOC
+  IN_PROGRESS
+  ARCHIVE
+  WAITING_ON_AM
+  WAITING_ON_CLIENT
+  TRANSFER
+}
+
+enum Timezone {
+  EASTERN
+  CENTRAL
+  PACIFIC
+  MOUNTAIN
+  EUROPE
+  ASIA
+  AFRICA
+  LATAM
+  AUSTRALIA_NZ
 }

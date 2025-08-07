@@ -8,7 +8,9 @@ export const UserSchema = z.object({
   is_admin: z.coerce.boolean().optional(),
   is_active: z.coerce.boolean().optional(),
   is_account_manager: z.coerce.boolean().optional(),
-  rate_type: z.coerce.number().optional(),
+  type: z.enum(["engineering", "architecture", "senior_architecture"], {
+    required_error: "Type is not a RateType Enum",
+  }),
   avatar: z.string().url("Invalid avatar URL").nullable().optional(),
   last_login: z.string().datetime("Invalid datetime format").nullable().optional(),
   password: z.string().min(6, "Password must be at least 6 characters long"),

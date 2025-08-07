@@ -1,13 +1,12 @@
-import { Button, Table, TableColumnsType } from "antd";
-import { EditOutlined } from "@ant-design/icons";
+import { Button, message, Popconfirm, Table, TableColumnsType } from "antd";
+import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { FC } from "react";
 import dayjs from "dayjs";
 import { ClientI } from "~/interfaces/clients.interface";
+import { useNavigate } from "@remix-run/react";
 
 interface DataType {
-    name: string;
-    email: string;
-    phone: string;
+    id: string;
     company: string;
     createdAt: string;
     updatedAt: string;
@@ -18,21 +17,17 @@ interface Props {
     onDelete?: (id: string) => void;
 }
 
-const ClientsTable: FC<Props> = ({ clients }) => {
+const ClientsTable: FC<Props> = ({ clients, onDelete }) => {
+        const navigate = useNavigate();
+
+    const handleDelete = (id: string) => {
+        if (onDelete) {
+            onDelete(id);
+            message.success("Client deleted successfully");
+        }
+    };
 
     const columns: TableColumnsType<DataType> = [
-        {
-            title: "Name",
-            dataIndex: "name"
-        },
-        {
-            title: "Email",
-            dataIndex: "email"
-        },
-        {
-            title: "Phone",
-            dataIndex: "phone"
-        },
         {
             title: "Company",
             dataIndex: "company"
@@ -48,9 +43,24 @@ const ClientsTable: FC<Props> = ({ clients }) => {
             fixed: "right",
             width: 150,
             render: (_: any, record: DataType) => (
-                <Button icon={<EditOutlined style={{ fontSize: "16px" }} />}>
-                    Edit
-                </Button>
+               <div className="flex justify-end gap-2">
+                    <Button
+                        icon={<EyeOutlined style={{ fontSize: "16px" }} />}
+                        onClick={() => navigate(`/admin/advanced/clients/${record.id}/info`)}
+                    />
+                    <Button
+                        icon={<EditOutlined style={{ fontSize: "16px" }} />}
+                        onClick={() => navigate(`/admin/advanced/clients/${record.id}/edit`)}
+                    />
+                    <Popconfirm
+                        title="Are you sure you want to delete this user?"
+                        onConfirm={() => handleDelete(record.id)}
+                        okText="Yes"
+                        cancelText="No"
+                    >
+                        <Button danger icon={<DeleteOutlined />} />
+                    </Popconfirm>
+                </div>
             ),
         },
     ];
@@ -62,6 +72,7 @@ const ClientsTable: FC<Props> = ({ clients }) => {
             dataSource={clients}
             size="middle"
             rowKey="id"
+            pagination={{ pageSize: 8 }}
         />
     );
 };

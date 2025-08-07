@@ -1,7 +1,47 @@
-import type { ActionFunction } from "@remix-run/node";
+// app/routes/api/users.$id.ts
+import type { LoaderFunction, ActionFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { prisma } from "~/config/prisma.server";
 
-// DELETE y PUT /api/users/:id
+// GET /api/users/:id
+export const loader: LoaderFunction = async ({ params }) => {
+  const userId = params.id;
+
+  if (!userId) {
+    return json({ error: "Missing user ID" }, { status: 400 });
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        is_admin: true,
+        is_active: true,
+        is_account_manager: true,
+        type: true,
+        avatar: true,
+        last_login: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    if (!user) {
+      return json({ error: "User not found" }, { status: 404 });
+    }
+
+    return json(user, { status: 200 });
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return json({ error: "Server error" }, { status: 500 });
+  }
+};
+
+// PUT & DELETE /api/users/:id
 export const action: ActionFunction = async ({ params, request }) => {
   const userId = params.id;
 
@@ -16,7 +56,6 @@ export const action: ActionFunction = async ({ params, request }) => {
 
   try {
     if (method === "DELETE") {
-      // Obtener el usuario antes de eliminarlo
       const user = await prisma.user.findUnique({
         where: { id: userId },
         select: {
@@ -27,7 +66,7 @@ export const action: ActionFunction = async ({ params, request }) => {
           is_admin: true,
           is_active: true,
           is_account_manager: true,
-          rate_type: true,
+          type: true,
           avatar: true,
           last_login: true,
           createdAt: true,
@@ -64,8 +103,6 @@ export const action: ActionFunction = async ({ params, request }) => {
       }
 
       const updatedFields = JSON.parse(userJson);
-
-      // ⚠️ Remover password si por alguna razón viene en el payload
       delete updatedFields.password;
 
       const updatedUser = await prisma.user.update({
@@ -77,7 +114,7 @@ export const action: ActionFunction = async ({ params, request }) => {
           is_admin: updatedFields.is_admin,
           is_active: updatedFields.is_active,
           is_account_manager: updatedFields.is_account_manager,
-          rate_type: updatedFields.rate_type,
+          type: updatedFields.type,
           avatar: updatedFields.avatar,
           last_login: updatedFields.last_login
             ? new Date(updatedFields.last_login)
@@ -91,7 +128,7 @@ export const action: ActionFunction = async ({ params, request }) => {
           is_admin: true,
           is_active: true,
           is_account_manager: true,
-          rate_type: true,
+          type: true,
           avatar: true,
           last_login: true,
           createdAt: true,

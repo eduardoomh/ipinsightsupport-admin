@@ -38,10 +38,10 @@ export const action: ActionFunction = async ({ request }) => {
 
   // Crear sesión
   const session = await getSession(request);
-  session.set("userId", user.id);
-  session.set("email", user.email);
-  session.set("name", user.name);
-  session.set("role", user.is_admin ? 'ADMIN' : 'USER')
+  session.set("userId", user?.id);
+  session.set("email", user?.email);
+  session.set("name", user?.name);
+  session.set("role", user?.is_admin ? 'ADMIN' : 'USER')
 
   /*
   const {password: passw, ...userFound} = user

@@ -18,7 +18,7 @@ export const loader: LoaderFunction = async () => {
       is_admin: true,
       is_active: true,
       is_account_manager: true,
-      rate_type: true,
+      type: true,
       avatar: true,
       last_login: true,
       createdAt: true,
@@ -62,7 +62,7 @@ export const action: ActionFunction = async ({ request }) => {
         is_admin: user.is_admin ?? false,
         is_active: user.is_active ?? true,
         is_account_manager: user.is_account_manager ?? false,
-        rate_type: user.rate_type ?? 0,
+        type: user.type ?? "engineering",
         avatar: user.avatar ?? null,
         last_login: user.last_login ? new Date(user.last_login) : null,
         password: hashedPassword, // ✅ Guardar contraseña hasheada

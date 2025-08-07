@@ -51,6 +51,10 @@ const items: MenuItem[] = [
                 label: <Link to="/admin/advanced/clients">Clients</Link>
             },
             {
+                key: 'advanced-contacts',
+                label: <Link to="/admin/advanced/contacts">Contacts</Link>
+            },
+            {
                 key: 'advanced-logs',
                 label: <Link to="/admin/advanced/logs">Logs</Link>
             },
@@ -71,6 +75,7 @@ const pathToKey: Record<string, string> = {
     "/admin/work-entries": "admin-work-entries",
     "/admin/advanced/users": "advanced-users",
     "/admin/advanced/clients": "advanced-clients",
+    "/admin/advanced/contacts": "advanced-contacts",
     "/admin/advanced/logs": "advanced-logs",
     "/admin/status-report": "admin-status-report",
 };

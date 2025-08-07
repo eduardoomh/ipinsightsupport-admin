@@ -1,5 +1,7 @@
+import { PlusOutlined } from "@ant-design/icons";
 import { defer, LoaderFunction } from "@remix-run/node";
-import { Await, useLoaderData, redirect } from "@remix-run/react";
+import { Await, useLoaderData, redirect, Outlet, useNavigate } from "@remix-run/react";
+import { Button } from "antd";
 import { Suspense, useState } from "react";
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import SkeletonEntries from "~/components/skeletons/SkeletonEntries";
@@ -26,6 +28,13 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function ClientsPage() {
   const { clients } = useLoaderData<typeof loader>();
   const [localClients, setLocalClients] = useState<ClientI[] | null>(null);
+  const navigate = useNavigate();
+
+  const refreshClients = async () => {
+    const res = await fetch("/api/clients");
+    const data = await res.json();
+    setLocalClients(data);
+  };
 
   const handleDelete = async (id: string) => {
     try {
@@ -43,8 +52,19 @@ export default function ClientsPage() {
     }
   };
 
+  const headerActions = (
+    <Button
+      type="primary"
+      className="bg-primary"
+      icon={<PlusOutlined />}
+      onClick={() => navigate("/admin/advanced/clients/new")} // 👉 esto activa el modal
+    >
+      Create Client
+    </Button>
+  );
+
   return (
-    <DashboardLayout title="Manage clients">
+    <DashboardLayout title="Manage clients" headerActions={headerActions}>
       <Suspense fallback={<SkeletonEntries />}>
         <Await resolve={clients}>
           {(resolvedClients: ClientI[]) => {
@@ -54,7 +74,10 @@ export default function ClientsPage() {
             if (!localClients) setLocalClients(resolvedClients);
 
             return (
-              <ClientsTable clients={currentClients} onDelete={handleDelete} />
+              <>
+                <ClientsTable clients={currentClients} onDelete={handleDelete} />
+                <Outlet context={{ refreshClients }} /> {/* 👈 importante para que el modal sepa cómo refrescar */}
+              </>
             );
           }}
         </Await>

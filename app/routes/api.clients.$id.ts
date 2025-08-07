@@ -1,8 +1,39 @@
 // app/routes/api/clients.$id.ts
-import type { ActionFunction } from "@remix-run/node";
+import type { LoaderFunction, ActionFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { prisma } from "~/config/prisma.server";
 
-// DELETE y PUT /api/clients/:id
+export const loader: LoaderFunction = async ({ params }) => {
+  const clientId = params.id;
+
+  if (!clientId) {
+    return json({ error: "Missing client ID" }, { status: 400 });
+  }
+
+  try {
+    const client = await prisma.client.findUnique({
+      where: { id: clientId },
+      select: {
+        id: true,
+        company: true,
+        timezone: true,
+        contacts: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    if (!client) {
+      return json({ error: "Client not found" }, { status: 404 });
+    }
+
+    return json(client, { status: 200 });
+  } catch (error) {
+    console.error("Error fetching client:", error);
+    return json({ error: "Server error" }, { status: 500 });
+  }
+};
+
 export const action: ActionFunction = async ({ params, request }) => {
   const clientId = params.id;
 
@@ -21,9 +52,6 @@ export const action: ActionFunction = async ({ params, request }) => {
         where: { id: clientId },
         select: {
           id: true,
-          name: true,
-          email: true,
-          phone: true,
           company: true,
           createdAt: true,
           updatedAt: true,
@@ -63,17 +91,13 @@ export const action: ActionFunction = async ({ params, request }) => {
       const updatedClient = await prisma.client.update({
         where: { id: clientId },
         data: {
-          name: updatedFields.name,
-          email: updatedFields.email,
-          phone: updatedFields.phone,
           company: updatedFields.company,
+          timezone: updatedFields.timezone,
         },
         select: {
           id: true,
-          name: true,
-          email: true,
-          phone: true,
           company: true,
+          timezone: true,
           createdAt: true,
           updatedAt: true,
         },

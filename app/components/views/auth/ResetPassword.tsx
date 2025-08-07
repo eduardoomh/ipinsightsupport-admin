@@ -37,7 +37,7 @@ const LoginForm: FC<Props> = ({ user }) => {
             return;
         }
 
-        formData.append("id", user.id);
+        formData.append("id", user?.id);
 
         const response = await fetch("/api/auth/reset-password", {
             method: "POST",

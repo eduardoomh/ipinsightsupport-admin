@@ -7,7 +7,7 @@ export interface UsersI {
     is_admin: boolean,
     is_active: boolean,
     is_account_manager: boolean,
-    rate_type: number,
+    type: 'engineering' | 'archtecture' | 'senior_architecture',
     avatar: string,
     last_login: null,
     createdAt: string;

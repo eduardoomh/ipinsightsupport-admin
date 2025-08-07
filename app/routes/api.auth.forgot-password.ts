@@ -30,8 +30,8 @@ export const action: ActionFunction = async ({ request }) => {
     }
 
     const tokenPayload = {
-      email: user.email,
-      id: user.id,
+      email: user?.email,
+      id: user?.id,
     };
 
     const token = jwt.sign(tokenPayload, process.env.JWT_SECRET || "changeme", {

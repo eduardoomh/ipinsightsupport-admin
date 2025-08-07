@@ -15,8 +15,8 @@ body {
 }
 
 .custom-table .ant-table-thead > tr > th {
-  background-color: #00AAE7; /* Azul por defecto de Ant Design */
-  color: white;
+  background-color: #A9E2FC; /* Azul por defecto de Ant Design */
+  color: #096584;
   font-weight: bold;
 }
 

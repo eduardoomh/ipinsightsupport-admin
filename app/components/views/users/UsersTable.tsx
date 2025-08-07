@@ -1,10 +1,12 @@
-import { Button, Table, TableColumnsType } from "antd";
-import { EditOutlined } from "@ant-design/icons";
+import { Button, message, Popconfirm, Table, TableColumnsType } from "antd";
+import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { FC } from "react";
 import dayjs from "dayjs";
 import { UsersI } from "~/interfaces/users.interface";
+import { useNavigate } from "@remix-run/react";
 
 interface DataType {
+    id: string;
     name: string;
     email: string;
     phone: string;
@@ -19,7 +21,15 @@ interface Props {
     onDelete?: (id: string) => void;
 }
 
-const UsersTable: FC<Props> = ({ users }) => {
+const UsersTable: FC<Props> = ({ users, onDelete }) => {
+    const navigate = useNavigate();
+
+    const handleDelete = (id: string) => {
+        if (onDelete) {
+            onDelete(id);
+            message.success("User deleted successfully");
+        }
+    };
 
     const columns: TableColumnsType<DataType> = [
         {
@@ -60,9 +70,24 @@ const UsersTable: FC<Props> = ({ users }) => {
             fixed: "right",
             width: 150,
             render: (_: any, record: DataType) => (
-                <Button icon={<EditOutlined style={{ fontSize: "16px" }} />}>
-                    Edit
-                </Button>
+                <div className="flex justify-end gap-2">
+                    <Button
+                        icon={<EyeOutlined style={{ fontSize: "16px" }} />}
+                        onClick={() => navigate(`/admin/advanced/users/${record.id}/info`)}
+                    />
+                    <Button
+                        icon={<EditOutlined style={{ fontSize: "16px" }} />}
+                        onClick={() => navigate(`/admin/advanced/users/${record.id}/edit`)}
+                    />
+                    <Popconfirm
+                        title="Are you sure you want to delete this user?"
+                        onConfirm={() => handleDelete(record.id)}
+                        okText="Yes"
+                        cancelText="No"
+                    >
+                        <Button danger icon={<DeleteOutlined />} />
+                    </Popconfirm>
+                </div>
             ),
         },
     ];
@@ -74,6 +99,7 @@ const UsersTable: FC<Props> = ({ users }) => {
             dataSource={users}
             size="middle"
             rowKey="id"
+            pagination={{ pageSize: 8 }}
         />
     );
 };

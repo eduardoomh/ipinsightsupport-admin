@@ -1,6 +1,16 @@
+// routes/admin/advanced/users/index.tsx
 import { defer, LoaderFunction } from "@remix-run/node";
-import { Await, useLoaderData, redirect } from "@remix-run/react";
+import {
+  Await,
+  useLoaderData,
+  redirect,
+  Outlet,
+  useNavigate,
+} from "@remix-run/react";
 import { Suspense, useState } from "react";
+import { Button } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import SkeletonEntries from "~/components/skeletons/SkeletonEntries";
 import UsersTable from "~/components/views/users/UsersTable";
@@ -26,6 +36,13 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function UsersPage() {
   const { users } = useLoaderData<typeof loader>();
   const [localUsers, setLocalUsers] = useState<UsersI[] | null>(null);
+  const navigate = useNavigate();
+
+  const refreshUsers = async () => {
+    const res = await fetch("/api/users");
+    const data = await res.json();
+    setLocalUsers(data);
+  };
 
   const handleDelete = async (id: string) => {
     try {
@@ -43,8 +60,19 @@ export default function UsersPage() {
     }
   };
 
+  const headerActions = (
+    <Button
+      type="primary"
+      className="bg-primary"
+      icon={<PlusOutlined />}
+      onClick={() => navigate("/admin/advanced/users/new")} // 👉 esto activa el modal
+    >
+      Create User
+    </Button>
+  );
+
   return (
-    <DashboardLayout title="Manage users">
+    <DashboardLayout title="Manage users" headerActions={headerActions}>
       <Suspense fallback={<SkeletonEntries />}>
         <Await resolve={users}>
           {(resolvedUsers: UsersI[]) => {
@@ -53,7 +81,10 @@ export default function UsersPage() {
             if (!localUsers) setLocalUsers(resolvedUsers);
 
             return (
-              <UsersTable users={currentUsers} onDelete={handleDelete} />
+              <>
+                <UsersTable users={currentUsers} onDelete={handleDelete} />
+                <Outlet context={{ refreshUsers }} /> {/* 👈 importante para que el modal sepa cómo refrescar */}
+              </>
             );
           }}
         </Await>
