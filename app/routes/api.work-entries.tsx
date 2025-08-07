@@ -1,23 +1,42 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { WorkEntrySchema } from "~/utils/schemas/workEntrySchema";
 import { prisma } from "~/config/prisma.server";
+import { buildPageInfo } from "~/utils/pagination/buildPageInfo";
+import { buildCursorPaginationQuery } from "~/utils/pagination/buildCursorPaginationQuery";
 
 // GET /api/work-entries → obtener todas las entradas de trabajo
-export const loader: LoaderFunction = async () => {
-  const workEntries = await prisma.workEntry.findMany({
-    include: {
-      client: true,
-      user: true,
-    },
-    orderBy: {
-      created_at: "desc",
-    },
+export const loader: LoaderFunction = async ({ request }) => {
+  const url = new URL(request.url);
+  const cursor = url.searchParams.get("cursor");
+  const takeParam = url.searchParams.get("take");
+  const direction = url.searchParams.get("direction") as "next" | "prev";
+
+  const take = takeParam ? parseInt(takeParam, 10) : 10;
+
+  const { queryOptions, isBackward } = buildCursorPaginationQuery({
+    cursor,
+    take,
+    direction,
+    orderByField: "created_at",
+    select: undefined, // usamos include
   });
 
-  return new Response(JSON.stringify(workEntries), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
+  queryOptions.include = {
+    client: true,
+    user: true,
+  };
+
+  const workEntries = await prisma.workEntry.findMany(queryOptions);
+
+  const { items, pageInfo } = buildPageInfo(workEntries, take, isBackward);
+
+  return new Response(
+    JSON.stringify({ workEntries: items, pageInfo }),
+    {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    }
+  );
 };
 
 // POST /api/work-entries → crear nueva entrada de trabajo con validación Zod

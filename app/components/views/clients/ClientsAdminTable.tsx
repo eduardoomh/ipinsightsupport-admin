@@ -1,8 +1,12 @@
-import { Table, TableColumnsType, Tag, Avatar, Space } from "antd";
+import { Table } from "antd";
 import { FC } from "react";
 import dayjs from "dayjs";
 import { ClientI } from "~/interfaces/clients.interface";
 import { useNavigate } from "@remix-run/react";
+import { PageInfo } from "~/interfaces/pagination.interface";
+import PaginationControls from "~/components/tables/PaginationControls";
+import { clientAdminColumns } from "./utils/clientAdminColumns";
+import usePagination from "~/hooks/usePagination";
 
 interface DataType {
   id: string;
@@ -14,66 +18,18 @@ interface DataType {
 
 interface Props {
   clients: ClientI[];
+  pageInfo: PageInfo;
+  onPageChange: (cursor: string, direction: "next" | "prev") => void;
+  pageSize: number;
 }
 
-const ClientsAdminTable: FC<Props> = ({ clients }) => {
+const ClientsAdminTable: FC<Props> = ({ clients, pageInfo, onPageChange, pageSize }) => {
   const navigate = useNavigate();
 
-  const columns: TableColumnsType<DataType> = [
-    {
-      title: "Company",
-      dataIndex: "company",
-      render: (_, record) => (
-        <span
-          style={{
-            cursor: "pointer",
-            textDecoration: "underline",
-          }}
-          onClick={() => navigate(`/admin/detailed-client/${record.id}`)}
-        >
-          {record.company}
-        </span>
-      ),
-    },
-    {
-      title: "Team",
-      dataIndex: "team_members",
-      render: (_, record) => {
-        if (!record.team_members || record.team_members.length === 0) {
-          return <span> - </span>;
-        }
+  const { currentPage, start, updatePage } = usePagination(pageSize, pageInfo, onPageChange);
+  const end = start + clients.length - 1;
 
-        return (
-          <div>
-            {record.team_members.map((tm, index) => {
-              const name = tm.user?.name || "—";
-              return (
-                <div key={index} style={{ marginBottom: 8 }}>
-                  <Space size="middle">
-                    <Avatar style={{ backgroundColor: "#1890ff" }}>
-                      {name.charAt(0).toUpperCase()}
-                    </Avatar>
-                    <span>{name}</span>
-                    {tm.role === "technical_lead" && (
-                      <Tag color="blue">Leading</Tag>
-                    )}
-                  </Space>
-                </div>
-              );
-            })}
-          </div>
-        );
-      },
-    },
-    {
-      title: "Last Work Entry",
-      dataIndex: "most_recent_work_entry",
-    },
-    {
-      title: "Most Recent Retainer",
-      dataIndex: "most_recent_retainer_activated",
-    },
-  ];
+  const columns = clientAdminColumns(navigate);
 
   const dataSource: DataType[] = clients.map((client: ClientI) => ({
     id: client.id,
@@ -88,13 +44,23 @@ const ClientsAdminTable: FC<Props> = ({ clients }) => {
   }));
 
   return (
-    <Table<DataType>
-      className="custom-table"
-      columns={columns}
-      dataSource={dataSource}
-      size="middle"
-      rowKey="id"
-    />
+    <>
+      <Table<DataType>
+        className="custom-table"
+        columns={columns}
+        dataSource={dataSource}
+        size="middle"
+        rowKey="id"
+        pagination={false}
+      />
+      <PaginationControls
+        currentPage={currentPage}
+        pageInfo={pageInfo}
+        start={start}
+        end={end}
+        onPageChange={updatePage}
+      />
+    </>
   );
 };
 

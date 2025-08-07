@@ -1,45 +1,45 @@
-import { defer, LoaderFunction } from "@remix-run/node";
-import { Await, redirect, useLoaderData } from "@remix-run/react";
-import { Suspense, useState } from "react";
+// routes/admin/advanced/clients/admin.tsx
+import { LoaderFunction } from "@remix-run/node";
+import {
+  Await,
+  useLoaderData
+} from "@remix-run/react";
+import { Suspense } from "react";
+
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import SkeletonEntries from "~/components/skeletons/SkeletonEntries";
 import ClientsAdminTable from "~/components/views/clients/ClientsAdminTable";
-import { ClientI } from "~/interfaces/clients.interface";
-import { delay } from "~/utils/general/delay";
+
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
+import { withPaginationDefer } from "~/utils/pagination/withPaginationDefer";
+import { useCursorPagination } from "~/hooks/useCursorPagination";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const session = await getSessionFromCookie(request);
-  if (!session) return redirect("/login");
-
-  const fetchClients = async () => {
-    const res = await fetch(`${process.env.APP_URL}/api/clients`);
-    const data = await res.json();
-    return delay(500, data);
-  };
-
-  return defer({
-    clients: fetchClients(),
+  return withPaginationDefer({
+    request,
+    apiPath: `${process.env.APP_URL}/api/clients`,
+    sessionCheck: () => getSessionFromCookie(request),
+    key: "clientsData",
   });
 };
+
 export default function AdminClients() {
-    const { clients } = useLoaderData<typeof loader>();
-    const [localClients, setLocalClients] = useState<ClientI[] | null>(null);
-    
+  const { data: clientsData, take, handlePageChange } = useCursorPagination("clientsData");
+
   return (
     <DashboardLayout title="Clients">
       <Suspense fallback={<SkeletonEntries />}>
-        <Await resolve={clients}>
-          {(resolvedClients: ClientI[]) => {
-            const currentClients = localClients ?? resolvedClients;
-
-            // Inicializa `localEntries` solo una vez
-            if (!localClients) setLocalClients(resolvedClients);
+        <Await resolve={clientsData}>
+          {(data: any) => {
+            const { clients, pageInfo } = data;
 
             return (
-              <>
-                <ClientsAdminTable clients={currentClients} />
-              </>
+              <ClientsAdminTable
+                clients={clients}
+                pageInfo={pageInfo}
+                onPageChange={handlePageChange}
+                pageSize={take}
+              />
             );
           }}
         </Await>

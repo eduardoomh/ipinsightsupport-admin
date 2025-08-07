@@ -1,60 +1,45 @@
-import { defer, LoaderFunction } from "@remix-run/node";
-import { Await, useLoaderData, redirect } from "@remix-run/react";
-import { Suspense, useState } from "react";
+// routes/admin/advanced/work-entries/index.tsx
+import { LoaderFunction } from "@remix-run/node";
+import { Await } from "@remix-run/react";
+import { Suspense } from "react";
+
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import SkeletonEntries from "~/components/skeletons/SkeletonEntries";
 import AdminWorkEntriesTable from "~/components/views/entries/AdminWorkEntriesTable";
-import { WorkEntry } from "~/interfaces/workEntries.interface";
-import { delay } from "~/utils/general/delay";
+
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
+import { withPaginationDefer } from "~/utils/pagination/withPaginationDefer";
+import { useCursorPagination } from "~/hooks/useCursorPagination";
+import { useDeleteResource } from "~/hooks/useDeleteResource";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const session = await getSessionFromCookie(request);
-  if (!session) return redirect("/login");
-
-  const fetchEntries = async () => {
-    const res = await fetch(`${process.env.APP_URL}/api/work-entries`);
-    const data = await res.json();
-    return delay(500, data);
-  };
-
-  return defer({
-    workEntries: fetchEntries(),
+  return withPaginationDefer({
+    request,
+    apiPath: `${process.env.APP_URL}/api/work-entries`,
+    sessionCheck: () => getSessionFromCookie(request),
+    key: "workEntries",
   });
 };
 
 export default function AdminWorkEntries() {
-  const { workEntries } = useLoaderData<typeof loader>();
-  const [localEntries, setLocalEntries] = useState<WorkEntry[] | null>(null);
-
-  const handleDelete = async (id: string) => {
-    try {
-      const res = await fetch(`/api/work-entries/${id}`, {
-        method: "DELETE",
-      });
-
-      if (res.ok) {
-        setLocalEntries((prev) => prev?.filter((entry) => entry.id !== id) ?? []);
-      } else {
-        console.error("Failed to delete entry");
-      }
-    } catch (err) {
-      console.error("Error deleting entry:", err);
-    }
-  };
+  const { data: workEntriesData, take, handlePageChange } = useCursorPagination("workEntries");
+  const deleteWorkEntry = useDeleteResource("/api/work-entries");
 
   return (
     <DashboardLayout title="Work entries">
       <Suspense fallback={<SkeletonEntries />}>
-        <Await resolve={workEntries}>
-          {(resolvedEntries: WorkEntry[]) => {
-            const currentEntries = localEntries ?? resolvedEntries;
-
-            // Inicializa `localEntries` solo una vez
-            if (!localEntries) setLocalEntries(resolvedEntries);
+        <Await resolve={workEntriesData}>
+          {(data: any) => {
+            const { workEntries, pageInfo } = data;
 
             return (
-              <AdminWorkEntriesTable entries={currentEntries} onDelete={handleDelete} />
+              <AdminWorkEntriesTable
+                entries={workEntries}
+                pageInfo={pageInfo}
+                onPageChange={handlePageChange}
+                pageSize={take}
+                onDelete={deleteWorkEntry}
+              />
             );
           }}
         </Await>
