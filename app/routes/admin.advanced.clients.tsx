@@ -1,82 +1,51 @@
-import { PlusOutlined } from "@ant-design/icons";
-import { defer, LoaderFunction } from "@remix-run/node";
-import { Await, useLoaderData, redirect, Outlet, useNavigate } from "@remix-run/react";
-import { Button } from "antd";
-import { Suspense, useState } from "react";
+// routes/admin/advanced/clients/index.tsx
+import { LoaderFunction } from "@remix-run/node";
+import {
+  Await,
+  Outlet
+} from "@remix-run/react";
+import { Suspense } from "react";
+
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import SkeletonEntries from "~/components/skeletons/SkeletonEntries";
 import ClientsTable from "~/components/views/clients/ClientsTable";
-import { ClientI } from "~/interfaces/clients.interface";
-import { delay } from "~/utils/general/delay";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
+import { withPaginationDefer } from "~/utils/pagination/withPaginationDefer";
+import { useCursorPagination } from "~/hooks/useCursorPagination";
+import { useDeleteResource } from "~/hooks/useDeleteResource";
+import { useDashboardHeaderActions } from "~/hooks/useDashboardHeaderActions";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const session = await getSessionFromCookie(request);
-  if (!session) return redirect("/login");
-
-  const fetchClients = async () => {
-    const res = await fetch(`${process.env.APP_URL}/api/clients`);
-    const data = await res.json();
-    return delay(500, data);
-  };
-
-  return defer({
-    clients: fetchClients(),
+  return withPaginationDefer({
+    request,
+    apiPath: `${process.env.APP_URL}/api/clients`,
+    sessionCheck: () => getSessionFromCookie(request),
+    key: "clientsData",
   });
 };
 
 export default function ClientsPage() {
-  const { clients } = useLoaderData<typeof loader>();
-  const [localClients, setLocalClients] = useState<ClientI[] | null>(null);
-  const navigate = useNavigate();
-
-  const refreshClients = async () => {
-    const res = await fetch("/api/clients");
-    const data = await res.json();
-    setLocalClients(data);
-  };
-
-  const handleDelete = async (id: string) => {
-    try {
-      const res = await fetch(`/api/clients/${id}`, {
-        method: "DELETE",
-      });
-
-      if (res.ok) {
-        setLocalClients((prev) => prev?.filter((entry) => entry.id !== id) ?? []);
-      } else {
-        console.error("Failed to delete client");
-      }
-    } catch (err) {
-      console.error("Error deleting client:", err);
-    }
-  };
-
-  const headerActions = (
-    <Button
-      type="primary"
-      className="bg-primary"
-      icon={<PlusOutlined />}
-      onClick={() => navigate("/admin/advanced/clients/new")} // 👉 esto activa el modal
-    >
-      Create Client
-    </Button>
-  );
+  const { data: clientsData, take, handlePageChange } = useCursorPagination("clientsData");
+  const deleteClient = useDeleteResource("/api/clients");
+  const headerActions = useDashboardHeaderActions("/admin/advanced/clients/new", "Create Client");
 
   return (
     <DashboardLayout title="Manage clients" headerActions={headerActions}>
       <Suspense fallback={<SkeletonEntries />}>
-        <Await resolve={clients}>
-          {(resolvedClients: ClientI[]) => {
-            const currentClients = localClients ?? resolvedClients;
-
-            // Inicializa `localEntries` solo una vez
-            if (!localClients) setLocalClients(resolvedClients);
+        <Await resolve={clientsData}>
+          {(data: any) => {
+            const { clients, pageInfo } = data;
 
             return (
               <>
-                <ClientsTable clients={currentClients} onDelete={handleDelete} />
-                <Outlet context={{ refreshClients }} /> {/* 👈 importante para que el modal sepa cómo refrescar */}
+                <ClientsTable
+                  clients={clients}
+                  onDelete={deleteClient}
+                  pageInfo={pageInfo}
+                  onPageChange={handlePageChange}
+                  pageSize={take}
+                />
+                <Outlet context={{ refreshClients: () => {} }} />
               </>
             );
           }}

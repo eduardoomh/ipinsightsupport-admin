@@ -1,82 +1,51 @@
-import { PlusOutlined } from "@ant-design/icons";
-import { defer, LoaderFunction } from "@remix-run/node";
-import { Await, useLoaderData, redirect, Outlet, useNavigate } from "@remix-run/react";
-import { Button } from "antd";
-import { Suspense, useState } from "react";
-import ContactsTable from "~/components/views/contacts/ContactsTable";
+// routes/admin/advanced/contacts/index.tsx
+import { LoaderFunction } from "@remix-run/node";
+import {
+  Await,
+  Outlet
+} from "@remix-run/react";
+import { Suspense } from "react";
+
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import SkeletonEntries from "~/components/skeletons/SkeletonEntries";
-import { delay } from "~/utils/general/delay";
+import ContactsTable from "~/components/views/contacts/ContactsTable";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
-import { ContactI } from "~/interfaces/contact.interface";
+import { withPaginationDefer } from "~/utils/pagination/withPaginationDefer";
+import { useCursorPagination } from "~/hooks/useCursorPagination";
+import { useDeleteResource } from "~/hooks/useDeleteResource";
+import { useDashboardHeaderActions } from "~/hooks/useDashboardHeaderActions";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const session = await getSessionFromCookie(request);
-  if (!session) return redirect("/login");
-
-  const fetchContacts = async () => {
-    const res = await fetch(`${process.env.APP_URL}/api/contacts`);
-    const data = await res.json();
-    return delay(500, data);
-  };
-
-  return defer({
-    contacts: fetchContacts(),
+  return withPaginationDefer({
+    request,
+    apiPath: `${process.env.APP_URL}/api/contacts`,
+    sessionCheck: () => getSessionFromCookie(request),
+    key: "contactsData",
   });
 };
 
 export default function ContactsPage() {
-  const { contacts } = useLoaderData<typeof loader>();
-  const [localContacts, setLocalContacts] = useState<ContactI[] | null>(null);
-  const navigate = useNavigate();
-
-  const refreshContacts = async () => {
-    const res = await fetch("/api/contacts");
-    const data = await res.json();
-    setLocalContacts(data);
-  };
-
-  const handleDelete = async (id: string) => {
-    try {
-      const res = await fetch(`/api/contacts/${id}`, {
-        method: "DELETE",
-      });
-
-      if (res.ok) {
-        setLocalContacts((prev) => prev?.filter((entry) => entry.id !== id) ?? []);
-      } else {
-        console.error("Failed to delete contact");
-      }
-    } catch (err) {
-      console.error("Error deleting contact:", err);
-    }
-  };
-
-  const headerActions = (
-    <Button
-      type="primary"
-      className="bg-primary"
-      icon={<PlusOutlined />}
-      onClick={() => navigate("/admin/advanced/contacts/new")}
-    >
-      Create Contact
-    </Button>
-  );
+  const { data: contactsData, take, handlePageChange } = useCursorPagination("contactsData");
+  const deleteContact = useDeleteResource("/api/contacts");
+  const headerActions = useDashboardHeaderActions("/admin/advanced/contacts/new", "Create Contact");
 
   return (
     <DashboardLayout title="Manage contacts" headerActions={headerActions}>
       <Suspense fallback={<SkeletonEntries />}>
-        <Await resolve={contacts}>
-          {(resolvedContacts: ContactI[]) => {
-            const currentContacts = localContacts ?? resolvedContacts;
-
-            // Inicializa `localEntries` solo una vez
-            if (!localContacts) setLocalContacts(resolvedContacts);
+        <Await resolve={contactsData}>
+          {(data: any) => {
+            const { contacts, pageInfo } = data;
 
             return (
               <>
-                <ContactsTable contacts={currentContacts} onDelete={handleDelete} />
-                <Outlet context={{ refreshContacts }} /> {/* 👈 importante para que el modal sepa cómo refrescar */}
+                <ContactsTable
+                  contacts={contacts}
+                  onDelete={deleteContact}
+                  pageInfo={pageInfo}
+                  onPageChange={handlePageChange}
+                  pageSize={take}
+                />
+                <Outlet context={{ refreshContacts: () => {} }} />
               </>
             );
           }}

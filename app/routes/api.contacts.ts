@@ -1,26 +1,47 @@
 // app/routes/api/contacts.ts
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { prisma } from "~/config/prisma.server";
+import { buildCursorPaginationQuery } from "~/utils/pagination/buildCursorPaginationQuery";
+import { buildPageInfo } from "~/utils/pagination/buildPageInfo";
 import { ContactSchema } from "~/utils/schemas/contactSchema";
 
 // GET /api/contacts → obtener todos los contactos
-export const loader: LoaderFunction = async () => {
-  const contacts = await prisma.contact.findMany({
-    orderBy: { createdAt: "desc" },
-    include: {
-      client: {
-        select: {
-          id: true,
-          company: true,
-        },
-      },
-    },
+export const loader: LoaderFunction = async ({ request }) => {
+  const url = new URL(request.url);
+  const cursor = url.searchParams.get("cursor");
+  const takeParam = url.searchParams.get("take");
+  const direction = url.searchParams.get("direction") as "next" | "prev";
+
+  const take = takeParam ? parseInt(takeParam, 10) : 6;
+
+  const { queryOptions, isBackward } = buildCursorPaginationQuery({
+    cursor,
+    take,
+    direction,
+    orderByField: "createdAt",
+    select: undefined, // usaremos include
   });
 
-  return new Response(JSON.stringify(contacts), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
+  queryOptions.include = {
+    client: {
+      select: {
+        id: true,
+        company: true,
+      },
+    },
+  };
+
+  const contacts = await prisma.contact.findMany(queryOptions);
+
+  const { items, pageInfo } = buildPageInfo(contacts, take, isBackward);
+
+  return new Response(
+    JSON.stringify({ contacts: items, pageInfo }),
+    {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    }
+  );
 };
 
 // POST /api/contacts → crear nuevo contacto para un cliente

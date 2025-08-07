@@ -3,13 +3,23 @@ import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { UserSchema } from "~/utils/schemas/userSchema";
 import { prisma } from "~/config/prisma.server";
 import bcrypt from "bcryptjs"; // ✅ Importa bcryptjs
+import { buildPageInfo } from "~/utils/pagination/buildPageInfo";
+import { buildCursorPaginationQuery } from "~/utils/pagination/buildCursorPaginationQuery";
 
 // GET /api/users → obtener todos los usuarios
-export const loader: LoaderFunction = async () => {
-  const users = await prisma.user.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
+export const loader: LoaderFunction = async ({ request }) => {
+  const url = new URL(request.url);
+  const cursor = url.searchParams.get("cursor");
+  const takeParam = url.searchParams.get("take");
+  const direction = url.searchParams.get("direction") as "next" | "prev";
+
+  const take = takeParam ? parseInt(takeParam, 10) : 6;
+
+  const { queryOptions, isBackward } = buildCursorPaginationQuery({
+    cursor,
+    take,
+    direction,
+    orderByField: "createdAt",
     select: {
       id: true,
       name: true,
@@ -23,14 +33,20 @@ export const loader: LoaderFunction = async () => {
       last_login: true,
       createdAt: true,
       updatedAt: true,
-      // 🚫 No incluimos password
     },
   });
 
-  return new Response(JSON.stringify(users), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
+  const users = await prisma.user.findMany(queryOptions);
+
+  const { items, pageInfo } = buildPageInfo(users, take, isBackward);
+
+  return new Response(
+    JSON.stringify({ users: items, pageInfo }),
+    {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    }
+  );
 };
 
 // POST /api/users → crear nuevo usuario con validación Zod y contraseña hasheada

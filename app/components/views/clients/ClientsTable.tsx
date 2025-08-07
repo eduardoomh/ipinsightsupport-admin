@@ -1,9 +1,11 @@
-import { Button, message, Popconfirm, Table, TableColumnsType } from "antd";
-import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
+import { message, Table } from "antd";
 import { FC } from "react";
-import dayjs from "dayjs";
 import { ClientI } from "~/interfaces/clients.interface";
 import { useNavigate } from "@remix-run/react";
+import PaginationControls from "~/components/tables/PaginationControls";
+import usePagination from "~/hooks/usePagination";
+import { PageInfo } from "~/interfaces/pagination.interface";
+import { clientColumns } from "./utils/clientColumns";
 
 interface DataType {
     id: string;
@@ -15,10 +17,13 @@ interface DataType {
 interface Props {
     clients: ClientI[];
     onDelete?: (id: string) => void;
+    pageInfo: PageInfo;
+    onPageChange: (cursor: string, direction: "next" | "prev") => void;
+    pageSize: number;
 }
 
-const ClientsTable: FC<Props> = ({ clients, onDelete }) => {
-        const navigate = useNavigate();
+const ClientsTable: FC<Props> = ({ clients, onDelete, pageInfo, onPageChange, pageSize }) => {
+    const navigate = useNavigate();
 
     const handleDelete = (id: string) => {
         if (onDelete) {
@@ -27,53 +32,30 @@ const ClientsTable: FC<Props> = ({ clients, onDelete }) => {
         }
     };
 
-    const columns: TableColumnsType<DataType> = [
-        {
-            title: "Company",
-            dataIndex: "company"
-        },
-        {
-            title: "Created At",
-            dataIndex: "createdAt",
-            render: (value: string) => dayjs(value).format("YYYY-MM-DD"),
-        },
-        {
-            title: "Actions",
-            key: "operation",
-            fixed: "right",
-            width: 150,
-            render: (_: any, record: DataType) => (
-               <div className="flex justify-end gap-2">
-                    <Button
-                        icon={<EyeOutlined style={{ fontSize: "16px" }} />}
-                        onClick={() => navigate(`/admin/advanced/clients/${record.id}/info`)}
-                    />
-                    <Button
-                        icon={<EditOutlined style={{ fontSize: "16px" }} />}
-                        onClick={() => navigate(`/admin/advanced/clients/${record.id}/edit`)}
-                    />
-                    <Popconfirm
-                        title="Are you sure you want to delete this user?"
-                        onConfirm={() => handleDelete(record.id)}
-                        okText="Yes"
-                        cancelText="No"
-                    >
-                        <Button danger icon={<DeleteOutlined />} />
-                    </Popconfirm>
-                </div>
-            ),
-        },
-    ];
+    const { currentPage, start, updatePage } = usePagination(pageSize, pageInfo, onPageChange);
+    const end = start + clients.length - 1;
+
+    const columns = clientColumns(navigate, handleDelete);
 
     return (
-        <Table<DataType>
-            className="custom-table"
-            columns={columns}
-            dataSource={clients}
-            size="middle"
-            rowKey="id"
-            pagination={{ pageSize: 8 }}
-        />
+        <>
+            <Table<DataType>
+                className="custom-table"
+                columns={columns}
+                dataSource={clients}
+                size="middle"
+                rowKey="id"
+                pagination={false}
+            />
+            <PaginationControls
+                currentPage={currentPage}
+                pageInfo={pageInfo}
+                start={start}
+                end={end}
+                onPageChange={updatePage}
+            />
+
+        </>
     );
 };
 
