@@ -60,8 +60,6 @@ const Sidebar: FC<Props> = ({ collapsed }) => {
       <div className="flex-1 overflow-y-auto mt-2">
         {mode === "user" ? (
           <MainMenu collapsed={collapsed} />
-        ) : showClientMenu ? (
-          <ClientMenu collapsed={collapsed} />
         ) : (
           <AdminMenu collapsed={collapsed} />
         )}

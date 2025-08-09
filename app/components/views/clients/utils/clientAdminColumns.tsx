@@ -14,7 +14,7 @@ export const clientAdminColumns = (
                         cursor: "pointer",
                         textDecoration: "underline",
                     }}
-                    onClick={() => navigate(`/admin/detailed-client/${record.id}`)}
+                    onClick={() => navigate(`/admin/detailed-client/${record.id}/dashboard`)}
                 >
                     {record.company}
                 </span>

@@ -49,11 +49,6 @@ const items: MenuItem[] = [
     icon: <SettingOutlined />,
     children: [
       {
-        key: "add-retainer",
-        icon: <PlusCircleOutlined />,
-        label: <Link to="/admin/retainers/new">Add Retainer</Link>,
-      },
-      {
         key: "edit-account-manager",
         icon: <EditOutlined />,
         label: <Link to="/admin/account-manager/edit">Edit Account Manager</Link>,
@@ -67,11 +62,6 @@ const items: MenuItem[] = [
         key: "change-status",
         icon: <EditOutlined />,
         label: <Link to="/admin/status/edit">Change Status</Link>,
-      },
-      {
-        key: "add-work-entry",
-        icon: <PlusCircleOutlined />,
-        label: <Link to="/admin/work-entries/new">Add Work Entry</Link>,
       },
       {
         key: "manage-contacts",

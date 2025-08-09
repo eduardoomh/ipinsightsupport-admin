@@ -1,7 +1,7 @@
 import { LoaderFunction, redirect } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Outlet, useLoaderData } from "@remix-run/react";
+import { useEffect } from "react";
 import DashboardLayout from "~/components/layout/DashboardLayout";
-import DetailedClient from "~/components/views/clients/DetailedClient";
 import { ClientI } from "~/interfaces/clients.interface";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 
@@ -24,12 +24,16 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   return { client };
 };
 
-export default function AdminClientDetail() {
+export default function ClientLayout() {
   const { client } = useLoaderData<typeof loader>();
 
+  useEffect(() =>{
+    console.log(client, "elid")
+  },[client])
+
   return (
-    <DashboardLayout title={client.company}>
-      <DetailedClient client={client} />
+    <DashboardLayout title={client.company} type="client_section" id={client.id}>
+      <Outlet context={{ client }} />
     </DashboardLayout>
   );
 }

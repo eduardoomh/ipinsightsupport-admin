@@ -7,6 +7,7 @@ import usePagination from "~/hooks/usePagination";
 import { workEntriesColumns } from "./utils/workEntriesColumns"
 import PaginationControls from "~/components/tables/PaginationControls";
 import { DataType } from "./utils/workEntries.interface"
+import { useTableLoading } from "~/hooks/useTableLoading";
 
 interface Props {
   entries: WorkEntry[];
@@ -20,7 +21,9 @@ const AdminWorkEntriesTable: FC<Props> = ({ entries, pageInfo, onPageChange, pag
   const [expandedRowKey, setExpandedRowKey] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const { currentPage, start, updatePage } = usePagination(pageSize, pageInfo, onPageChange);
+  const { loading, handlePageChange } = useTableLoading(entries, onPageChange);
+
+  const { currentPage, start, updatePage } = usePagination(pageSize, pageInfo, handlePageChange);
   const end = start + entries.length - 1;
 
   const columns = workEntriesColumns(navigate);
@@ -34,6 +37,7 @@ const AdminWorkEntriesTable: FC<Props> = ({ entries, pageInfo, onPageChange, pag
         size="middle"
         rowKey="id"
         pagination={false}
+        loading={loading}
         expandedRowRender={(record) => (
           <div className="text-sm text-gray-700 p-3 bg-gray-50 rounded border border-gray-200">
             <strong>Summary:</strong>{" "}

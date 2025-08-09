@@ -7,6 +7,7 @@ import { buildCursorPaginationQuery } from "~/utils/pagination/buildCursorPagina
 // GET /api/work-entries → obtener todas las entradas de trabajo
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
+  const clientId = url.searchParams.get("client_id"); // <-- nuevo filtro opcional
   const cursor = url.searchParams.get("cursor");
   const takeParam = url.searchParams.get("take");
   const direction = url.searchParams.get("direction") as "next" | "prev";
@@ -20,6 +21,14 @@ export const loader: LoaderFunction = async ({ request }) => {
     orderByField: "created_at",
     select: undefined, // usamos include
   });
+
+  // Agregamos filtro por client_id si existe
+  if (clientId) {
+    queryOptions.where = {
+      ...(queryOptions.where || {}),
+      client_id: clientId,
+    };
+  }
 
   queryOptions.include = {
     client: true,

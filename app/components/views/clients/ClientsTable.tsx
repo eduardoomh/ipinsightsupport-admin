@@ -6,57 +6,62 @@ import PaginationControls from "~/components/tables/PaginationControls";
 import usePagination from "~/hooks/usePagination";
 import { PageInfo } from "~/interfaces/pagination.interface";
 import { clientColumns } from "./utils/clientColumns";
+import { useTableLoading } from "~/hooks/useTableLoading";
 
 interface DataType {
-    id: string;
-    company: string;
-    createdAt: string;
-    updatedAt: string;
+  id: string;
+  company: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface Props {
-    clients: ClientI[];
-    onDelete?: (id: string) => void;
-    pageInfo: PageInfo;
-    onPageChange: (cursor: string, direction: "next" | "prev") => void;
-    pageSize: number;
+  clients: ClientI[];
+  onDelete?: (id: string) => void;
+  pageInfo: PageInfo;
+  onPageChange: (cursor: string, direction: "next" | "prev") => void;
+  pageSize: number;
 }
 
 const ClientsTable: FC<Props> = ({ clients, onDelete, pageInfo, onPageChange, pageSize }) => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const handleDelete = (id: string) => {
-        if (onDelete) {
-            onDelete(id);
-            message.success("Client deleted successfully");
-        }
-    };
+  const { loading, handlePageChange } = useTableLoading(clients, onPageChange);
 
-    const { currentPage, start, updatePage } = usePagination(pageSize, pageInfo, onPageChange);
-    const end = start + clients.length - 1;
+  const handleDelete = (id: string) => {
+    if (onDelete) {
+      onDelete(id);
+      message.success("Client deleted successfully");
+    }
+  };
 
-    const columns = clientColumns(navigate, handleDelete);
+  const { currentPage, start, updatePage } = usePagination(pageSize, pageInfo, handlePageChange);
 
-    return (
-        <>
-            <Table<DataType>
-                className="custom-table"
-                columns={columns}
-                dataSource={clients}
-                size="middle"
-                rowKey="id"
-                pagination={false}
-            />
-            <PaginationControls
-                currentPage={currentPage}
-                pageInfo={pageInfo}
-                start={start}
-                end={end}
-                onPageChange={updatePage}
-            />
+  const end = start + clients.length - 1;
 
-        </>
-    );
+  const columns = clientColumns(navigate, handleDelete);
+
+
+  return (
+    <>
+      <Table<DataType>
+        className="custom-table"
+        columns={columns}
+        dataSource={clients}
+        size="middle"
+        rowKey="id"
+        pagination={false}
+        loading={loading}
+      />
+      <PaginationControls
+        currentPage={currentPage}
+        pageInfo={pageInfo}
+        start={start}
+        end={end}
+        onPageChange={updatePage}
+      />
+    </>
+  );
 };
 
 export default ClientsTable;

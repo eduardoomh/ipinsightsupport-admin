@@ -38,7 +38,7 @@ export default function EditContactDrawer() {
       try {
         const res = await fetch("/api/clients");
         const data = await res.json();
-        setClients(data);
+        setClients(data.clients);
       } catch (error) {
         console.error("Failed to load clients");
       }

@@ -78,6 +78,7 @@ export const loader: LoaderFunction = async ({ params }) => {
     }));
 
     const result = {
+      id: client.id,
       company: client.company,
       accountManager,
       region: `${client.timezone} Timezone`,

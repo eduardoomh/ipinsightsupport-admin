@@ -6,6 +6,7 @@ import { PageInfo } from "~/interfaces/pagination.interface";
 import { contactColumns } from "./utils/contactColumns";
 import usePagination from "~/hooks/usePagination";
 import PaginationControls from "~/components/tables/PaginationControls";
+import { useTableLoading } from "~/hooks/useTableLoading";
 
 interface DataType {
     id: string;
@@ -33,8 +34,8 @@ const ContactsTable: FC<Props> = ({ contacts, onDelete, pageInfo, onPageChange, 
             message.success("Contact deleted successfully");
         }
     };
-
-    const { currentPage, start, updatePage } = usePagination(pageSize, pageInfo, onPageChange);
+    const { loading, handlePageChange } = useTableLoading(contacts, onPageChange);
+    const { currentPage, start, updatePage } = usePagination(pageSize, pageInfo, handlePageChange);
     const end = start + contacts.length - 1;
 
     const columns = contactColumns(navigate, handleDelete);
@@ -48,6 +49,7 @@ const ContactsTable: FC<Props> = ({ contacts, onDelete, pageInfo, onPageChange, 
                 size="middle"
                 rowKey="id"
                 pagination={false}
+                loading={loading}
             />
             <PaginationControls
                 currentPage={currentPage}

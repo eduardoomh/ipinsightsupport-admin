@@ -1,22 +1,52 @@
 // app/routes/api/retainers.ts
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { prisma } from "~/config/prisma.server";
+import { buildCursorPaginationQuery } from "~/utils/pagination/buildCursorPaginationQuery";
+import { buildPageInfo } from "~/utils/pagination/buildPageInfo";
 import { RetainerSchema } from "~/utils/schemas/retainerSchema";
 
 // GET /api/retainers → obtener todos los retainers
-export const loader: LoaderFunction = async () => {
-  const retainers = await prisma.retainer.findMany({
-    orderBy: { date_activated: "desc" },
-    include: {
-      client: true,
-      created_by: true,
-    },
+export const loader: LoaderFunction = async ({ request }) => {
+  const url = new URL(request.url);
+  const clientId = url.searchParams.get("client_id"); // <-- nuevo
+  const cursor = url.searchParams.get("cursor");
+  const takeParam = url.searchParams.get("take");
+  const direction = url.searchParams.get("direction") as "next" | "prev";
+
+  const take = takeParam ? parseInt(takeParam, 10) : 6;
+
+  const { queryOptions, isBackward } = buildCursorPaginationQuery({
+    cursor,
+    take,
+    direction,
+    orderByField: "date_activated",
+    select: undefined,
   });
 
-  return new Response(JSON.stringify(retainers), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
+  // Si viene client_id, agrega filtro
+  if (clientId) {
+    queryOptions.where = {
+      ...(queryOptions.where || {}),
+      client_id: clientId,
+    };
+  }
+
+  queryOptions.include = {
+    client: true,
+    created_by: true,
+  };
+
+  const retainers = await prisma.retainer.findMany(queryOptions);
+
+  const { items, pageInfo } = buildPageInfo(retainers, take, isBackward);
+
+  return new Response(
+    JSON.stringify({ retainers: items, pageInfo }),
+    {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    }
+  );
 };
 
 // POST /api/retainers → crear un nuevo retainer

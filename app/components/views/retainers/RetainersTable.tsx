@@ -1,52 +1,45 @@
-import {
-    message,
-    Table
-} from "antd";
+import { message, Table } from "antd";
 import { FC } from "react";
-import { UsersI } from "~/interfaces/users.interface";
 import { useNavigate } from "@remix-run/react";
 import PaginationControls from "~/components/tables/PaginationControls";
-import { usersColumns } from "./utils/userColumns";
 import usePagination from "~/hooks/usePagination";
-import { DataType } from "./utils/usersTable.interface";
 import { PageInfo } from "~/interfaces/pagination.interface";
-import { useTableLoading } from "~/hooks/useTableLoading";
+import { retainerColumns } from "./utils/retainerColumns";
+import { RetainerI } from "~/interfaces/retaner.interface";
 
 interface Props {
-    users: UsersI[];
+    retainers: RetainerI[];
     onDelete?: (id: string) => void;
     pageInfo: PageInfo;
     onPageChange: (cursor: string, direction: "next" | "prev") => void;
     pageSize: number;
 }
 
-const UsersTable: FC<Props> = ({ users, onDelete, pageInfo, onPageChange, pageSize }) => {
+const RetainersTable: FC<Props> = ({ retainers, onDelete, pageInfo, onPageChange, pageSize }) => {
     const navigate = useNavigate();
 
     const handleDelete = (id: string) => {
         if (onDelete) {
             onDelete(id);
-            message.success("User deleted successfully");
+            message.success("Retainer deleted successfully");
         }
     };
-    const { loading, handlePageChange } = useTableLoading(users, onPageChange);
-    const { currentPage, start, updatePage } = usePagination(pageSize, pageInfo, handlePageChange);
-    const end = start + users.length - 1;
 
-    const columns = usersColumns(navigate, handleDelete);
+    const { currentPage, start, updatePage } = usePagination(pageSize, pageInfo, onPageChange);
+    const end = start + retainers.length - 1;
+
+    const columns = retainerColumns(navigate, handleDelete);
 
     return (
         <>
-            <Table<DataType>
+            <Table<RetainerI>
                 className="custom-table"
                 columns={columns}
-                dataSource={users}
+                dataSource={retainers}
                 size="middle"
                 rowKey="id"
                 pagination={false}
-                loading={loading}
             />
-
             <PaginationControls
                 currentPage={currentPage}
                 pageInfo={pageInfo}
@@ -58,4 +51,4 @@ const UsersTable: FC<Props> = ({ users, onDelete, pageInfo, onPageChange, pageSi
     );
 };
 
-export default UsersTable;
+export default RetainersTable;
