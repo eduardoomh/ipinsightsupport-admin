@@ -38,7 +38,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const users = await prisma.user.findMany(queryOptions);
 
-  const { items, pageInfo } = buildPageInfo(users, take, isBackward);
+  const { items, pageInfo } = buildPageInfo(users, take, isBackward, cursor);
 
   return new Response(
     JSON.stringify({ users: items, pageInfo }),

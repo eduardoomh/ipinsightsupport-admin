@@ -5,7 +5,7 @@ import ContactForm from "~/components/views/contacts/ContactForm";
 
 export default function NewContactDrawerRoute() {
   const navigate = useNavigate();
-  const { refreshContacts } = useOutletContext<{ refreshContacts: () => void }>();
+  const { refreshResults } = useOutletContext<{ refreshResults: () => void }>();
   const [submitting, setSubmitting] = useState(false);
   const [clients, setClients] = useState<{ id: string; company: string }[]>([]);
 
@@ -47,8 +47,7 @@ export default function NewContactDrawerRoute() {
       }
 
       message.success("Contact created successfully");
-      refreshContacts();
-      handleClose();
+      refreshResults();
     } catch (err: any) {
       console.error(err);
       message.error(err.message || "Something went wrong");

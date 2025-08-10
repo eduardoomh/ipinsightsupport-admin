@@ -1,0 +1,56 @@
+// routes/admin/advanced/retainers/$clientId.tsx
+import { LoaderFunction } from "@remix-run/node";
+import { Await, useLoaderData } from "@remix-run/react";
+import { Suspense } from "react";
+
+import SkeletonEntries from "~/components/skeletons/SkeletonEntries";
+import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
+import { withTwoResourcesDefer } from "~/utils/pagination/withPaginationDefer";
+import { useCursorPagination } from "~/hooks/useCursorPagination";
+import DashboardLayout from "~/components/layout/DashboardLayout";
+import ContentLayout from "~/components/layout/components/ContentLayout";
+import AdminWorkEntriesTable from "~/components/views/entries/AdminWorkEntriesTable";
+
+export const loader: LoaderFunction = async ({ request, params }) => {
+  const companyId = params.companyId;
+  if (!companyId) {
+    throw new Response("companyId is required", { status: 400 });
+  }
+
+  return withTwoResourcesDefer({
+    request,
+    sessionCheck: () => getSessionFromCookie(request),
+    resources: [
+      { key: "client", apiPath: `${process.env.APP_URL}/api/clients/${companyId}` },
+      { key: "workEntriesByClientData", apiPath: `${process.env.APP_URL}/api/work-entries?client_id=${companyId}` },
+    ],
+  });
+};
+
+export default function ClientEntriesPage() {
+  const { client, take } = useLoaderData<typeof loader>();
+  const { data: workEntriesData, handlePageChange } = useCursorPagination("workEntriesByClientData");
+
+  return (
+    <DashboardLayout title={client.company} type="client_section" id={client.id}>
+      <ContentLayout title={`Recent work entries`} type="basic_section" size="small" hideHeader={false}>
+        <Suspense fallback={<SkeletonEntries />}>
+          <Await resolve={workEntriesData}>
+            {(data: any) => {
+              const { workEntries, pageInfo } = data;
+              
+              return (
+                <AdminWorkEntriesTable
+                  entries={workEntries}
+                  pageInfo={pageInfo}
+                  onPageChange={handlePageChange}
+                  pageSize={take}
+                />
+              );
+            }}
+          </Await>
+        </Suspense>
+      </ContentLayout>
+    </DashboardLayout>
+  );
+}

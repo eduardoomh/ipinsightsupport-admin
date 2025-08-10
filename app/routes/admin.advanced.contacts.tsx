@@ -2,7 +2,9 @@
 import { LoaderFunction } from "@remix-run/node";
 import {
   Await,
-  Outlet
+  Outlet,
+  useNavigate,
+  useRevalidator
 } from "@remix-run/react";
 import { Suspense } from "react";
 
@@ -14,6 +16,7 @@ import { withPaginationDefer } from "~/utils/pagination/withPaginationDefer";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
 import { useDeleteResource } from "~/hooks/useDeleteResource";
 import { useDashboardHeaderActions } from "~/hooks/useDashboardHeaderActions";
+import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPagination";
 
 export const loader: LoaderFunction = async ({ request }) => {
   return withPaginationDefer({
@@ -28,6 +31,7 @@ export default function ContactsPage() {
   const { data: contactsData, take, handlePageChange } = useCursorPagination("contactsData");
   const deleteContact = useDeleteResource("/api/contacts");
   const headerActions = useDashboardHeaderActions("/admin/advanced/contacts/new", "Create Contact");
+  const refreshResults = useRefreshAndResetPagination("/admin/advanced/contacts");
 
   return (
     <DashboardLayout title="Manage contacts" headerActions={headerActions}>
@@ -45,7 +49,7 @@ export default function ContactsPage() {
                   onPageChange={handlePageChange}
                   pageSize={take}
                 />
-                <Outlet context={{ refreshContacts: () => {} }} />
+                <Outlet context={{ refreshResults }} />
               </>
             );
           }}

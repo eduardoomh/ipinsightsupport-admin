@@ -6,7 +6,7 @@ import ClientForm from "~/components/views/clients/ClientsForm";
 
 export default function NewUserDrawerRoute() {
   const navigate = useNavigate();
-  const { refreshClients } = useOutletContext<{ refreshClients: () => void }>();
+  const { refreshResults } = useOutletContext<{ refreshResults: () => void }>();
   const [submitting, setSubmitting] = useState(false);
 
   const handleClose = () => navigate("/admin/advanced/clients");
@@ -54,8 +54,7 @@ export default function NewUserDrawerRoute() {
       }
 
       message.success("Client and contact created successfully");
-      refreshClients();
-      handleClose();
+      refreshResults();
     } catch (err: any) {
       console.error(err);
       message.error(err.message || "Something went wrong");

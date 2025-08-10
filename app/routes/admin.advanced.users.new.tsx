@@ -6,7 +6,7 @@ import UsersForm from "~/components/views/users/UsersForm";
 
 export default function NewUserDrawerRoute() {
   const navigate = useNavigate();
-  const { refreshUsers } = useOutletContext<{ refreshUsers: () => void }>();
+  const { refreshResults } = useOutletContext<{ refreshResults: () => void }>();
   const [submitting, setSubmitting] = useState(false);
 
   const handleClose = () => navigate("/admin/advanced/users");
@@ -24,8 +24,7 @@ export default function NewUserDrawerRoute() {
 
       if (res.ok) {
         message.success("User created successfully");
-        refreshUsers();
-        handleClose();
+        refreshResults();
       } else {
         message.error("Error creating user");
       }

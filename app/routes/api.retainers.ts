@@ -38,7 +38,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const retainers = await prisma.retainer.findMany(queryOptions);
 
-  const { items, pageInfo } = buildPageInfo(retainers, take, isBackward);
+  const { items, pageInfo } = buildPageInfo(retainers, take, isBackward, cursor);
 
   return new Response(
     JSON.stringify({ retainers: items, pageInfo }),

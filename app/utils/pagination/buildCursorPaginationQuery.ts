@@ -7,6 +7,7 @@ interface CursorPaginationOptions {
   select?: Record<string, boolean>;
 }
 
+// buildCursorPaginationQuery.ts
 export function buildCursorPaginationQuery({
   cursor,
   take = 10,
@@ -17,7 +18,8 @@ export function buildCursorPaginationQuery({
   const isBackward = direction === "prev";
 
   const queryOptions: any = {
-    take,
+    // pedimos uno extra para detectar si hay más
+    take: take + 1,
     orderBy: {
       [orderByField]: isBackward ? "asc" : "desc",
     },
@@ -28,7 +30,7 @@ export function buildCursorPaginationQuery({
   }
 
   if (cursor) {
-    queryOptions.skip = 1;
+    queryOptions.skip = 1; // omitimos el cursor mismo
     queryOptions.cursor = { id: cursor };
   }
 

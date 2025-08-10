@@ -14,6 +14,7 @@ import { withPaginationDefer } from "~/utils/pagination/withPaginationDefer";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
 import { useDeleteResource } from "~/hooks/useDeleteResource";
 import { useDashboardHeaderActions } from "~/hooks/useDashboardHeaderActions";
+import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPagination";
 
 export const loader: LoaderFunction = async ({ request }) => {
   return withPaginationDefer({
@@ -28,6 +29,7 @@ export default function ClientsPage() {
   const { data: clientsData, take, handlePageChange } = useCursorPagination("clientsData");
   const deleteClient = useDeleteResource("/api/clients");
   const headerActions = useDashboardHeaderActions("/admin/advanced/clients/new", "Create Client");
+  const refreshResults = useRefreshAndResetPagination("/admin/advanced/clients");
 
   return (
     <DashboardLayout title="Manage clients" headerActions={headerActions}>
@@ -45,7 +47,7 @@ export default function ClientsPage() {
                   onPageChange={handlePageChange}
                   pageSize={take}
                 />
-                <Outlet context={{ refreshClients: () => {} }} />
+                <Outlet context={{ refreshResults }} />
               </>
             );
           }}

@@ -1,13 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface PageInfo {
-    hasNextPage: boolean;
-    hasPreviousPage: boolean;
-    startCursor: string | null;
-    endCursor: string | null;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  startCursor: string | null;
+  endCursor: string | null;
 }
 
-export default function usePagination(pageSize: number, pageInfo: PageInfo, onPageChange: (cursor: string, dir: "next" | "prev") => void) {
+export default function usePagination(
+  pageSize: number,
+  pageInfo: PageInfo,
+  onPageChange: (cursor: string, dir: "next" | "prev") => void
+) {
   const [currentPage, setCurrentPage] = useState(1);
 
   const start = (currentPage - 1) * pageSize + 1;
@@ -17,5 +21,16 @@ export default function usePagination(pageSize: number, pageInfo: PageInfo, onPa
     onPageChange(cursor, direction);
   };
 
-  return { currentPage, start, updatePage };
+  const resetPage = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  // 🔹 Si hasPreviousPage es false, significa que estamos en la primera página
+  useEffect(() => {
+    if (!pageInfo.hasPreviousPage) {
+      setCurrentPage(1);
+    }
+  }, [pageInfo.hasPreviousPage]);
+
+  return { currentPage, start, updatePage, resetPage };
 }

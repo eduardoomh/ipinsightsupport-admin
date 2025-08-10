@@ -1,10 +1,5 @@
-import {
-  Button
-} from "antd";
-import {
-  LeftOutlined,
-  RightOutlined,
-} from "@ant-design/icons";
+import { Button } from "antd";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { FC } from "react";
 
 interface PageInfo {
@@ -52,4 +47,4 @@ const PaginationControls: FC<PaginationControlsProps> = ({
   );
 };
 
-export default PaginationControls
+export default PaginationControls;

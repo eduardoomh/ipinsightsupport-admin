@@ -33,7 +33,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const contacts = await prisma.contact.findMany(queryOptions);
 
-  const { items, pageInfo } = buildPageInfo(contacts, take, isBackward);
+  const { items, pageInfo } = buildPageInfo(contacts, take, isBackward, cursor);
 
   return new Response(
     JSON.stringify({ contacts: items, pageInfo }),

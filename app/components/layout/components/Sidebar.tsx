@@ -26,8 +26,6 @@ const Sidebar: FC<Props> = ({ collapsed }) => {
     }, 200);
   };
 
-  const showClientMenu = location.pathname.includes("detailed-client");
-
   return (
     <aside
       className={`border-r px-4 border-high_blue flex flex-col transition-all duration-300

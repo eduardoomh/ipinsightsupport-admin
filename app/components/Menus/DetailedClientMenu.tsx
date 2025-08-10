@@ -39,22 +39,22 @@ const DetailedClientMenu: React.FC<Props> = ({ collapsed, clientId }) => {
     {
       key: "dashboard",
       icon: <DashboardOutlined />,
-      label: <Link to={`/admin/detailed-client/${clientId}/dashboard`}>Dashboard</Link>,
+      label: <Link to={`/admin/company/dashboard/${clientId}`}>Dashboard</Link>,
     },
     {
       key: "work-entries",
       icon: <FileTextOutlined />,
-      label: <Link to={`/admin/detailed-client/${clientId}/work-entries/${clientId}`}>Work Entries</Link>,
+      label: <Link to={`/admin/company/work-entries/${clientId}`}>Work Entries</Link>,
     },
     {
       key: "retainers",
       icon: <DollarOutlined />,
-      label: <Link to={`/admin/detailed-client/${clientId}/retainers/${clientId}`}>Retainers</Link>,
+      label: <Link to={`/admin/company/retainers/${clientId}`}>Retainers</Link>,
     },
     {
       key: "invoices",
       icon: <FileAddOutlined />,
-      label: <Link to={`/admin/detailed-client/${clientId}/invoices/${clientId}`}>Invoices</Link>,
+      label: <Link to={`/admin/company/invoices/${clientId}`}>Invoices</Link>,
     },
     {
       key: "actions",
@@ -64,7 +64,7 @@ const DetailedClientMenu: React.FC<Props> = ({ collapsed, clientId }) => {
         {
           key: "add-retainer",
           icon: <PlusCircleOutlined />,
-          label: <Link to="/admin/retainers/new">Add Retainer</Link>,
+          label: <Link to={`/admin/company/retainer/new/${clientId}`}>Add Retainer</Link>,
         },
         {
           key: "edit-account-manager",

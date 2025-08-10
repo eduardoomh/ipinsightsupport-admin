@@ -25,7 +25,7 @@ export const workEntriesColumns = (
             cursor: "pointer",
             textDecoration: "underline",
           }}
-          onClick={() => navigate(`/admin/detailed-client/${record.client.id}/dashboard`)}
+          onClick={() => navigate(`/admin/company/dashboard/${record.client.id}`)}
         >
           {record.client.company}
         </span>

@@ -14,6 +14,7 @@ import { withPaginationDefer } from "~/utils/pagination/withPaginationDefer";
 import { useDeleteResource } from "~/hooks/useDeleteResource";
 import { useDashboardHeaderActions } from "~/hooks/useDashboardHeaderActions";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
+import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPagination";
 
 export const loader: LoaderFunction = async ({ request }) => {
   return withPaginationDefer({
@@ -28,6 +29,7 @@ export default function UsersPage() {
   const { data: usersData, take, handlePageChange } = useCursorPagination("usersData");
   const deleteUser = useDeleteResource("/api/users");
   const headerActions = useDashboardHeaderActions("/admin/advanced/users/new", "Create User");
+  const refreshResults = useRefreshAndResetPagination("/admin/advanced/users");
 
   return (
     <DashboardLayout title="Manage users" headerActions={headerActions}>
@@ -45,7 +47,7 @@ export default function UsersPage() {
                   onPageChange={handlePageChange}
                   pageSize={take}
                 />
-                <Outlet context={{ refreshUsers: () => {} }} />
+                <Outlet context={{ refreshResults }} />
               </>
             );
           }}

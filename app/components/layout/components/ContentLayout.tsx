@@ -8,18 +8,19 @@ interface Props {
     type: 'basic_section' | 'client_section';
     size?: 'small' | 'normal'
     id?: string;
+    hideHeader?: boolean;
 }
 
-const ContentLayout: FC<PropsWithChildren<Props>> = ({ title, headerActions, children, type, size = 'normal', id }) => {
+const ContentLayout: FC<PropsWithChildren<Props>> = ({ title, headerActions, children, type, size = 'normal', id, hideHeader = false }) => {
     return (
-        <div className={`pr-${size === 'small' ? '1' : '12'} flex-1 overflow-y-auto bg-transparent`}>
+        <div className={`pr-${size === 'small' ? '1' : '6'} flex-1 overflow-y-auto bg-transparent`}>
             {
                 type === 'client_section' ? (
                     <DetailedClientLayout title={title} clientId={id}>
                         {children}
                     </DetailedClientLayout>
                 ) : (
-                    <DefaultCardLayout title={title} headerActions={headerActions} size={size}>
+                    <DefaultCardLayout title={title} headerActions={headerActions} size={size} hideHeader={hideHeader}>
                         {children}
                     </DefaultCardLayout>
                 )

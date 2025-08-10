@@ -37,7 +37,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const workEntries = await prisma.workEntry.findMany(queryOptions);
 
-  const { items, pageInfo } = buildPageInfo(workEntries, take, isBackward);
+  const { items, pageInfo } = buildPageInfo(workEntries, take, isBackward, cursor);
 
   return new Response(
     JSON.stringify({ workEntries: items, pageInfo }),

@@ -2,6 +2,11 @@ import { defer } from "@remix-run/node";
 import { buildPaginationURL } from "./buildPaginationURL";
 import { redirect } from '@remix-run/react';
 
+type ResourceFetch = {
+  key: string;
+  apiPath: string;
+};
+
 // utils/pagination/withPaginationDefer.ts
 export async function withPaginationDefer({
   request,
@@ -27,6 +32,44 @@ export async function withPaginationDefer({
 
   return defer({
     [key]: fetchFn(),
+    take,
+  });
+}
+
+export async function withTwoResourcesDefer({
+  request,
+  sessionCheck,
+  resources,
+}: {
+  request: Request;
+  sessionCheck: () => Promise<any>;
+  resources: [ResourceFetch, ResourceFetch]; // Array con dos recursos a fetch
+}) {
+  const session = await sessionCheck();
+  if (!session) return redirect("/login");
+
+  // El segundo recurso es el que usamos para paginar, le aplicamos buildPaginationURL
+  const { apiUrl, take } = buildPaginationURL(resources[1].apiPath, request.url);
+
+  // Fetch para el primer recurso, se resuelve de inmediato (evita suspense)
+  const fetchFirst = async () => {
+    const res = await fetch(resources[0].apiPath);
+    if (!res.ok) throw new Error(`Failed to fetch ${resources[0].key}`);
+    return res.json();
+  };
+
+  // Fetch para el segundo recurso, diferido
+  const fetchSecond = async () => {
+    const res = await fetch(apiUrl.toString());
+    if (!res.ok) throw new Error(`Failed to fetch ${resources[1].key}`);
+    return res.json();
+  };
+
+  const firstData = await fetchFirst();
+
+  return defer({
+    [resources[0].key]: firstData,
+    [resources[1].key]: fetchSecond(),
     take,
   });
 }

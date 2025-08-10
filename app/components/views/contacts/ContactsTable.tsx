@@ -1,5 +1,5 @@
 import { message, Table } from "antd";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { useNavigate } from "@remix-run/react";
 import { ContactI } from "~/interfaces/contact.interface";
 import { PageInfo } from "~/interfaces/pagination.interface";
@@ -39,6 +39,10 @@ const ContactsTable: FC<Props> = ({ contacts, onDelete, pageInfo, onPageChange, 
     const end = start + contacts.length - 1;
 
     const columns = contactColumns(navigate, handleDelete);
+
+    useEffect(() =>{
+        console.log(pageInfo, "info de la pagina")
+    },[pageInfo])
 
     return (
         <>
