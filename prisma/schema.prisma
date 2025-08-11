@@ -132,6 +132,7 @@ model Retainer {
   id             String   @id @default(cuid())
   amount         Float
   date_activated DateTime
+  date_expired   DateTime?
   note           String?  @db.Text
   is_credit      Boolean  @default(false)
 

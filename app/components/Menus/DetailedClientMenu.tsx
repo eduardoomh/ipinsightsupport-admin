@@ -4,7 +4,6 @@ import {
   DashboardOutlined,
   FileTextOutlined,
   DollarOutlined,
-  PlusCircleOutlined,
   EditOutlined,
   TeamOutlined,
   SettingOutlined,
@@ -62,11 +61,6 @@ const DetailedClientMenu: React.FC<Props> = ({ collapsed, clientId }) => {
       icon: <SettingOutlined />,
       children: [
         {
-          key: "add-retainer",
-          icon: <PlusCircleOutlined />,
-          label: <Link to={`/admin/company/retainer/new/${clientId}`}>Add Retainer</Link>,
-        },
-        {
           key: "edit-account-manager",
           icon: <EditOutlined />,
           label: <Link to="/admin/account-manager/edit">Edit Account Manager</Link>,
@@ -82,11 +76,6 @@ const DetailedClientMenu: React.FC<Props> = ({ collapsed, clientId }) => {
           label: <Link to="/admin/status/edit">Change Status</Link>,
         },
         {
-          key: "add-work-entry",
-          icon: <PlusCircleOutlined />,
-          label: <Link to="/admin/work-entries/new">Add Work Entry</Link>,
-        },
-        {
           key: "manage-contacts",
           icon: <ContactsOutlined />,
           label: <Link to="/admin/contacts">Manage Contacts</Link>,
@@ -94,12 +83,12 @@ const DetailedClientMenu: React.FC<Props> = ({ collapsed, clientId }) => {
         {
           key: "manage-rates",
           icon: <DollarOutlined />,
-          label: <Link to="/admin/rates">Manage Rates</Link>,
+          label: <Link to={`/admin/company/rates/${clientId}`}>Manage Rates</Link>,
         },
         {
           key: "manage-team",
           icon: <TeamOutlined />,
-          label: <Link to="/admin/team">Manage Team</Link>,
+          label: <Link to={`/admin/company/team-members/${clientId}`}>Manage Team</Link>,
         },
         {
           key: "add-note-update",

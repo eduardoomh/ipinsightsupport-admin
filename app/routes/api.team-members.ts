@@ -5,8 +5,15 @@ import { TeamMemberSchema } from "~/utils/schemas/teamMemberSchema";
 import { z } from "zod";
 
 // GET /api/team-members
-export const loader: LoaderFunction = async () => {
+
+export const loader: LoaderFunction = async ({ request }) => {
+  const url = new URL(request.url);
+  const clientId = url.searchParams.get("client_id");
+
+  const where = clientId ? { client_id: clientId } : {};
+
   const teamMembers = await prisma.teamMember.findMany({
+    where,
     include: {
       client: true,
       user: true,

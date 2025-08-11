@@ -5,8 +5,15 @@ import { z } from "zod";
 import { ClientRatesSchema } from "~/utils/schemas/clientRatesSchema";
 
 // GET /api/client-rates
-export const loader: LoaderFunction = async () => {
+export const loader: LoaderFunction = async ({ request }) => {
+  const url = new URL(request.url);
+  const clientId = url.searchParams.get("client_id"); // query param
+
+  // usar `clientId` (camelCase) porque así está en tu schema Prisma
+  const where = clientId ? { clientId } : undefined;
+
   const rates = await prisma.clientRates.findMany({
+    where,
     include: {
       client: true,
     },
@@ -24,7 +31,7 @@ export const loader: LoaderFunction = async () => {
 // POST /api/client-rates → create or update rates for a client
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
-  const ratesJson = formData.get("rates") as string;
+  const ratesJson = formData.get("clientRates") as string;
 
   if (!ratesJson) {
     return new Response(JSON.stringify({ error: "No rates data provided" }), {
