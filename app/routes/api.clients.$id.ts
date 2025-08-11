@@ -2,25 +2,31 @@
 import type { LoaderFunction, ActionFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { prisma } from "~/config/prisma.server";
+import { buildDynamicSelect } from "~/utils/fields/buildDynamicSelect";
 
-export const loader: LoaderFunction = async ({ params }) => {
+export const loader: LoaderFunction = async ({ params, request }) => {
   const clientId = params.id;
 
   if (!clientId) {
     return json({ error: "Missing client ID" }, { status: 400 });
   }
 
+  const url = new URL(request.url);
+  const fieldsParam = url.searchParams.get("fields");
+
+  const defaultSelect = {
+    id: true,
+    company: true,
+    timezone: true,
+    contacts: true,
+    createdAt: true,
+    updatedAt: true,
+  };
+
   try {
     const client = await prisma.client.findUnique({
       where: { id: clientId },
-      select: {
-        id: true,
-        company: true,
-        timezone: true,
-        contacts: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      select: buildDynamicSelect(fieldsParam, defaultSelect),
     });
 
     if (!client) {

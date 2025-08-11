@@ -23,7 +23,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     request,
     sessionCheck: () => getSessionFromCookie(request),
     resources: [
-      { key: "client", apiPath: `${process.env.APP_URL}/api/clients/${companyId}` },
+      { key: "client", apiPath: `${process.env.APP_URL}/api/clients/${companyId}?fields=id,company` },
       { key: "retainersByClientData", apiPath: `${process.env.APP_URL}/api/retainers?client_id=${companyId}` },
     ],
   });

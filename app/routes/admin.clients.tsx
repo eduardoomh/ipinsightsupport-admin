@@ -17,7 +17,7 @@ import { useCursorPagination } from "~/hooks/useCursorPagination";
 export const loader: LoaderFunction = async ({ request }) => {
   return withPaginationDefer({
     request,
-    apiPath: `${process.env.APP_URL}/api/clients`,
+    apiPath: `${process.env.APP_URL}/api/clients?relations=team_members`,
     sessionCheck: () => getSessionFromCookie(request),
     key: "clientsData",
   });

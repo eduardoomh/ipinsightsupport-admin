@@ -20,14 +20,14 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     }
 
     // Obtener datos del cliente
-    const clientRes = await fetch(`${process.env.APP_URL}/api/clients/${companyId}`);
+    const clientRes = await fetch(`${process.env.APP_URL}/api/clients/${companyId}?fields=id,company`);
     if (!clientRes.ok) {
         throw new Response("Company not found", { status: 404 });
     }
     const client: ClientI = await clientRes.json();
 
     // Buscar teamMembers para ese cliente
-    const teamRes = await fetch(`${process.env.APP_URL}/api/team-members?client_id=${companyId}`);
+    const teamRes = await fetch(`${process.env.APP_URL}/api/team-members?client_id=${companyId}&fields=role,rate_type,id,user_id`);
 
     let teamMembers: any[] = [];
     let edit = false;
@@ -41,7 +41,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     }
 
     // Obtener users con paginación (take=100)
-    const usersRes = await fetch(`${process.env.APP_URL}/api/users?take=100`);
+    const usersRes = await fetch(`${process.env.APP_URL}/api/users?take=100&fields=id,name`);
     let users: any[] = [];
 
     if (usersRes.ok) {

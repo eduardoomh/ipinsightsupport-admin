@@ -3,23 +3,49 @@ import type { LoaderFunction, ActionFunction } from "@remix-run/node";
 import { prisma } from "~/config/prisma.server";
 import { TeamMemberSchema } from "~/utils/schemas/teamMemberSchema";
 import { z } from "zod";
+import { buildDynamicSelect } from "~/utils/fields/buildDynamicSelect";
 
 // GET /api/team-members
 
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
   const clientId = url.searchParams.get("client_id");
+  const fieldsParam = url.searchParams.get("fields");
 
   const where = clientId ? { client_id: clientId } : {};
 
-  const teamMembers = await prisma.teamMember.findMany({
+  const defaultSelect = {
+    id: true,
+    role: true,
+    rate_type: true,
+    client_id: true,
+    user_id: true,
+    createdAt: true,
+    updatedAt: true,
+  };
+
+  const queryOptions: any = {
     where,
-    include: {
+    orderBy: { updatedAt: "desc" },
+  };
+
+  if (clientId) {
+    // Si hay client_id → solo los campos solicitados o por defecto, sin include
+    queryOptions.select = buildDynamicSelect(fieldsParam, defaultSelect);
+  } else {
+    // Si NO hay client_id → devuelve todo y permite incluir client y user
+    queryOptions.select = buildDynamicSelect(fieldsParam, {
+      ...defaultSelect,
       client: true,
       user: true,
-    },
-    orderBy: { updatedAt: "desc" },
-  });
+    });
+    queryOptions.include = {
+      client: true,
+      user: true,
+    };
+  }
+
+  const teamMembers = await prisma.teamMember.findMany(queryOptions);
 
   return new Response(JSON.stringify(teamMembers), {
     status: 200,

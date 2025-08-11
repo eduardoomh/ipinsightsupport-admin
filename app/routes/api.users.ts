@@ -5,35 +5,42 @@ import { prisma } from "~/config/prisma.server";
 import bcrypt from "bcryptjs"; // ✅ Importa bcryptjs
 import { buildPageInfo } from "~/utils/pagination/buildPageInfo";
 import { buildCursorPaginationQuery } from "~/utils/pagination/buildCursorPaginationQuery";
+import { buildDynamicSelect } from "~/utils/fields/buildDynamicSelect";
 
 // GET /api/users → obtener todos los usuarios
+
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
   const cursor = url.searchParams.get("cursor");
   const takeParam = url.searchParams.get("take");
   const direction = url.searchParams.get("direction") as "next" | "prev";
+  const fieldsParam = url.searchParams.get("fields");
 
   const take = takeParam ? parseInt(takeParam, 10) : 6;
+
+  const defaultSelect = {
+    id: true,
+    name: true,
+    email: true,
+    phone: true,
+    is_admin: true,
+    is_active: true,
+    is_account_manager: true,
+    type: true,
+    avatar: true,
+    last_login: true,
+    createdAt: true,
+    updatedAt: true,
+  };
+
+  const dynamicSelect = buildDynamicSelect(fieldsParam, defaultSelect);
 
   const { queryOptions, isBackward } = buildCursorPaginationQuery({
     cursor,
     take,
     direction,
     orderByField: "createdAt",
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      phone: true,
-      is_admin: true,
-      is_active: true,
-      is_account_manager: true,
-      type: true,
-      avatar: true,
-      last_login: true,
-      createdAt: true,
-      updatedAt: true,
-    },
+    select: dynamicSelect,
   });
 
   const users = await prisma.user.findMany(queryOptions);

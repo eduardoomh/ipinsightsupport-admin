@@ -30,9 +30,21 @@ export const loader: LoaderFunction = async ({ request }) => {
     };
   }
 
+  // Incluimos solo los campos necesarios
   queryOptions.include = {
-    client: true,
-    user: true,
+    client: {
+      select: {
+        id: true,
+        company: true,
+      },
+    },
+    user: {
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
+    },
   };
 
   const workEntries = await prisma.workEntry.findMany(queryOptions);

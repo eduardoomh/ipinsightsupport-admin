@@ -7,20 +7,31 @@ import { ClientRatesSchema } from "~/utils/schemas/clientRatesSchema";
 // GET /api/client-rates
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
-  const clientId = url.searchParams.get("client_id"); // query param
+  const clientId = url.searchParams.get("client_id");
 
-  // usar `clientId` (camelCase) porque así está en tu schema Prisma
   const where = clientId ? { clientId } : undefined;
 
-  const rates = await prisma.clientRates.findMany({
+  const queryOptions: any = {
     where,
-    include: {
-      client: true,
-    },
     orderBy: {
       updatedAt: "desc",
     },
-  });
+  };
+
+  // Solo selecciona 3 campos si hay clientId
+  if (clientId) {
+    queryOptions.select = {
+      engineeringRate: true,
+      architectureRate: true,
+      seniorArchitectureRate: true,
+    };
+  }else{
+    queryOptions.include = {
+      client: true
+    }
+  }
+
+  const rates = await prisma.clientRates.findMany(queryOptions);
 
   return new Response(JSON.stringify(rates), {
     status: 200,

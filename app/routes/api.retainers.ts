@@ -8,7 +8,7 @@ import { RetainerSchema } from "~/utils/schemas/retainerSchema";
 // GET /api/retainers → obtener todos los retainers
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
-  const clientId = url.searchParams.get("client_id"); // <-- nuevo
+  const clientId = url.searchParams.get("client_id");
   const cursor = url.searchParams.get("cursor");
   const takeParam = url.searchParams.get("take");
   const direction = url.searchParams.get("direction") as "next" | "prev";
@@ -31,9 +31,21 @@ export const loader: LoaderFunction = async ({ request }) => {
     };
   }
 
+  // Solo traer campos específicos de client y created_by
   queryOptions.include = {
-    client: true,
-    created_by: true,
+    client: {
+      select: {
+        id: true,
+        company: true,
+      },
+    },
+    created_by: {
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
+    },
   };
 
   const retainers = await prisma.retainer.findMany(queryOptions);
