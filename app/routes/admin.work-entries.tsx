@@ -10,7 +10,6 @@ import AdminWorkEntriesTable from "~/components/views/entries/AdminWorkEntriesTa
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 import { withPaginationDefer } from "~/utils/pagination/withPaginationDefer";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
-import { useDeleteResource } from "~/hooks/useDeleteResource";
 
 export const loader: LoaderFunction = async ({ request }) => {
   return withPaginationDefer({
@@ -23,7 +22,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function AdminWorkEntries() {
   const { data: workEntriesData, take, handlePageChange } = useCursorPagination("workEntries");
-  const deleteWorkEntry = useDeleteResource("/api/work-entries");
 
   return (
     <DashboardLayout title="Work entries">
@@ -38,7 +36,6 @@ export default function AdminWorkEntries() {
                 pageInfo={pageInfo}
                 onPageChange={handlePageChange}
                 pageSize={take}
-                onDelete={deleteWorkEntry}
               />
             );
           }}

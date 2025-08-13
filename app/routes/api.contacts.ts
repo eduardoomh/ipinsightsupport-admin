@@ -11,6 +11,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const cursor = url.searchParams.get("cursor");
   const takeParam = url.searchParams.get("take");
   const direction = url.searchParams.get("direction") as "next" | "prev";
+  const clientId = url.searchParams.get("client_id");
 
   const take = takeParam ? parseInt(takeParam, 10) : 6;
 
@@ -21,6 +22,11 @@ export const loader: LoaderFunction = async ({ request }) => {
     orderByField: "createdAt",
     select: undefined, // usaremos include
   });
+
+  // Si hay clientId, filtramos
+  if (clientId) {
+    queryOptions.where = { client_id: clientId };
+  }
 
   queryOptions.include = {
     client: {

@@ -5,13 +5,13 @@ import ClientForm from "~/components/views/clients/ClientsForm";
 import type { ClientI } from "~/interfaces/clients.interface";
 
 type OutletContext = {
-  refreshClients: () => void;
+  refreshResults: () => void;
 };
 
 export default function EditClientDrawer() {
   const { clientId } = useParams();
   const navigate = useNavigate();
-  const { refreshClients } = useOutletContext<OutletContext>();
+  const { refreshResults } = useOutletContext<OutletContext>();
   const [client, setClient] = useState<ClientI | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -47,7 +47,7 @@ export default function EditClientDrawer() {
 
       if (res.ok) {
         message.success("Client updated successfully");
-        refreshClients();
+        refreshResults();
         handleClose();
       } else {
         message.error("Error updating client");

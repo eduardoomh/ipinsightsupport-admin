@@ -51,9 +51,9 @@ const DetailedClientMenu: React.FC<Props> = ({ collapsed, clientId }) => {
       label: <Link to={`/admin/company/retainers/${clientId}`}>Retainers</Link>,
     },
     {
-      key: "invoices",
-      icon: <FileAddOutlined />,
-      label: <Link to={`/admin/company/invoices/${clientId}`}>Invoices</Link>,
+      key: "contacts",
+      icon: <ContactsOutlined />,
+      label: <Link to={`/admin/company/contacts/${clientId}`}>Contacts</Link>,
     },
     {
       key: "actions",
@@ -61,24 +61,9 @@ const DetailedClientMenu: React.FC<Props> = ({ collapsed, clientId }) => {
       icon: <SettingOutlined />,
       children: [
         {
-          key: "edit-account-manager",
+          key: "edit-company-details",
           icon: <EditOutlined />,
-          label: <Link to="/admin/account-manager/edit">Edit Account Manager</Link>,
-        },
-        {
-          key: "edit-region",
-          icon: <EditOutlined />,
-          label: <Link to="/admin/region/edit">Edit Region</Link>,
-        },
-        {
-          key: "change-status",
-          icon: <EditOutlined />,
-          label: <Link to="/admin/status/edit">Change Status</Link>,
-        },
-        {
-          key: "manage-contacts",
-          icon: <ContactsOutlined />,
-          label: <Link to="/admin/contacts">Manage Contacts</Link>,
+          label: <Link to={`/admin/company/edit/${clientId}`}>Edit Company</Link>,
         },
         {
           key: "manage-rates",
@@ -101,16 +86,16 @@ const DetailedClientMenu: React.FC<Props> = ({ collapsed, clientId }) => {
 
   // Aplanamos items para incluir también children
   const flattenItems = items.flatMap(item =>
-        //@ts-ignore
+    //@ts-ignore
     item.children ? item.children : item
   ) as MenuItem[];
 
   // Detectar selectedKey comparando pathname con "to" de cada Link
   let selectedKey = "dashboard";
   for (const item of flattenItems) {
-        //@ts-ignore
+    //@ts-ignore
     if (isReactElementWithToProp(item.label)) {
-          //@ts-ignore
+      //@ts-ignore
       const to = item.label.props.to;
       if (location.pathname.startsWith(to)) {
         selectedKey = item.key as string;

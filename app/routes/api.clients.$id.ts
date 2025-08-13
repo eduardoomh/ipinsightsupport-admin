@@ -18,6 +18,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     id: true,
     company: true,
     timezone: true,
+    currentStatus: true,
     contacts: true,
     createdAt: true,
     updatedAt: true,

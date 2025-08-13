@@ -5,13 +5,13 @@ import UsersForm from "~/components/views/users/UsersForm";
 import type { UsersI } from "~/interfaces/users.interface";
 
 type OutletContext = {
-  refreshUsers: () => void;
+  refreshResults: () => void;
 };
 
 export default function EditUserDrawer() {
   const { userId } = useParams();
   const navigate = useNavigate();
-  const { refreshUsers } = useOutletContext<OutletContext>();
+  const { refreshResults } = useOutletContext<OutletContext>();
   const [user, setUser] = useState<UsersI | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -47,7 +47,7 @@ export default function EditUserDrawer() {
 
       if (res.ok) {
         message.success("User updated successfully");
-        refreshUsers();
+        refreshResults();
         handleClose();
       } else {
         message.error("Error updating user");

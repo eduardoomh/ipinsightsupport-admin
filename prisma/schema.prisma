@@ -31,6 +31,7 @@ model User {
   schedule_entries      ScheduleEntry[]       @relation("UserScheduleEntry")
   retainers             Retainer[]            @relation("CreatedByUserRetainer")
   team_members          TeamMember[]          @relation("UserTeamMember")
+  account_manager       Client[]              @relation("AccountManagerUser")
   client_status_history ClientStatusHistory[] @relation("ChangedByUserStatusHistory")
 
   createdAt DateTime @default(now())
@@ -54,6 +55,8 @@ model Client {
   client_retainers      Retainer[]            @relation("clientRetainer")
   team_members          TeamMember[]          @relation("ClientTeamMember")
   rates                 ClientRates?          @relation("ClientRates")
+  account_manager_id    String?
+  account_manager       User?                 @relation("AccountManagerUser", fields: [account_manager_id], references: [id])
   client_status_history ClientStatusHistory[] @relation("ClientStatusHistory")
 
   createdAt DateTime @default(now())

@@ -23,9 +23,11 @@ interface Props {
     pageInfo: PageInfo;
     onPageChange: (cursor: string, direction: "next" | "prev") => void;
     pageSize: number;
+    viewAction?: boolean;
+    editActionPath?: string;
 }
 
-const ContactsTable: FC<Props> = ({ contacts, onDelete, pageInfo, onPageChange, pageSize }) => {
+const ContactsTable: FC<Props> = ({ contacts, onDelete, pageInfo, onPageChange, pageSize, viewAction = true, editActionPath }) => {
     const navigate = useNavigate();
 
     const handleDelete = (id: string) => {
@@ -38,11 +40,7 @@ const ContactsTable: FC<Props> = ({ contacts, onDelete, pageInfo, onPageChange, 
     const { currentPage, start, updatePage } = usePagination(pageSize, pageInfo, handlePageChange);
     const end = start + contacts.length - 1;
 
-    const columns = contactColumns(navigate, handleDelete);
-
-    useEffect(() =>{
-        console.log(pageInfo, "info de la pagina")
-    },[pageInfo])
+    const columns = contactColumns(navigate, handleDelete, viewAction, editActionPath);
 
     return (
         <>

@@ -6,9 +6,10 @@ interface Props {
     submitting: boolean;
     clients?: { id: string; company: string }[];
     edit?: boolean;
+    excludeClientField?: boolean;
 }
 
-const ContactForm = ({ contact, handleSubmit, submitting, clients = [], edit = false }: Props) => {
+const ContactForm = ({ contact, handleSubmit, submitting, clients = [], edit = false, excludeClientField = false }: Props) => {
     return (
         <Form
             layout="vertical"
@@ -43,29 +44,29 @@ const ContactForm = ({ contact, handleSubmit, submitting, clients = [], edit = f
                 <Input />
             </Form.Item>
 
-            <Form.Item
-                label="Client"
-                name="client_id"
-                rules={
-                    edit
-                        ? [{ required: true, message: "Please select a client" }]
-                        : undefined
-                }
-            >
-                <Select
-                    showSearch
-                    allowClear={!edit}
-                    placeholder={edit ? "Select a client" : "Select a client (optional)"}
-                    optionFilterProp="label"
-                    options={clients.map((client) => ({
-                        label: client.company,
-                        value: client.id,
-                    }))}
-                    filterOption={(input, option) =>
-                        (option?.label as string)?.toLowerCase().includes(input.toLowerCase())
-                    }
-                />
-            </Form.Item>
+            {
+                !excludeClientField && (
+                    <Form.Item
+                        label="Client"
+                        name="client_id"
+                        rules={[{ required: true, message: "Please select a client" }]}
+                    >
+                        <Select
+                            showSearch
+                            allowClear={!edit}
+                            placeholder={edit ? "Select a client" : "Select a client (optional)"}
+                            optionFilterProp="label"
+                            options={clients.map((client) => ({
+                                label: client.company,
+                                value: client.id,
+                            }))}
+                            filterOption={(input, option) =>
+                                (option?.label as string)?.toLowerCase().includes(input.toLowerCase())
+                            }
+                        />
+                    </Form.Item>
+                )
+            }
 
             <Button
                 type="primary"

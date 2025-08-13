@@ -7,6 +7,7 @@ import { PageInfo } from "~/interfaces/pagination.interface";
 import PaginationControls from "~/components/tables/PaginationControls";
 import { clientAdminColumns } from "./utils/clientAdminColumns";
 import usePagination from "~/hooks/usePagination";
+import { useTableLoading } from "~/hooks/useTableLoading";
 
 interface DataType {
   id: string;
@@ -26,7 +27,8 @@ interface Props {
 const ClientsAdminTable: FC<Props> = ({ clients, pageInfo, onPageChange, pageSize }) => {
   const navigate = useNavigate();
 
-  const { currentPage, start, updatePage } = usePagination(pageSize, pageInfo, onPageChange);
+  const { loading, handlePageChange } = useTableLoading(clients, onPageChange);
+  const { currentPage, start, updatePage } = usePagination(pageSize, pageInfo, handlePageChange);
   const end = start + clients.length - 1;
 
   const columns = clientAdminColumns(navigate);
@@ -52,6 +54,7 @@ const ClientsAdminTable: FC<Props> = ({ clients, pageInfo, onPageChange, pageSiz
         size="middle"
         rowKey="id"
         pagination={false}
+        loading={loading}
       />
       <PaginationControls
         currentPage={currentPage}

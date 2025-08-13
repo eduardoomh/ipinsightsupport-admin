@@ -29,9 +29,9 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function ContactsPage() {
   const { data: contactsData, take, handlePageChange } = useCursorPagination("contactsData");
-  const deleteContact = useDeleteResource("/api/contacts");
   const headerActions = useDashboardHeaderActions("/admin/advanced/contacts/new", "Create Contact");
   const refreshResults = useRefreshAndResetPagination("/admin/advanced/contacts");
+  const deleteContact = useDeleteResource("/api/contacts", refreshResults);
 
   return (
     <DashboardLayout title="Manage contacts" headerActions={headerActions}>

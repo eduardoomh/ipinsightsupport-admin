@@ -27,9 +27,9 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function ClientsPage() {
   const { data: clientsData, take, handlePageChange } = useCursorPagination("clientsData");
-  const deleteClient = useDeleteResource("/api/clients");
   const headerActions = useDashboardHeaderActions("/admin/advanced/clients/new", "Create Client");
   const refreshResults = useRefreshAndResetPagination("/admin/advanced/clients");
+  const deleteClient = useDeleteResource("/api/clients", refreshResults);
 
   return (
     <DashboardLayout title="Manage clients" headerActions={headerActions}>

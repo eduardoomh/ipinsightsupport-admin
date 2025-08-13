@@ -5,13 +5,13 @@ import ContactForm from "~/components/views/contacts/ContactForm";
 import { ContactI } from "~/interfaces/contact.interface";
 
 type OutletContext = {
-  refreshContacts: () => void;
+  refreshResults: () => void;
 };
 
 export default function EditContactDrawer() {
   const { contactId } = useParams();
   const navigate = useNavigate();
-  const { refreshContacts } = useOutletContext<OutletContext>();
+  const { refreshResults } = useOutletContext<OutletContext>();
   const [contact, setContact] = useState<ContactI | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -63,7 +63,7 @@ export default function EditContactDrawer() {
 
       if (res.ok) {
         message.success("Contact updated successfully");
-        refreshContacts();
+        refreshResults();
         handleClose();
       } else {
         message.error("Error updating contact");

@@ -27,9 +27,9 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function UsersPage() {
   const { data: usersData, take, handlePageChange } = useCursorPagination("usersData");
-  const deleteUser = useDeleteResource("/api/users");
   const headerActions = useDashboardHeaderActions("/admin/advanced/users/new", "Create User");
   const refreshResults = useRefreshAndResetPagination("/admin/advanced/users");
+  const deleteUser = useDeleteResource("/api/users", refreshResults);
 
   return (
     <DashboardLayout title="Manage users" headerActions={headerActions}>

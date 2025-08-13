@@ -15,6 +15,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const takeParam = url.searchParams.get("take");
   const direction = url.searchParams.get("direction") as "next" | "prev";
   const fieldsParam = url.searchParams.get("fields");
+  const filter = url.searchParams.get("filter"); // Nuevo parámetro
 
   const take = takeParam ? parseInt(takeParam, 10) : 6;
 
@@ -42,6 +43,14 @@ export const loader: LoaderFunction = async ({ request }) => {
     orderByField: "createdAt",
     select: dynamicSelect,
   });
+
+  // Filtro por account_manager
+  if (filter === "is_account_manager") {
+    queryOptions.where = {
+      ...(queryOptions.where || {}),
+      is_account_manager: true,
+    };
+  }
 
   const users = await prisma.user.findMany(queryOptions);
 
