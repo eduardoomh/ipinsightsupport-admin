@@ -1,10 +1,11 @@
-import { Card, Col, Row, Table, Typography, Tag, Avatar, Space } from "antd";
+import { Col, Row, Typography } from "antd";
 import dayjs from "dayjs";
 import React, { useEffect, useRef, useState } from "react";
 import ContentLayout from "~/components/layout/components/ContentLayout";
-import DashboardLayout from "~/components/layout/DashboardLayout";
 import DashboardItem from "../detailedClients/DashboardItem";
 import TeamMember from "../detailedClients/utils/TeamMember";
+import { ClientI } from "~/interfaces/clients.interface";
+import { getRateTypeLabel, RateType } from "~/utils/general/getRateTypeLabel";
 
 const { Text } = Typography;
 
@@ -20,19 +21,8 @@ const formatDateWithAgo = (dateStr: string) => {
   );
 };
 
-const cardStyle = {
-  border: "1px solid #cacaca", // borde gris más fuerte
-  borderRadius: 0,
-};
-
-const headerCellStyle = {
-  backgroundColor: "#01ABE8",
-  color: "white",
-  fontWeight: 600,
-};
-
 interface Props {
-  client: any;
+  client: ClientI;
 }
 
 const DetailedClient: React.FC<Props> = ({ client }) => {
@@ -45,18 +35,6 @@ const DetailedClient: React.FC<Props> = ({ client }) => {
     }
   }, []);
 
-  const contactsColumns = [
-    { title: "Name", dataIndex: "name", key: "name", onHeaderCell: () => ({ style: headerCellStyle }) },
-    {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-      onHeaderCell: () => ({ style: headerCellStyle }),
-      render: (email: string) => <a href={`mailto:${email}`}>{email}</a>,
-    },
-    { title: "Phone", dataIndex: "phone", key: "phone", onHeaderCell: () => ({ style: headerCellStyle }) },
-  ];
-
   return (
     <>
       <ContentLayout title="Profile" type="basic_section" size="small">
@@ -64,28 +42,28 @@ const DetailedClient: React.FC<Props> = ({ client }) => {
           <Col span={12}>
             <DashboardItem
               label="Region"
-              value={client.region}
+              value={client.timezone}
               showBorder={true}
             />
             <DashboardItem
               label="Remaining funds"
-              value={client.remainingFunds}
+              value={`$${client.remainingFunds}`}
               showBorder={true}
             />
             <DashboardItem
               label="Account manager"
-              value={client.accountManager}
+              value={client?.account_manager?.name || 'Np asignado'}
             />
           </Col>
           <Col span={12}>
             <DashboardItem
               label="Most Recent Work Entry"
-              value={formatDateWithAgo(client.mostRecentWorkEntry)}
+              value={formatDateWithAgo(client.most_recent_work_entry)}
               showBorder={true}
             />
             <DashboardItem
               label="Most Recent Retainer Activate"
-              value={formatDateWithAgo(client.mostRecentRetainerActivated)}
+              value={formatDateWithAgo(client.most_recent_retainer_activated)}
               showBorder={true}
             />
             <DashboardItem
@@ -101,12 +79,24 @@ const DetailedClient: React.FC<Props> = ({ client }) => {
           <ContentLayout title="Rates" type="basic_section" size="small">
 
             {
-              client.rates.map((rateItem: any) => {
-                const hoursItem = client.hoursRemaining.find((h: any) => h.role === rateItem.role);
+              [
+                {
+                  rate: client?.rates?.engineeringRate || '0',
+                  role: 'Engineering'
+                },
+                {
+                  rate: client.rates?.architectureRate || '0',
+                  role: 'Architecture'
+                },
+                {
+                  rate: client.rates?.seniorArchitectureRate || '0',
+                  role: 'Senior architecture'
+                }
+              ].map((rateItem: any) => {
                 return (
                   <DashboardItem
                     label={rateItem.role}
-                    value={`${rateItem.rate} - ${hoursItem?.hours || "N/A"} remaining`}
+                    value={`$${rateItem.rate}/hr (0/hrs remaining)`}
                     showBorder={true}
                   />
                 )
@@ -116,29 +106,35 @@ const DetailedClient: React.FC<Props> = ({ client }) => {
         </Col>
         <Col span={12}>
           <ContentLayout title="Team members" type="basic_section" size="small">
-            {client.team.map((member) => (
-              <TeamMember
-                name={member.name}
-                role={member.role}
-                isLead={member.isLead}
-                showBorder={true}
-              />
-            ))}
+            {
+              client.team_members.length > 0 ?
+                client.team_members.map((member) => (
+                  <TeamMember
+                    name={member.user.name}
+                    role={getRateTypeLabel(member.rate_type as RateType)}
+                    isLead={member.role === "technical_lead"}
+                    showBorder={true}
+                  />
+                )) : <p>There are no team members assigned yet.</p>
+            }
           </ContentLayout>
         </Col>
       </Row>
       <br />
       <ContentLayout title="Contacts" type="basic_section" size="small">
-        {client.contacts.map((contact) => (
-          <TeamMember
-            name={contact.name}
-            role={contact.email}
-            isLead={false}
-            showBorder={true}
-          />
-        ))}
+        {
+          client.contacts.length > 0 ?
+            client.contacts.map((contact) => (
+              <TeamMember
+                name={contact.name}
+                role={contact.email}
+                isLead={false}
+                showBorder={true}
+              />
+            )) : <p>There are no contacts yet.</p>
+        }
       </ContentLayout>
-      <br/>
+      <br />
     </>
   );
 };

@@ -39,3 +39,43 @@ body {
 .ant-picker-cell:hover:not(.ant-picker-cell-selected):not(.ant-picker-cell-range-start):not(.ant-picker-cell-range-end):not(.ant-picker-cell-today) {
   background-color: transparent !important;
 }
+
+
+.tag-mode {
+  transition: transform 0.2s ease;
+}
+.tag-mode:hover {
+  transform: scale(1.05);
+}
+
+/* Click: pulsación más notoria */
+.pulse {
+  animation: pulseAnim 0.4s ease-out;
+}
+
+@keyframes pulseAnim {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 8px rgba(0, 0, 0, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+
+/* Items del menú horizontal */
+.ant-menu-horizontal .ant-menu-item:hover {
+  color: #000 !important; /* negro al hover horizontal */
+  background-color: #1a6696;
+}
+
+/* Items del overflow/dropdown */
+.ant-menu-submenu-popup .ant-menu-item:hover {
+  color: #0c61ab !important; /* blanco al hover del dropdown */
+  background-color: #1a6696;
+}

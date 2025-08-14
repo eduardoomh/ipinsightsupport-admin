@@ -13,7 +13,7 @@ interface Props {
 
 const ContentLayout: FC<PropsWithChildren<Props>> = ({ title, headerActions, children, type, size = 'normal', id, hideHeader = false }) => {
     return (
-        <div className={`pr-${size === 'small' ? '1' : '6'} flex-1 overflow-y-auto bg-transparent`}>
+        <div className={`pr-${size === 'small' ? '1' : '6'} pt-8 flex-1 overflow-y-auto bg-transparent`}>
             {
                 type === 'client_section' ? (
                     <DetailedClientLayout title={title} clientId={id}>

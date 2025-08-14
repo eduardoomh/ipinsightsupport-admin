@@ -10,7 +10,7 @@ import {
   ContactsOutlined,
   FileAddOutlined,
 } from "@ant-design/icons";
-import { Menu } from "antd";
+import { ConfigProvider, Menu } from "antd";
 import type { MenuProps } from "antd";
 
 type MenuItem = Required<MenuProps>["items"][number];
@@ -105,14 +105,32 @@ const DetailedClientMenu: React.FC<Props> = ({ collapsed, clientId }) => {
   }
 
   return (
-    <Menu
-      selectedKeys={[selectedKey]}
-      mode="horizontal"
-      inlineCollapsed={collapsed}
-      items={items}
-      className="bg-light_blue"
-      style={{ border: 0, width: "100%" }}
-    />
+    <ConfigProvider
+    
+      theme={{
+        token: { borderRadius: 4 },
+        components: {
+          Menu: {
+            itemColor: "#000",
+            itemSelectedColor: "#E6F5FB",
+            itemSelectedBg: "#1f72a6",
+            itemHoverColor: "#000",
+            itemHoverBg: "#fff",
+            subMenuItemBg: "transparent"
+          }
+        }
+      }}
+      
+    >
+      <Menu
+        selectedKeys={[selectedKey]}
+        mode="horizontal"
+        inlineCollapsed={collapsed}
+        items={items}
+        style={{ border: 0, width: "100%", backgroundColor: "#fff" }}
+      />
+    </ConfigProvider>
+
   );
 };
 

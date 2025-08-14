@@ -1,7 +1,9 @@
 import { useNavigate, useOutletContext, useParams } from "@remix-run/react";
 import { Drawer, message } from "antd";
 import { useEffect, useState } from "react";
+import FormSkeleton from "~/components/basics/FormSkeleton";
 import ClientForm from "~/components/views/clients/ClientsForm";
+import ClientSkeleton from "~/components/views/clients/utils/ClientSkeleton";
 import type { ClientI } from "~/interfaces/clients.interface";
 
 type OutletContext = {
@@ -69,7 +71,7 @@ export default function EditClientDrawer() {
       placement="right"
     >
       {loading ? (
-        <div className="text-center py-8">Loading client data...</div>
+        <FormSkeleton />
       ) : (
         <ClientForm
           client={client}

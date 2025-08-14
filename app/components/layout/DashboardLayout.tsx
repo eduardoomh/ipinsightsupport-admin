@@ -31,7 +31,7 @@ const DashboardLayout: FC<PropsWithChildren<DashboardLayoutProps>> = ({
   const toggleCollapsed = () => setCollapsed(!collapsed);
 
   return (
-    <main className="bg-light_blue w-screen h-screen flex flex-col flex-1" style={{ backgroundColor: "#F6F7F7" }}>
+    <main className="bg-light_blue w-screen h-screen flex flex-col flex-1" style={{ backgroundColor: "#F5F9FA" }}>
       <HeaderLayout
         user={user as any}
         title={title}

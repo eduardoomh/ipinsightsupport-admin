@@ -1,4 +1,4 @@
-import { TeamOutlined } from "@ant-design/icons"
+import { ShopOutlined } from "@ant-design/icons"
 import { FC, PropsWithChildren } from "react";
 import DetailedClientMenu from "~/components/Menus/DetailedClientMenu";
 
@@ -25,7 +25,7 @@ const DetailedClientLayout: FC<PropsWithChildren<Props>> = ({ title, children, c
                     gap: "1rem",
                     padding: "20px 28px",
                     borderRadius: '12px 12px 0 0',
-                    backgroundColor: "#A9E2FC"
+                    backgroundColor: "#f2f2f2"
                 }}>
                     <span
                         style={{
@@ -37,7 +37,7 @@ const DetailedClientLayout: FC<PropsWithChildren<Props>> = ({ title, children, c
                             borderRadius: "50px",
                             backgroundColor: "#198890"
                         }}>
-                        <TeamOutlined
+                        <ShopOutlined
                             style={{ color: "#fff", fontSize: "2rem" }}
                         />
                     </span>
@@ -52,7 +52,7 @@ const DetailedClientLayout: FC<PropsWithChildren<Props>> = ({ title, children, c
                     style={{
                         paddingBottom: "1rem",
                         borderRadius: '0 0 12px 12px',
-                        backgroundColor: "#e6f5fb"
+                        backgroundColor: "#fff"
                     }}
                 >
                     <DetailedClientMenu collapsed={false} clientId={clientId} />

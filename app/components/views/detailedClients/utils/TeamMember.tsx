@@ -33,7 +33,7 @@ const TeamMember: FC<Props> = ({ name, role, isLead, showBorder }) => {
             <div style={{display: "flex", flexDirection: "column", gap: "4px"}}>
                 <Text strong>{name}</Text>
                 <div style={{display: "flex", gap: "4px"}}>
-                    <Tag>{role}</Tag> {" "}{isLead && <Tag color="blue">Lead</Tag>}
+                    <Tag>{role}</Tag> {" "}{isLead && <Tag color="blue">Leading</Tag>}
                 </div>
                 
             </div>

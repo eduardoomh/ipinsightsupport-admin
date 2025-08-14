@@ -119,7 +119,7 @@ const ClientMenu: React.FC<Props> = ({ collapsed }) => {
       mode="inline"
       inlineCollapsed={collapsed}
       items={items}
-      className="bg-light_blue"
+      className="bg-darken_blue"
       style={{ border: 0, width: "100%" }}
     />
   );

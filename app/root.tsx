@@ -70,10 +70,11 @@ function ClientWrapper({ children }: { children: React.ReactNode }) {
         token: { borderRadius: 4 },
         components: {
           Menu: {
+            itemColor: "#fff",  
             itemSelectedColor: "#E6F5FB",
-            itemSelectedBg: "#00AAE7",
-            itemHoverColor: "#000",
-            itemHoverBg: "#c3e9f8",
+            itemSelectedBg: "#1f72a6",
+            itemHoverColor: "#fff",
+            itemHoverBg: "#1a6696",
             subMenuItemBg: "transparent"
           }
         }
