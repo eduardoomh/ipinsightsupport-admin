@@ -4,11 +4,9 @@ import { message } from "antd";
 import { useState } from "react";
 import ContentLayout from "~/components/layout/components/ContentLayout";
 import DashboardLayout from "~/components/layout/DashboardLayout";
-import ClientRatesForm from "~/components/views/clientRates/ClientRatesForm";
 import TeamMemberForm from "~/components/views/teamMembers/TeamMemberForm";
 import { ClientI } from "~/interfaces/clients.interface";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
-import TeamMember from '../components/views/detailedClients/utils/TeamMember';
 
 export const loader: LoaderFunction = async ({ request, params }) => {
     const session = await getSessionFromCookie(request);

@@ -39,19 +39,6 @@ const UsersForm = ({ user, handleSubmit, submitting, edit }: Props) => {
                 <Input />
             </Form.Item>
 
-            {!edit && (
-                <Form.Item
-                    name="password"
-                    label="Password"
-                    rules={[
-                        { required: true, message: "Please enter a password" },
-                        { min: 6, message: "Password must be at least 6 characters long" },
-                    ]}
-                >
-                    <Input.Password />
-                </Form.Item>
-            )}
-
             <Form.Item
                 name="type"
                 label="Rate Type"

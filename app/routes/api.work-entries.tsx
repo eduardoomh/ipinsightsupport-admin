@@ -72,30 +72,106 @@ export const action: ActionFunction = async ({ request }) => {
     });
   }
 
+console.log("step 1", workEntryJson)
   try {
     const parsedInput = JSON.parse(workEntryJson);
-
+console.log("step 0.5")
     // Validar con Zod
     const entry = WorkEntrySchema.parse(parsedInput);
-
-    const savedEntry = await prisma.workEntry.create({
-      data: {
-        billed_on: new Date(entry.billed_on),
-        hours_billed: entry.hours_billed,
-        hours_spent: entry.hours_spent,
-        hourly_rate: entry.hourly_rate,
-        summary: entry.summary,
-        rate_type: entry.rate_type,
-        client_id: entry.client_id,
-        user_id: entry.user_id,
-      },
+console.log("step 0.6")
+    // 1️⃣ Obtener usuario completo
+    console.log("step 1.1")
+    const user = await prisma.user.findUnique({
+      where: { id: entry.user_id },
     });
+    if (!user) {
+      return new Response(JSON.stringify({ error: "User not found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+console.log("step 1.2")
+    // 2️⃣ Obtener tarifas del cliente
+    const clientRate = await prisma.clientRates.findFirst({
+      where: { clientId: entry.client_id },
+    });
+    if (!clientRate) {
+      return new Response(JSON.stringify({ error: "Client rates not found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+console.log("step 2")
+    // 3️⃣ Seleccionar tarifa según tipo de usuario
+    let rate: number;
+    switch (user.type) {
+      case "engineering":
+        rate = Number(clientRate.engineeringRate);
+        break;
+      case "architecture":
+        rate = Number(clientRate.architectureRate);
+        break;
+      case "senior_architecture":
+        rate = Number(clientRate.seniorArchitectureRate);
+        break;
+      default:
+        return new Response(JSON.stringify({ error: "Invalid user type" }), {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        });
+    }
+
+    // 4️⃣ Calcular costo total
+    const totalCost = rate * entry.hours_billed;
+
+    // 5️⃣ Verificar fondos
+    const client = await prisma.client.findUnique({
+      where: { id: entry.client_id },
+    });
+    console.log("step 3")
+    if (!client) {
+      return new Response(JSON.stringify({ error: "Client not found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    if (Number(client.remainingFunds) < totalCost) {
+      return new Response(JSON.stringify({ error: "Insufficient funds" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // 6️⃣ Transacción: crear work entry + actualizar cliente
+    const [savedEntry, updatedClient] = await prisma.$transaction([
+      prisma.workEntry.create({
+        data: {
+          billed_on: new Date(entry.billed_on),
+          hours_billed: entry.hours_billed,
+          hours_spent: entry.hours_spent,
+          hourly_rate: rate,
+          summary: entry.summary,
+          rate_type: user.type,
+          client_id: entry.client_id,
+          user_id: entry.user_id,
+        },
+      }),
+      prisma.client.update({
+        where: { id: entry.client_id },
+        data: {
+          most_recent_work_entry: new Date(entry.billed_on),
+          remainingFunds: Number(client.remainingFunds) - totalCost,
+        },
+      }),
+    ]);
 
     return new Response(JSON.stringify(savedEntry), {
       status: 201,
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
+    console.log(error)
     if (error instanceof Error && "errors" in error) {
       return new Response(JSON.stringify({ errors: (error as any).errors }), {
         status: 400,

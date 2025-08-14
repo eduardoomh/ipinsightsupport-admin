@@ -2,10 +2,14 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { UserSchema } from "~/utils/schemas/userSchema";
 import { prisma } from "~/config/prisma.server";
-import bcrypt from "bcryptjs"; // ✅ Importa bcryptjs
+import { Resend } from "resend";
 import { buildPageInfo } from "~/utils/pagination/buildPageInfo";
 import { buildCursorPaginationQuery } from "~/utils/pagination/buildCursorPaginationQuery";
 import { buildDynamicSelect } from "~/utils/fields/buildDynamicSelect";
+import { renderSetPasswordEmailHTML } from "~/utils/emails/set-password";
+import jwt from 'jsonwebtoken';
+
+const resend = new Resend(process.env.RESEND_API_KEY || "re_test_placeholder");
 
 // GET /api/users → obtener todos los usuarios
 
@@ -80,12 +84,10 @@ export const action: ActionFunction = async ({ request }) => {
   try {
     const userParsed = JSON.parse(userJson);
 
-    // Validar con el esquema importado
+    // ✅ Validar con Zod
     const user = UserSchema.parse(userParsed);
 
-    // ✅ Hashear la contraseña
-    const hashedPassword = await bcrypt.hash(user.password, 10);
-
+    // 1️⃣ Crear usuario sin contraseña todavía
     const savedUser = await prisma.user.create({
       data: {
         name: user.name,
@@ -97,17 +99,46 @@ export const action: ActionFunction = async ({ request }) => {
         type: user.type ?? "engineering",
         avatar: user.avatar ?? null,
         last_login: user.last_login ? new Date(user.last_login) : null,
-        password: hashedPassword, // ✅ Guardar contraseña hasheada
+        password: "hashed_pw_1"
       },
     });
 
+    // 2️⃣ Crear token JWT para que el usuario pueda establecer su contraseña
+    const tokenPayload = { id: savedUser.id, email: savedUser.email };
+    const token = jwt.sign(tokenPayload, process.env.JWT_SECRET || "changeme", {
+      expiresIn: "1d",
+    });
+
+    // 3️⃣ Construir URL de set password
+    const setPasswordUrl = `${process.env.APP_URL}/create-password?token=${token}`;
+
+    // 4️⃣ Renderizar HTML del email
+    const html = renderSetPasswordEmailHTML({
+      name: savedUser.name,
+      setPasswordUrl,
+    });
+
+    // 5️⃣ Enviar correo con Resend
+    await resend.emails.send({
+      from: "no-reply@ipinsightsupport.com",
+      to: savedUser.email,
+      subject: "Welcome! Set your password",
+      html,
+    });
+
+    // 6️⃣ Retornar usuario sin contraseña
     const { password, ...userWithoutPassword } = savedUser;
 
-    return new Response(JSON.stringify(userWithoutPassword), {
+    return new Response(JSON.stringify({
+      message: "User created and invitation email sent",
+      user: userWithoutPassword,
+    }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
+
   } catch (error) {
+    console.log(error)
     if (error instanceof Error && "errors" in error) {
       return new Response(JSON.stringify({ errors: (error as any).errors }), {
         status: 400,

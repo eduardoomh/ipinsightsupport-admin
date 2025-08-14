@@ -100,11 +100,15 @@ export const action: ActionFunction = async ({ params, request }) => {
         data: {
           company: updatedFields.company,
           timezone: updatedFields.timezone,
+          account_manager_id: updatedFields.account_manager_id,
+          currentStatus: updatedFields.currentStatus
         },
         select: {
           id: true,
           company: true,
           timezone: true,
+          account_manager: true,
+          currentStatus: true,
           createdAt: true,
           updatedAt: true,
         },

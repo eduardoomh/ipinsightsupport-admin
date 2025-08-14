@@ -16,6 +16,7 @@ export const loader: LoaderFunction = async ({ params }) => {
         id: true,
         company: true,
         timezone: true,
+        currentStatus: true,
         account_manager: {
           select:{
             id: true,

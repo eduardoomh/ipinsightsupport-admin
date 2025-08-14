@@ -27,6 +27,7 @@ export default {
         high_blue: "#00AAE7",
         base_blue: "#c3e9f8",
         light_blue: "#E6F5FB",
+        hard_blue: "#1f72a6",
         darken_blue: "#0D3147"
 
       },
