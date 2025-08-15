@@ -9,11 +9,12 @@ interface Props {
     size?: 'small' | 'normal'
     id?: string;
     hideHeader?: boolean;
+    tailwindClass?: string;
 }
 
-const ContentLayout: FC<PropsWithChildren<Props>> = ({ title, headerActions, children, type, size = 'normal', id, hideHeader = false }) => {
+const ContentLayout: FC<PropsWithChildren<Props>> = ({ title, headerActions, children, type, size = 'normal', id, hideHeader = false, tailwindClass }) => {
     return (
-        <div className={`pr-${size === 'small' ? '1' : '6'} pt-8 flex-1 overflow-y-auto bg-transparent`}>
+        <div className={`pr-${size === 'small' ? '1' : '6'} pt-0 flex-1 overflow-y-auto bg-transparent ${tailwindClass && tailwindClass}`}>
             {
                 type === 'client_section' ? (
                     <DetailedClientLayout title={title} clientId={id}>

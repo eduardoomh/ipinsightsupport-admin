@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "@remix-run/react";
 import AuthContainer from "~/components/views/auth/AuthContainer";
 
-export default function ResetPasswordRoute() {
+export default function CreatePasswordRoute() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [isValid, setIsValid] = useState(false);
@@ -10,11 +10,8 @@ export default function ResetPasswordRoute() {
 
   useEffect(() => {
     const token = searchParams.get("token");
+    console.log(token, "eltoken")
 
-    if (!token) {
-      navigate("/login");
-      return;
-    }
 
     const validateToken = async () => {
       const response = await fetch("/api/auth/validate-token", {
@@ -27,8 +24,10 @@ export default function ResetPasswordRoute() {
 
       const result = await response.json();
 
+      console.log(result)
+
       if (!result.valid) {
-        navigate("/login");
+
       } else {
         setIsValid(true);
         setValues(result.data);
@@ -39,12 +38,12 @@ export default function ResetPasswordRoute() {
     validateToken();
   }, [navigate, searchParams]);
 
-  if (!isValid || !values) return null;
+  if (!isValid || !values) return null; // o un loading spinner
 
   return (
     <main className="flex items-center justify-center min-h-screen">
       {/* Mostrar solo si token fue validado */}
-      <AuthContainer type="reset_password" data={values} />
+      <AuthContainer type="create_password" data={values} />
     </main>
   );
 }

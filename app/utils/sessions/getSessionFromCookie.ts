@@ -1,7 +1,7 @@
 import { base64UrlDecode } from "./base64UrlDecode";
 
 interface SessionPayload {
-    userId?: string;
+    id?: string;
     role?: string;
     email?: string;
     name?: string;

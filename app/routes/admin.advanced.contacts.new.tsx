@@ -46,7 +46,7 @@ export default function NewContactDrawerRoute() {
         throw new Error("Failed to create contact");
       }
 
-      message.success("Contact created successfully");
+      message.success("Contact created successfully. An email has been sent to the contact to set their password.");
       refreshResults();
     } catch (err: any) {
       console.error(err);

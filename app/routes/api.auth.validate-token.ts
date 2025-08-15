@@ -16,9 +16,10 @@ export const action: ActionFunction = async ({ request }) => {
 
     return json({
       valid: true,
-      user: {
+      data: {
         email: (decoded as any).email,
-        id: (decoded as any).userId,
+        id: (decoded as any).id,
+        type: (decoded as any).type
       },
     });
   } catch (err) {

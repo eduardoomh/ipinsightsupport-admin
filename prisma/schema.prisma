@@ -48,8 +48,11 @@ model Client {
   remainingFunds                 Float        @default(0.0)
   most_recent_work_entry         DateTime?
   most_recent_retainer_activated DateTime?
+  engineering_hours              Float?
+  architecture_hours             Float?
+  senior_architecture_hours      Float?
 
-  contacts              Contact[]             @relation("ClientContacts") 
+  contacts              Contact[]             @relation("ClientContacts")
   work_entries          WorkEntry[]           @relation("ClientWorkEntry")
   schedule_entries      ScheduleEntry[]       @relation("ClientScheduleEntry")
   client_retainers      Retainer[]            @relation("clientRetainer")
@@ -117,10 +120,11 @@ enum DayStatus {
 }
 
 model Contact {
-  id    String @id @default(cuid())
-  name  String
-  email String @unique
-  phone String
+  id       String  @id @default(cuid())
+  name     String
+  email    String  @unique
+  phone    String
+  password String?
 
   client_id String?
   client    Client? @relation("ClientContacts", fields: [client_id], references: [id], onDelete: SetNull)
@@ -132,12 +136,12 @@ model Contact {
 }
 
 model Retainer {
-  id             String   @id @default(cuid())
+  id             String    @id @default(cuid())
   amount         Float
   date_activated DateTime
   date_expired   DateTime?
-  note           String?  @db.Text
-  is_credit      Boolean  @default(false)
+  note           String?   @db.Text
+  is_credit      Boolean   @default(false)
 
   client_id String
   client    Client @relation("clientRetainer", fields: [client_id], references: [id])

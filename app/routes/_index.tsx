@@ -5,8 +5,6 @@ import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSessionFromCookie(request);
-  
-  console.log(session, "veremos")
 
   if (!session) {
     return redirect("/login");

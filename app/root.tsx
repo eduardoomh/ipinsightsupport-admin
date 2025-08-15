@@ -21,7 +21,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const pathname = url.pathname;
 
-  const isPublic = ["/login"].includes(pathname);
+  const isPublic = ["/login", "/create-password", "/reset-password"].includes(pathname);
 
   if (isPublic) {
     return json({ user: null });
@@ -33,8 +33,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect("/login");
   }
 
-  const { userId, role, name, email } = session;
-  return json({ user: { userId, role, name, email } });
+  const { id, role, name, email } = session;
+  return json({ user: { id, role, name, email } });
 }
 
 // 🧱 Layout principal (NO USA HOOKS AQUÍ)

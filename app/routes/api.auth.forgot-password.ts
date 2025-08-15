@@ -19,46 +19,51 @@ export const action: ActionFunction = async ({ request }) => {
       });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    const user = await prisma.user.findUnique({ where: { email } });
+    let account: { id: string; name: string; email: string };
+    let type: "USER" | "CONTACT" = "USER";
 
-    if (!user) {
-      return new Response(JSON.stringify({ error: "User not found" }), {
-        status: 404,
-      });
+    if (user) {
+      account = { id: user.id, name: user.name, email: user.email };
+    } else {
+      const contact = await prisma.contact.findUnique({ where: { email } });
+      if (!contact) {
+        return new Response(JSON.stringify({ error: "User not found" }), {
+          status: 404,
+        });
+      }
+      account = { id: contact.id, name: contact.name, email: contact.email };
+      type = "CONTACT";
     }
 
     const tokenPayload = {
-      email: user?.email,
-      id: user?.id,
+      email: account.email,
+      id: account.id,
+      type,
     };
 
     const token = jwt.sign(tokenPayload, process.env.JWT_SECRET || "changeme", {
       expiresIn: "1d",
     });
 
-    const resetUrl = `${process.env.APP_URL}/change-password?token=${token}`;
+    const resetUrl = `${process.env.APP_URL}/reset-password?token=${token}`;
 
     const html = renderRecoverEmailHTML({
-      name: user.name,
-      email: user.email,
+      name: account.name,
       resetUrl,
     });
 
     await resend.emails.send({
       from: "no-reply@ipinsightsupport.com",
-      to: email,
+      to: account.email,
       subject: "Password Recovery",
       html,
     });
 
-    return new Response(JSON.stringify({ 
-      message: "Email sent successfully",
-      success: true
-    }), {
-      status: 200,
-    });
+    return new Response(
+      JSON.stringify({ message: "Email sent successfully", success: true }),
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Forgot password error:", error);
     return new Response(JSON.stringify({ error: "Internal server error" }), {

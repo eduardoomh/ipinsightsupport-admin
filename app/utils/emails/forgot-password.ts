@@ -1,20 +1,163 @@
 export function renderRecoverEmailHTML({
   name,
-  email,
   resetUrl,
 }: {
   name: string;
-  email: string;
   resetUrl: string;
 }) {
   return `
-    <div style="font-family: Arial, sans-serif; padding: 20px;">
-      <h2>Hola ${name || "usuario"},</h2>
-      <p>Recibimos una solicitud para restablecer la contraseña asociada a este correo: <strong>${email}</strong>.</p>
-      <p>Para continuar, haz clic en el siguiente botón o copia el enlace en tu navegador:</p>
-      <a href="${resetUrl}" style="background-color: #2d72d9; color: white; padding: 12px 20px; text-decoration: none; border-radius: 6px;">Restablecer contraseña</a>
-      <p style="margin-top: 20px;">Este enlace expirará en 24 horas. Si no solicitaste este cambio, puedes ignorar este mensaje.</p>
-      <p style="margin-top: 30px;">Saludos,<br>Equipo Chamosa</p>
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Password Reset - Sentinelux</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+      }
+      table {
+        border-spacing: 0;
+        mso-table-lspace: 0pt;
+        mso-table-rspace: 0pt;
+        border-collapse: collapse;
+        margin: 0 auto;
+      }
+      img {
+        border: 0;
+        outline: none;
+        text-decoration: none;
+        display: block;
+        max-width: 100%;
+        height: auto;
+      }
+      .container {
+        width: 100%;
+        background-color: #f4f4f4;
+        padding: 20px 0;
+      }
+      .content {
+        max-width: 600px;
+        background-color: #ffffff;
+        margin: 0 auto;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      }
+      .header {
+        background-color: #ffffff;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #e0e0e0;
+      }
+      .logo {
+        height: 40px;
+      }
+      .badge {
+        padding: 8px 16px;
+        border: 2px solid #00aae7;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 14px;
+        color: #00aae7;
+      }
+      .body-content {
+        padding: 30px;
+        text-align: center;
+        color: #000000;
+      }
+      .body-content h2 {
+        color: #00aae7;
+        font-size: 20px;
+        margin-bottom: 15px;
+      }
+      .body-content p {
+        font-size: 16px;
+        line-height: 1.6;
+        margin: 10px 0;
+      }
+      .btn {
+        display: inline-block;
+        background-color: #00aae7;
+        color: #ffffff !important;
+        padding: 12px 24px;
+        font-size: 16px;
+        text-decoration: none;
+        border-radius: 8px;
+        margin-top: 25px;
+        font-weight: bold;
+      }
+      .footer {
+        padding: 20px;
+        font-size: 14px;
+        color: #000000;
+        text-align: center;
+        background-color: #ffffff;
+        border-top: 1px solid #e0e0e0;
+      }
+      @media only screen and (max-width: 600px) {
+        .body-content {
+          padding: 20px;
+        }
+        .btn {
+          font-size: 14px;
+          padding: 10px 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="content">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff; border-bottom:1px solid #e0e0e0;">
+          <tr>
+            <!-- Logo -->
+            <td align="left" valign="middle" style="padding:20px;">
+              <img src="https://es.ipinsightsupport.com/wp-content/uploads/2025/08/1.png"
+                  alt="IP Insight Support Logo"
+                  width="180"
+                  style="display:block; width:180px; height:auto; border:0; outline:none; text-decoration:none;">
+            </td>
+
+            <!-- Badge a la derecha -->
+            <td align="right" valign="middle" style="padding:20px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="right" style="border-collapse:collapse;">
+                <tr>
+                  <td align="center" bgcolor="#ffffff" style="border:2px solid #00aae7; border-radius:8px; padding:8px 16px; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight:600; font-size:14px; color:#00aae7; text-align:center; display:inline-block;">
+                    SENTINELUX
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+
+        <div class="body-content">
+          <h2>Hello, ${name}</h2>
+          <p>We received a request to reset your password for your <br /><strong>Sentinelux IP InsightSupport</strong> account.</p>
+          <p>Click the button below to reset your password:</p>
+          <a href="${resetUrl}" target="_blank" class="btn">Reset My Password</a>
+          <p style="margin-top: 30px; font-size: 14px; color: #999999">
+            If the button above does not work, copy and paste this link into your browser:
+          </p>
+          <p style="font-size: 14px; color: #00aae7; word-break: break-word">
+            ${resetUrl}
+          </p>
+        </div>
+
+        <div class="footer">
+          <p>Best regards,<br /><strong>The Sentinelux IP InsightSupport Team</strong></p>
+        </div>
+      </div>
     </div>
+  </body>
+</html>
   `;
 }

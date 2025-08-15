@@ -26,7 +26,20 @@ const Sidebar: FC<Props> = ({ collapsed }) => {
     >
       {/* Botón superior */}
       {!collapsed && (
-        <h1 style={{ color: "#fff", fontSize: "1.4rem", fontWeight: "500", textAlign: "center", marginBottom: "16px" }}>Sentinelux System</h1>
+        <div
+          style={{
+            border: "1px solid white",
+            borderWidth: "1px 0 1px 0",
+            padding: "4px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: "8px",
+            marginBottom: "8px"
+          }}>
+          <h1 style={{ color: "#fff", fontSize: "1.4rem", fontWeight: "500", textAlign: "center" }}>Sentinelux  🧠</h1>
+        </div>
+
       )}
 
       {/* Menú scrollable */}

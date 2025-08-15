@@ -40,7 +40,7 @@ const DashboardLayout: FC<PropsWithChildren<DashboardLayoutProps>> = ({
       />
       <div className="flex flex-1 min-h-0">
         <Sidebar collapsed={collapsed} toggleCollapsed={toggleCollapsed} />
-        <ContentLayout type={type} title={title} headerActions={headerActions} id={id}>
+        <ContentLayout type={type} title={title} headerActions={headerActions} id={id} tailwindClass={'mt-8'}>
           {children}
         </ContentLayout>
       </div>

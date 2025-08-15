@@ -12,9 +12,6 @@ const DefaultCardLayout: FC<PropsWithChildren<Props>> = ({ title, headerActions,
         <Card
             style={{
                 width: "100%",
-                borderRadius: '12px',
-                borderTopRightRadius: size !== 'small' ? '0px' : '12px',
-                borderBottomRightRadius: size !== 'small' ? '0px' : '12px',
                 border: '1px solid #D3D3D3',
                 boxShadow: "0px 1px 4px rgba(1, 10, 11, 0.32)"
             }}

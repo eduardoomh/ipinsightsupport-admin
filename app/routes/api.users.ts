@@ -8,6 +8,7 @@ import { buildCursorPaginationQuery } from "~/utils/pagination/buildCursorPagina
 import { buildDynamicSelect } from "~/utils/fields/buildDynamicSelect";
 import { renderSetPasswordEmailHTML } from "~/utils/emails/set-password";
 import jwt from 'jsonwebtoken';
+import bcrypt from "bcryptjs";
 
 const resend = new Resend(process.env.RESEND_API_KEY || "re_test_placeholder");
 
@@ -87,6 +88,9 @@ export const action: ActionFunction = async ({ request }) => {
     // ✅ Validar con Zod
     const user = UserSchema.parse(userParsed);
 
+    const defaultPassword = "changeme123";
+    const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+
     // 1️⃣ Crear usuario sin contraseña todavía
     const savedUser = await prisma.user.create({
       data: {
@@ -99,12 +103,12 @@ export const action: ActionFunction = async ({ request }) => {
         type: user.type ?? "engineering",
         avatar: user.avatar ?? null,
         last_login: user.last_login ? new Date(user.last_login) : null,
-        password: "hashed_pw_1"
+        password: hashedPassword
       },
     });
 
     // 2️⃣ Crear token JWT para que el usuario pueda establecer su contraseña
-    const tokenPayload = { id: savedUser.id, email: savedUser.email };
+    const tokenPayload = { id: savedUser.id, email: savedUser.email, type: 'USER' };
     const token = jwt.sign(tokenPayload, process.env.JWT_SECRET || "changeme", {
       expiresIn: "1d",
     });

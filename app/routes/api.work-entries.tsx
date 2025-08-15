@@ -7,7 +7,8 @@ import { buildCursorPaginationQuery } from "~/utils/pagination/buildCursorPagina
 // GET /api/work-entries → obtener todas las entradas de trabajo
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
-  const clientId = url.searchParams.get("client_id"); // <-- nuevo filtro opcional
+  const clientId = url.searchParams.get("client_id"); // filtro opcional por cliente
+  const userId = url.searchParams.get("user_id"); // <-- nuevo filtro opcional por usuario
   const cursor = url.searchParams.get("cursor");
   const takeParam = url.searchParams.get("take");
   const direction = url.searchParams.get("direction") as "next" | "prev";
@@ -22,13 +23,12 @@ export const loader: LoaderFunction = async ({ request }) => {
     select: undefined, // usamos include
   });
 
-  // Agregamos filtro por client_id si existe
-  if (clientId) {
-    queryOptions.where = {
-      ...(queryOptions.where || {}),
-      client_id: clientId,
-    };
-  }
+  // Agregamos filtros opcionales
+  queryOptions.where = {
+    ...(queryOptions.where || {}),
+    ...(clientId ? { client_id: clientId } : {}),
+    ...(userId ? { user_id: userId } : {}),
+  };
 
   // Incluimos solo los campos necesarios
   queryOptions.include = {
@@ -72,15 +72,11 @@ export const action: ActionFunction = async ({ request }) => {
     });
   }
 
-console.log("step 1", workEntryJson)
   try {
     const parsedInput = JSON.parse(workEntryJson);
-console.log("step 0.5")
     // Validar con Zod
     const entry = WorkEntrySchema.parse(parsedInput);
-console.log("step 0.6")
     // 1️⃣ Obtener usuario completo
-    console.log("step 1.1")
     const user = await prisma.user.findUnique({
       where: { id: entry.user_id },
     });
@@ -90,7 +86,6 @@ console.log("step 0.6")
         headers: { "Content-Type": "application/json" },
       });
     }
-console.log("step 1.2")
     // 2️⃣ Obtener tarifas del cliente
     const clientRate = await prisma.clientRates.findFirst({
       where: { clientId: entry.client_id },
@@ -101,7 +96,6 @@ console.log("step 1.2")
         headers: { "Content-Type": "application/json" },
       });
     }
-console.log("step 2")
     // 3️⃣ Seleccionar tarifa según tipo de usuario
     let rate: number;
     switch (user.type) {

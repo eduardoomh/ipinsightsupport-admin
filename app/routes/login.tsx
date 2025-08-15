@@ -6,7 +6,7 @@ import AuthContainer from "~/components/views/auth/AuthContainer";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request);
-  if (session.has("userId") && session.has("role")) {
+  if (session.has("id") && session.has("role")) {
     return redirect("/");
   }
   return null;

@@ -27,7 +27,7 @@ export default function NewUserDrawerRoute() {
                 date_activated: values.date_activated,
                 is_credit: values.is_credit,
                 //@ts-ignore
-                created_by_id: user.userId,
+                created_by_id: user.id,
                 client_id: client.id
             };
 

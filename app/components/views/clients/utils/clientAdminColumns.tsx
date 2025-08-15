@@ -35,7 +35,7 @@ export const clientAdminColumns = (
                             return (
                                 <div key={index} style={{ marginBottom: 8 }}>
                                     <Space size="middle">
-                                        <Avatar style={{ backgroundColor: "#1890ff" }}>
+                                        <Avatar style={{ backgroundColor: "#01a2ae" }}>
                                             {name.charAt(0).toUpperCase()}
                                         </Avatar>
                                         <span>{name}</span>

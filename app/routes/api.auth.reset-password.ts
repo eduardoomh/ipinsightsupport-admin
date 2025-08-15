@@ -4,12 +4,13 @@ import bcrypt from "bcryptjs";
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
-  const userId = formData.get("id") as string;
+  const dataId = formData.get("id") as string;
+  const type = formData.get("type") as string; // corregido para tomar 'type'
   const newPassword = formData.get("password") as string;
 
-  if (!userId || !newPassword) {
+  if (!dataId || !newPassword || !type) {
     return new Response(
-      JSON.stringify({ success: false, error: "Missing userId or password" }),
+      JSON.stringify({ success: false, error: "Missing id, type, or password" }),
       { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
@@ -17,10 +18,22 @@ export const action: ActionFunction = async ({ request }) => {
   try {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    await prisma.user.update({
-      where: { id: userId },
-      data: { password: hashedPassword },
-    });
+    if (type === "USER") {
+      await prisma.user.update({
+        where: { id: dataId },
+        data: { password: hashedPassword },
+      });
+    } else if (type === "CONTACT") {
+      await prisma.contact.update({
+        where: { id: dataId },
+        data: { password: hashedPassword },
+      });
+    } else {
+      return new Response(
+        JSON.stringify({ success: false, error: "Invalid type" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,

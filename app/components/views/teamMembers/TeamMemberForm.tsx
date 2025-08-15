@@ -55,10 +55,10 @@ export default function TeamMemberForm({
   }, [users, teamMembers]);
 
   // Al cambiar el checkbox "on_team"
-  const onOnTeamChange = (userId: string, checked: boolean) => {
+  const onOnTeamChange = (id: string, checked: boolean) => {
     setDataSource((prev) =>
       prev.map((row) => {
-        if (row.key !== userId) return row;
+        if (row.key !== id) return row;
 
         // Si se desmarca, limpia role y rate_type
         if (!checked) {
@@ -72,10 +72,10 @@ export default function TeamMemberForm({
   };
 
   // Al cambiar el checkbox "technical_lead"
-  const onTechnicalLeadChange = (userId: string, checked: boolean) => {
+  const onTechnicalLeadChange = (id: string, checked: boolean) => {
     setDataSource((prev) =>
       prev.map((row) => {
-        if (row.key !== userId) return row;
+        if (row.key !== id) return row;
 
         if (checked) {
           // Si marca líder técnico, se asume on_team y role = technical_lead

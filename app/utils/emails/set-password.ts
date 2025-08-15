@@ -7,42 +7,167 @@ export function renderSetPasswordEmailHTML({
 }) {
   return `
   <!DOCTYPE html>
-  <html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Welcome to Sentinelux IP InsightsSupport</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome to Sentinelux</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+      }
+      table {
+        border-spacing: 0;
+        mso-table-lspace: 0pt;
+        mso-table-rspace: 0pt;
+        border-collapse: collapse;
+        margin: 0 auto;
+      }
+      img {
+        border: 0;
+        outline: none;
+        text-decoration: none;
+        display: block;
+        max-width: 100%;
+        height: auto;
+      }
+      .container {
+        width: 100%;
+        background-color: #f4f4f4;
+        padding: 20px 0;
+      }
+      .content {
+        max-width: 600px;
+        background-color: #ffffff;
+        margin: 0 auto;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      }
+      .header {
+        background-color: #ffffff;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #e0e0e0;
+      }
+      .logo {
+        height: 40px;
+      }
+      .badge {
+        padding: 8px 16px;
+        border: 2px solid #00aae7;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 14px;
+        color: #00aae7;
+      }
+      .body-content {
+        padding: 30px;
+        text-align: center;
+        color: #000000;
+      }
+      .body-content h2 {
+        color: #00aae7;
+        font-size: 20px;
+        margin-bottom: 15px;
+      }
+      .body-content p {
+        font-size: 16px;
+        line-height: 1.6;
+        margin: 10px 0;
+      }
+      .btn {
+        display: inline-block;
+        background-color: #00aae7;
+        color: #ffffff !important;
+        padding: 12px 24px;
+        font-size: 16px;
+        text-decoration: none;
+        border-radius: 8px;
+        margin-top: 25px;
+        font-weight: bold;
+      }
+      .footer {
+        padding: 20px;
+        font-size: 14px;
+        color: #000000;
+        text-align: center;
+        background-color: #ffffff;
+        border-top: 1px solid #e0e0e0;
+      }
+      @media only screen and (max-width: 600px) {
+        .body-content {
+          padding: 20px;
+        }
+        .btn {
+          font-size: 14px;
+          padding: 10px 20px;
+        }
+      }
+    </style>
   </head>
-  <body style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; color: #333;">
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: auto; background: white; border-radius: 8px; overflow: hidden;">
-      <tr>
-        <td style="background-color: #1a237e; padding: 20px; text-align: center; color: white;">
-          <h1 style="margin: 0; font-size: 22px;">Sentinelux IP InsightsSupport</h1>
-        </td>
-      </tr>
-      <tr>
-        <td style="padding: 20px;">
-          <p>Hello <strong>${name}</strong>,</p>
-          <p>Your account has been successfully created in <strong>Sentinelux IP InsightsSupport</strong>.</p>
-          <p>To get started, please click the link below to set your password:</p>
-          <p style="text-align: center; margin: 30px 0;">
-            <a href="${setPasswordUrl}" style="background-color: #1a237e; color: white; text-decoration: none; padding: 12px 20px; border-radius: 4px; font-weight: bold; display: inline-block;">
-              Set My Password
-            </a>
+  <body>
+    <div class="container">
+      <div class="content">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff; border-bottom:1px solid #e0e0e0;">
+        <tr>
+          <!-- Logo -->
+          <td align="left" valign="middle" style="padding:20px;">
+            <img src="https://es.ipinsightsupport.com/wp-content/uploads/2025/08/1.png"
+                alt="IP Insight Support Logo"
+                width="180"
+                style="display:block; width:180px; height:auto; border:0; outline:none; text-decoration:none;">
+          </td>
+
+          <!-- Badge a la derecha -->
+          <td align="right" valign="middle" style="padding:20px;">
+            <!--[if mso]>
+            <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"
+                        href="#"
+                        style="height:32px; v-text-anchor:middle; width:120px;" arcsize="50%" strokecolor="#00aae7" fillcolor="#ffffff">
+              <w:anchorlock/>
+              <center style="color:#00aae7; font-family:'Segoe UI', Tahoma, Geneva, Verdana,sans-serif; font-size:14px; font-weight:600;">
+                SENTINELUX
+              </center>
+            </v:roundrect>
+            <![endif]-->
+            <!--[if !mso]><!-- -->
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="right" style="border-collapse:collapse;">
+        <tr>
+          <td align="center" bgcolor="#ffffff" style="border:2px solid #00aae7; border-radius:8px; padding:8px 16px; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight:600; font-size:14px; color:#00aae7; text-align:center; display:inline-block;">
+            SENTINELUX
+          </td>
+        </tr>
+      </table>
+            <!--<![endif]-->
+          </td>
+        </tr>
+      </table>
+        <div class="body-content">
+          <h2>Hello, ${name}</h2>
+          <p>Your account has been successfully created in <br /><strong>Sentinelux IP InsightSupport</strong></p>
+          <p>To get started, please click the button below to set your password:</p>
+          <a href="${setPasswordUrl}" target="_blank" class="btn">Set My Password</a>
+          <p style="margin-top: 30px; font-size: 14px; color: #999999">
+            If the button above does not work, copy and paste this link into your browser:
           </p>
-          <p>If the button above does not work, copy and paste this link into your browser:</p>
-          <p style="word-break: break-all; color: #1a237e;">${setPasswordUrl}</p>
-          <br/>
-          <p>Best regards,<br/>The Sentinelux IP InsightsSupport Team</p>
-        </td>
-      </tr>
-      <tr>
-        <td style="background-color: #f1f1f1; padding: 10px; text-align: center; font-size: 12px; color: #666;">
-          © ${new Date().getFullYear()} Sentinelux IP InsightsSupport. All rights reserved.
-        </td>
-      </tr>
-    </table>
+          <p style="font-size: 14px; color: #00aae7; word-break: break-word">
+            ${setPasswordUrl}
+          </p>
+        </div>
+        <div class="footer">
+          <p>Best regards,<br /><strong>The Sentinelux IP InsightSupport Team</strong></p>
+        </div>
+      </div>
+    </div>
   </body>
-  </html>
+</html>
   `;
 }

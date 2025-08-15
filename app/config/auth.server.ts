@@ -3,11 +3,11 @@ import { getSession } from "~/config/session.server";
 
 export const requireUserSession = async (request: Request) => {
   const session = await getSession(request);
-  const userId = session.get("userId");
+  const id = session.get("id");
 
-  if (!userId) {
+  if (!id) {
     throw redirect("/login");
   }
 
-  return userId;
+  return id;
 };

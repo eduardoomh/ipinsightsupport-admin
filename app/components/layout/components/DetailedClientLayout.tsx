@@ -13,18 +13,15 @@ const DetailedClientLayout: FC<PropsWithChildren<Props>> = ({ title, children, c
             <div
                 style={{
                     width: "calc(100% - 2rem)",
-                    borderRadius: '12px',
                     border: '1px solid #D3D3D3',
                     marginBottom: "2rem",
                     marginRight: "2rem",
-                    boxShadow: "0px 1px 4px rgba(1, 10, 11, 0.32)"
                 }}>
                 <div style={{
                     display: "flex",
                     alignItems: "center",
                     gap: "1rem",
                     padding: "20px 28px",
-                    borderRadius: '12px 12px 0 0',
                     backgroundColor: "#f2f2f2"
                 }}>
                     <span

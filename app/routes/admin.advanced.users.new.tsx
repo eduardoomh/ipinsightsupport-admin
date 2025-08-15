@@ -23,7 +23,7 @@ export default function NewUserDrawerRoute() {
       });
 
       if (res.ok) {
-        message.success("User created successfully");
+        message.success("User created successfully. An email has been sent to the user to set their password.");
         refreshResults();
       } else {
         message.error("Error creating user");

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link, useLocation } from "@remix-run/react";
 import {
     ContainerOutlined,
@@ -8,48 +8,49 @@ import {
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Menu } from 'antd';
+import { UserContext } from '~/context/UserContext';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
-const items: MenuItem[] = [
-    {
-        key: 'home',
-        icon: <PieChartOutlined />,
-        label: <Link to="/">Home</Link>,
-    },
-    {
-        key: 'schedule', // ✅ corregido
-        icon: <DesktopOutlined />,
-        label: <Link to="/schedule">Schedule</Link>,
-    },
-    {
-        key: 'work-entries',
-        label: 'Work entries',
-        icon: <MailOutlined />,
-        children: [
-            {
-                key: 'all-entries',
-                label: <Link to="/entries">All entries</Link>,
-            },
-            {
-                key: 'personal-entries',
-                label: <Link to="/personal-entries">Personal entries</Link>
-            },
-        ],
-    },
-    {
-        key: 'status-report',
-        icon: <ContainerOutlined />,
-        label: <Link to="/status-report">Status report</Link>,
-    }
-];
+const items = (id: string): MenuItem[] => {
+    return [
+        {
+            key: 'home',
+            icon: <PieChartOutlined />,
+            label: <Link to="/">Home</Link>,
+        },
+        {
+            key: 'schedule',
+            icon: <DesktopOutlined />,
+            label: <Link to="/schedule">Schedule</Link>,
+        },
+        {
+            key: 'work-entries',
+            label: 'Work entries',
+            icon: <MailOutlined />,
+            children: [
+                {
+                    key: 'personal-entries',
+                    label: <Link to={`/entries/${id}`}>Personal entries</Link>,
+                }
+            ],
+        },
+        {
+            key: 'status-report',
+            icon: <ContainerOutlined />,
+            label: <Link to="/status-report">Status report</Link>,
+        }
+    ]
+}
 
-const pathToKey: Record<string, string> = {
-    "/": "home",
-    "/schedule": "schedule",
-    "/entries": "all-entries",
-    "/personal-entries": "personal-entries",
-    "/status-report": "status-report",
+const pathToKey = (id: any): Record<string, string> => {
+    return {
+        "/": "home",
+        "/schedule": "schedule",
+        [`/entries/${id}`]: "personal-entries",
+        "/status-report": "status-report",
+    }
+
 };
 
 type Props = {
@@ -58,7 +59,8 @@ type Props = {
 
 const MainMenu: React.FC<Props> = ({ collapsed }) => {
     const location = useLocation();
-    const selectedKey = pathToKey[location.pathname] || 'home';
+    const user = useContext(UserContext)
+    const selectedKey = pathToKey(user.id)[location.pathname] || 'home';;
 
     return (
         <Menu
@@ -66,7 +68,7 @@ const MainMenu: React.FC<Props> = ({ collapsed }) => {
             defaultOpenKeys={['work-entries']}
             mode="inline"
             inlineCollapsed={collapsed}
-            items={items}
+            items={items(user.id)}
             className="bg-darken_blue"
             style={{ border: 0, width: '100%' }}
         />

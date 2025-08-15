@@ -26,7 +26,7 @@ export const destroySession = (session: Session): Promise<string> =>
 
 interface UserSessionData {
   session: Session;
-  userId: string | undefined;
+  id: string | undefined;
   role: string | undefined;
   permissions: string[];
 }
@@ -34,18 +34,18 @@ interface UserSessionData {
 // Helper para obtener usuario y datos de sesión completos
 export async function getUserSession(request: Request): Promise<UserSessionData> {
   const session = await getSession(request);
-  const userId = session.get("userId") as string | undefined;
+  const id = session.get("id") as string | undefined;
   const role = session.get("role") as string | undefined;
   const permissions = (session.get("permissions") as string[] | undefined) ?? [];
 
-  return { session, userId, role, permissions };
+  return { session, id, role, permissions };
 }
 
 // Helper para exigir usuario (redirigir si no está autenticado)
-export async function requireUser(request: Request): Promise<{ userId: string; session: Session }> {
-  const { userId, session } = await getUserSession(request);
-  if (!userId) throw redirect("/login");
-  return { userId, session };
+export async function requireUser(request: Request): Promise<{ id: string; session: Session }> {
+  const { id, session } = await getUserSession(request);
+  if (!id) throw redirect("/login");
+  return { id, session };
 }
 
 // Helper para validar permisos

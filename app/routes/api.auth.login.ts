@@ -4,8 +4,6 @@ import { prisma } from "~/config/prisma.server";
 import bcrypt from "bcryptjs";
 import { LoginSchema } from "~/utils/schemas/loginSchema";
 import { getSession, commitSession } from "~/config/session.server";
-import jwt from 'jsonwebtoken';
-const JWT_SECRET = process.env.JWT_SECRET!;
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
@@ -25,47 +23,75 @@ export const action: ActionFunction = async ({ request }) => {
     );
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email },
-  });
+  let role: "ADMIN" | "USER" | "CLIENT" = "USER";
+  let sessionUser: { id: string; email: string; name: string; is_admin: boolean };
 
-  if (!user || !(await bcrypt.compare(password, user.password))) {
-    return new Response(
-      JSON.stringify({ error: "Credenciales inválidas" }),
-      { status: 401, headers: { "Content-Type": "application/json" } }
-    );
+  // Buscar primero en users
+  const user = await prisma.user.findUnique({ where: { email } });
+
+  if (user) {
+    const passwordValid = user.password
+      ? await bcrypt.compare(password, user.password)
+      : false;
+
+    if (!passwordValid) {
+      return new Response(
+        JSON.stringify({ error: "Credenciales inválidas" }),
+        { status: 401, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    role = user.is_admin ? "ADMIN" : "USER";
+    sessionUser = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      is_admin: user.is_admin,
+    };
+  } else {
+    // Buscar en contacts si no se encuentra en users
+    const contact = await prisma.contact.findUnique({ where: { email } });
+    if (!contact) {
+      return new Response(
+        JSON.stringify({ error: "Credenciales inválidas" }),
+        { status: 401, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    const passwordValid = contact.password
+      ? await bcrypt.compare(password, contact.password)
+      : false;
+
+    if (!passwordValid) {
+      return new Response(
+        JSON.stringify({ error: "Credenciales inválidas" }),
+        { status: 401, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    role = "CLIENT";
+    sessionUser = {
+      id: contact.id,
+      email: contact.email,
+      name: contact.name,
+      is_admin: false,
+    };
   }
 
   // Crear sesión
   const session = await getSession(request);
-  session.set("userId", user?.id);
-  session.set("email", user?.email);
-  session.set("name", user?.name);
-  session.set("role", user?.is_admin ? 'ADMIN' : 'USER')
+  session.set("id", sessionUser.id);
+  session.set("email", sessionUser.email);
+  session.set("name", sessionUser.name);
+  session.set("role", role);
 
-  /*
-  const {password: passw, ...userFound} = user
-
-    const token = jwt.sign(
-    {
-      ...userFound
-    },
-    JWT_SECRET,
-    {
-      expiresIn: "7d",
-    }
-  );
-*/
   return new Response(
-    JSON.stringify({ 
-      success: true, //token 
-      message: "Login succesfully"
-    }),
+    JSON.stringify({ success: true, message: "Login successfully" }),
     {
       status: 200,
-      headers: { 
+      headers: {
         "Set-Cookie": await commitSession(session),
-        "Content-Type": "application/json" 
+        "Content-Type": "application/json",
       },
     }
   );
