@@ -9,7 +9,7 @@ export default function NewUserDrawerRoute() {
   const { refreshResults } = useOutletContext<{ refreshResults: () => void }>();
   const [submitting, setSubmitting] = useState(false);
 
-  const handleClose = () => navigate("/admin/advanced/clients");
+  const handleClose = () => navigate("/admin/advanced/companies");
 
   const handleSubmit = async (values: any) => {
     setSubmitting(true);
@@ -29,7 +29,7 @@ export default function NewUserDrawerRoute() {
       });
 
       if (!clientRes.ok) {
-        throw new Error("Failed to create client");
+        throw new Error("Failed to create company");
       }
 
       const savedClient = await clientRes.json();
@@ -53,7 +53,7 @@ export default function NewUserDrawerRoute() {
         throw new Error("Failed to create contact");
       }
 
-      message.success("Client and contact created successfully. An email has been sent to the contact to set their password.");
+      message.success("Company and contact created successfully. An email has been sent to the contact to set their password.");
       refreshResults();
     } catch (err: any) {
       console.error(err);
@@ -65,7 +65,7 @@ export default function NewUserDrawerRoute() {
 
   return (
     <Drawer
-      title="Create New Client"
+      title="Create New Company"
       open={true}
       onClose={handleClose}
       footer={null}

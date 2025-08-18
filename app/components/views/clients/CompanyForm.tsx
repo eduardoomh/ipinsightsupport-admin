@@ -13,6 +13,7 @@ interface Props {
     handleSubmit: (values: any) => void;
     submitting: boolean;
     edit?: boolean;
+    admin?: boolean;
     users: User[]; // Lista de usuarios para seleccionar como account_manager
 }
 
@@ -28,7 +29,7 @@ const TIMEZONES = [
     "AUSTRALIA_NZ",
 ];
 
-const CLIENT_STATUSES = [
+export const CLIENT_STATUSES = [
     "ADHOC",
     "IN_PROGRESS",
     "ARCHIVE",
@@ -37,7 +38,7 @@ const CLIENT_STATUSES = [
     "TRANSFER",
 ];
 
-const CompanyForm = ({ client, handleSubmit, submitting, edit = false, users }: Props) => {
+const CompanyForm = ({ client, handleSubmit, submitting, edit = false, users, admin = true }: Props) => {
     useEffect(() => {
         console.log(client, users);
     }, [client, users]);
@@ -57,27 +58,33 @@ const CompanyForm = ({ client, handleSubmit, submitting, edit = false, users }: 
             onFinish={handleSubmit}
             id="client-form"
         >
-            <Form.Item
-                name="company"
-                label="Company"
-                rules={[{ required: true, message: "Please enter the company name" }]}
-            >
-                <Input />
-            </Form.Item>
+            {
+                admin && (
+                    <>
+                        <Form.Item
+                            name="company"
+                            label="Company"
+                            rules={[{ required: true, message: "Please enter the company name" }]}
+                        >
+                            <Input />
+                        </Form.Item>
 
-            <Form.Item
-                name="timezone"
-                label="Timezone"
-                rules={[{ required: true, message: "Please select a timezone" }]}
-            >
-                <Select placeholder="Select a timezone">
-                    {TIMEZONES.map((tz) => (
-                        <Option key={tz} value={tz}>
-                            {tz.replace("_", " ").toLowerCase().replace(/\b\w/g, l => l.toUpperCase())}
-                        </Option>
-                    ))}
-                </Select>
-            </Form.Item>
+                        <Form.Item
+                            name="timezone"
+                            label="Timezone"
+                            rules={[{ required: true, message: "Please select a timezone" }]}
+                        >
+                            <Select placeholder="Select a timezone">
+                                {TIMEZONES.map((tz) => (
+                                    <Option key={tz} value={tz}>
+                                        {tz.replace("_", " ").toLowerCase().replace(/\b\w/g, l => l.toUpperCase())}
+                                    </Option>
+                                ))}
+                            </Select>
+                        </Form.Item>
+                    </>
+                )
+            }
 
             <Form.Item
                 name="currentStatus"
@@ -93,19 +100,25 @@ const CompanyForm = ({ client, handleSubmit, submitting, edit = false, users }: 
                 </Select>
             </Form.Item>
 
-            <Form.Item
-                name="account_manager_id"
-                label="Account Manager"
-                rules={[{ required: false }]}
-            >
-                <Select placeholder="Select an account manager" allowClear>
-                    {users.map((user) => (
-                        <Option key={user.id} value={user.id}>
-                            {user.name}
-                        </Option>
-                    ))}
-                </Select>
-            </Form.Item>
+            {
+                admin && (
+                    <>
+                        <Form.Item
+                            name="account_manager_id"
+                            label="Account Manager"
+                            rules={[{ required: false }]}
+                        >
+                            <Select placeholder="Select an account manager" allowClear>
+                                {users.map((user) => (
+                                    <Option key={user.id} value={user.id}>
+                                        {user.name}
+                                    </Option>
+                                ))}
+                            </Select>
+                        </Form.Item>
+                    </>
+                )
+            }
 
             <Button
                 type="primary"

@@ -33,8 +33,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect("/login");
   }
 
-  const { id, role, name, email } = session;
-  return json({ user: { id, role, name, email } });
+  const { id, role, name, email, company_id } = session;
+  return json({ user: { id, role, name, email, company_id } });
 }
 
 // 🧱 Layout principal (NO USA HOOKS AQUÍ)

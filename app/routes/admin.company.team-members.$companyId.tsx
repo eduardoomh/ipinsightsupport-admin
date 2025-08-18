@@ -18,7 +18,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     }
 
     // Obtener datos del cliente
-    const clientRes = await fetch(`${process.env.APP_URL}/api/clients/${companyId}?fields=id,company`);
+    const clientRes = await fetch(`${process.env.APP_URL}/api/clients/${companyId}?fields=id,company,currentStatus`);
     if (!clientRes.ok) {
         throw new Response("Company not found", { status: 404 });
     }
@@ -118,7 +118,7 @@ export default function NewUserDrawerRoute() {
         }
     };
     return (
-        <DashboardLayout title={client.company} type="client_section" id={client.id}>
+        <DashboardLayout title={client.company} type="client_section" id={client.id} companyStatus={client.currentStatus}>
             <ContentLayout
                 title={edit ? "Current Team" : "New Team"}
                 type="basic_section"

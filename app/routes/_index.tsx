@@ -10,6 +10,10 @@ export const loader: LoaderFunction = async ({ request }) => {
     return redirect("/login");
   }
 
+  if(session.company_id && session.role === "CLIENT"){
+    return redirect(`/company/dashboard/${session.company_id}`)
+  }
+
   return null;
 };
 

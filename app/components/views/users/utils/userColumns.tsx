@@ -1,5 +1,4 @@
-// columns/usersColumns.ts
-import { DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, EyeOutlined, CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons';
 import { TableColumnsType, Button, Popconfirm } from 'antd';
 import dayjs from "dayjs";
 import { DataType } from './usersTable.interface';
@@ -21,19 +20,22 @@ export const usersColumns = (
             dataIndex: "phone",
         },
         {
-            title: "Role",
+            title: "Admin",
             dataIndex: "is_admin",
-            render: (value: boolean) => `${value ? "Admin" : "User"}`,
+            render: (value: boolean) =>
+                value ? <CheckCircleTwoTone twoToneColor="#52c41a" /> : <CloseCircleTwoTone twoToneColor="#ff4d4f" />,
         },
         {
-            title: "Status",
+            title: "Active",
             dataIndex: "is_active",
-            render: (value: boolean) => `${value ? "Active" : "Inactive"}`,
+            render: (value: boolean) =>
+                value ? <CheckCircleTwoTone twoToneColor="#52c41a" /> : <CloseCircleTwoTone twoToneColor="#ff4d4f" />,
         },
         {
-            title: "Account",
+            title: "Manager",
             dataIndex: "is_account_manager",
-            render: (value: boolean) => `${value ? "Manager" : "No manager"}`,
+            render: (value: boolean) =>
+                value ? <CheckCircleTwoTone twoToneColor="#52c41a" /> : <CloseCircleTwoTone twoToneColor="#ff4d4f" />,
         },
         {
             title: "Created At",

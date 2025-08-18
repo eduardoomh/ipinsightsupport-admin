@@ -10,14 +10,18 @@ interface Props {
     id?: string;
     hideHeader?: boolean;
     tailwindClass?: string;
+    companyStatus?: string;
+    menuType?: "ADMIN" | "USER" | "CLIENT"
 }
 
-const ContentLayout: FC<PropsWithChildren<Props>> = ({ title, headerActions, children, type, size = 'normal', id, hideHeader = false, tailwindClass }) => {
+const ContentLayout: FC<PropsWithChildren<Props>> = ({ 
+    title, headerActions, children, type, size = 'normal', id, hideHeader = false, tailwindClass, companyStatus, menuType = "ADMIN"
+}) => {
     return (
         <div className={`pr-${size === 'small' ? '1' : '6'} pt-0 flex-1 overflow-y-auto bg-transparent ${tailwindClass && tailwindClass}`}>
             {
                 type === 'client_section' ? (
-                    <DetailedClientLayout title={title} clientId={id}>
+                    <DetailedClientLayout title={title} clientId={id} companyStatus={companyStatus} type={menuType}>
                         {children}
                     </DetailedClientLayout>
                 ) : (

@@ -28,7 +28,12 @@ const HeaderLayout: FC<Props> = ({ user, collapsed, toggleCollapsed }) => {
             <div className="flex justify-start items-center">
                 <CollapsedButton collapsed={collapsed} toggleCollapsed={toggleCollapsed} />
                 <img src="/IP-Insight-Support-Logo.webp" width={220} />
-                <TagMode />
+                {
+                    user.role === "ADMIN" && (
+                        <TagMode />
+                    )
+                }
+
             </div>
             <UserPopover user={user} />
         </div>

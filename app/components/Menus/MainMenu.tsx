@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Link, useLocation } from "@remix-run/react";
 import {
     ContainerOutlined,
@@ -25,6 +25,11 @@ const items = (id: string): MenuItem[] => {
             label: <Link to="/schedule">Schedule</Link>,
         },
         {
+            key: 'companies',
+            icon: <DesktopOutlined />,
+            label: <Link to="/companies">Companies</Link>,
+        },
+        {
             key: 'work-entries',
             label: 'Work entries',
             icon: <MailOutlined />,
@@ -47,6 +52,7 @@ const pathToKey = (id: any): Record<string, string> => {
     return {
         "/": "home",
         "/schedule": "schedule",
+        "/companies": "companies",
         [`/entries/${id}`]: "personal-entries",
         "/status-report": "status-report",
     }
@@ -60,7 +66,11 @@ type Props = {
 const MainMenu: React.FC<Props> = ({ collapsed }) => {
     const location = useLocation();
     const user = useContext(UserContext)
-    const selectedKey = pathToKey(user.id)[location.pathname] || 'home';;
+    const selectedKey = pathToKey(user.id)[location.pathname] || 'home';
+
+        useEffect(() =>{
+            console.log(user, "user")
+        },[user])
 
     return (
         <Menu

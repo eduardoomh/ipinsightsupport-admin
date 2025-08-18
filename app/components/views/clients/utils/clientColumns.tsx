@@ -26,14 +26,14 @@ export const clientColumns = (
                 <div className="flex justify-end gap-2">
                     <Button
                         icon={<EyeOutlined style={{ fontSize: "16px" }} />}
-                        onClick={() => navigate(`/admin/advanced/clients/${record.id}/info`)}
+                        onClick={() => navigate(`/admin/advanced/companies/${record.id}/info`)}
                     />
                     <Button
                         icon={<EditOutlined style={{ fontSize: "16px" }} />}
-                        onClick={() => navigate(`/admin/advanced/clients/${record.id}/edit`)}
+                        onClick={() => navigate(`/admin/advanced/companies/${record.id}/edit`)}
                     />
                     <Popconfirm
-                        title="Are you sure you want to delete this user?"
+                        title="Are you sure you want to delete this company?"
                         onConfirm={() => handleDelete(record.id)}
                         okText="Yes"
                         cancelText="No"

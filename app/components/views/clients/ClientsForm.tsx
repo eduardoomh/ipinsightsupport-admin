@@ -95,7 +95,7 @@ const ClientForm = ({ client, handleSubmit, submitting, edit = false }: Props) =
                 loading={submitting}
                 block
             >
-                {edit ? "Update Client" : "Create Client"}
+                {edit ? "Update Company" : "Create Company"}
             </Button>
         </Form>
     );

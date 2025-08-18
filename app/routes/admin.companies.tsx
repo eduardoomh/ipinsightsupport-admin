@@ -27,7 +27,7 @@ export default function AdminClients() {
   const { data: clientsData, take, handlePageChange } = useCursorPagination("clientsData");
 
   return (
-    <DashboardLayout title="Clients">
+    <DashboardLayout title="Companies">
       <Suspense fallback={<SkeletonEntries />}>
         <Await resolve={clientsData}>
           {(data: any) => {

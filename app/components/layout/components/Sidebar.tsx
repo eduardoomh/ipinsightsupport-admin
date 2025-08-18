@@ -1,7 +1,9 @@
-import { FC } from "react";
+import { FC, useContext } from "react";
 import MainMenu from "../../Menus/MainMenu";
 import { useAppMode } from "~/context/AppModeContext";
 import AdminMenu from "~/components/Menus/AdminMenu";
+import { UserContext } from "~/context/UserContext";
+import CompanyMainMenu from "~/components/Menus/CompanyMainMenu";
 
 interface Props {
   collapsed: boolean;
@@ -10,6 +12,7 @@ interface Props {
 
 const Sidebar: FC<Props> = ({ collapsed }) => {
   const { mode } = useAppMode();
+  const user = useContext(UserContext)
 
   return (
     <aside
@@ -45,7 +48,17 @@ const Sidebar: FC<Props> = ({ collapsed }) => {
       {/* Menú scrollable */}
       <div className="flex-1 overflow-y-auto mt-2">
         {mode === "user" ? (
-          <MainMenu collapsed={collapsed} />
+          <>
+            {
+              user.role === "CLIENT" && user?.company_id ? (
+                <CompanyMainMenu collapsed={collapsed} />
+              ) : (
+                <MainMenu collapsed={collapsed} />
+              )
+            }
+
+          </>
+
         ) : (
           <AdminMenu collapsed={collapsed} />
         )}

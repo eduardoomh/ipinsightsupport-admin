@@ -58,7 +58,7 @@ export default function ClientContactsPage() {
   };
 
   return (
-    <DashboardLayout title={client.company} type="client_section" id={client.id}>
+    <DashboardLayout title={client.company} type="client_section" id={client.id} companyStatus={client.currentStatus}>
       <ContentLayout
         title="Edit Company details"
         type="basic_section"

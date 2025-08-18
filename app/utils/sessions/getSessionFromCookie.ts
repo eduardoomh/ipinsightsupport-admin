@@ -5,6 +5,7 @@ interface SessionPayload {
     role?: string;
     email?: string;
     name?: string;
+    company_id?: string;
 }
 
 export async function getSessionFromCookie(request: Request): Promise<SessionPayload | null> {

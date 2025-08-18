@@ -18,9 +18,9 @@ const items: MenuItem[] = [
         label: <Link to="/admin/home">Home</Link>,
     },
     {
-        key: 'clients',
+        key: 'companies',
         icon: <PieChartOutlined />,
-        label: <Link to="/admin/clients">Clients</Link>,
+        label: <Link to="/admin/companies">Companies</Link>,
     },
     {
         key: 'schedule', // ✅ corregido
@@ -47,8 +47,8 @@ const items: MenuItem[] = [
                 label: <Link to="/admin/advanced/users">Users</Link>,
             },
             {
-                key: 'advanced-clients',
-                label: <Link to="/admin/advanced/clients">Clients</Link>
+                key: 'advanced-companies',
+                label: <Link to="/admin/advanced/companies">Companies</Link>
             },
             {
                 key: 'advanced-contacts',
@@ -69,12 +69,12 @@ const items: MenuItem[] = [
 
 const pathToKey: Record<string, string> = {
     "/admin/home": "home",
-    "/admin/clients": "clients",
+    "/admin/companies": "companies",
     "/admin/schedule": "schedule",
     "/admin/retainers": "retainers",
     "/admin/work-entries": "admin-work-entries",
     "/admin/advanced/users": "advanced-users",
-    "/admin/advanced/clients": "advanced-clients",
+    "/admin/advanced/companies": "advanced-companies",
     "/admin/advanced/contacts": "advanced-contacts",
     "/admin/advanced/logs": "advanced-logs",
     "/admin/status-report": "admin-status-report",

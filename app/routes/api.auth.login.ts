@@ -7,6 +7,7 @@ import { getSession, commitSession } from "~/config/session.server";
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
+  let company_id: string | undefined = undefined;
 
   const email = formData.get("email")?.toString() || "";
   const password = formData.get("password")?.toString() || "";
@@ -56,6 +57,8 @@ export const action: ActionFunction = async ({ request }) => {
         JSON.stringify({ error: "Credenciales inválidas" }),
         { status: 401, headers: { "Content-Type": "application/json" } }
       );
+    }else{ 
+      company_id = contact?.client_id || undefined
     }
 
     const passwordValid = contact.password
@@ -84,6 +87,10 @@ export const action: ActionFunction = async ({ request }) => {
   session.set("email", sessionUser.email);
   session.set("name", sessionUser.name);
   session.set("role", role);
+
+  if (role === "CLIENT" && company_id) {
+    session.set("company_id", company_id);
+  }
 
   return new Response(
     JSON.stringify({ success: true, message: "Login successfully" }),

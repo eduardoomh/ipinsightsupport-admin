@@ -28,7 +28,7 @@ export default function ClientLayout() {
   const { client } = useLoaderData<typeof loader>();
 
   return (
-    <DashboardLayout title={client.company} type="client_section" id={client.id}>
+    <DashboardLayout title={client.company} type="client_section" id={client.id} companyStatus={client.currentStatus}>
       <DetailedClient client={client} />
     </DashboardLayout>
   );

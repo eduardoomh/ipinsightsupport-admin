@@ -15,7 +15,7 @@ export default function InfoClientModal() {
             const data = await res.json();
             setClient(data);
         } catch (err) {
-            message.error("Failed to load client data");
+            message.error("Failed to load company data");
         } finally {
             setLoading(false);
         }
@@ -25,11 +25,11 @@ export default function InfoClientModal() {
         fetchClient();
     }, [clientId]);
 
-    const handleClose = () => navigate("/admin/advanced/clients");
+    const handleClose = () => navigate("/admin/advanced/companies");
 
 return (
     <Modal
-        title={`Client info`}
+        title={`Company info`}
         open={true}
         onCancel={handleClose}
         footer={null}
@@ -37,7 +37,7 @@ return (
         destroyOnClose
     >
         {loading ? (
-            <div className="text-center py-8">Loading client data...</div>
+            <div className="text-center py-8">Loading company data...</div>
         ) : client ? (
             <div className="p-4">
                 <div className="grid grid-cols-2 gap-4 mb-6">
@@ -79,7 +79,7 @@ return (
                 )}
             </div>
         ) : (
-            <div className="text-center text-red-500">Client not found</div>
+            <div className="text-center text-red-500">Company not found</div>
         )}
     </Modal>
 );

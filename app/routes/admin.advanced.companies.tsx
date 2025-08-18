@@ -27,12 +27,12 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function ClientsPage() {
   const { data: clientsData, take, handlePageChange } = useCursorPagination("clientsData");
-  const headerActions = useDashboardHeaderActions("/admin/advanced/clients/new", "Create Client");
-  const refreshResults = useRefreshAndResetPagination("/admin/advanced/clients");
+  const headerActions = useDashboardHeaderActions("/admin/advanced/companies/new", "Create Company");
+  const refreshResults = useRefreshAndResetPagination("/admin/advanced/companies");
   const deleteClient = useDeleteResource("/api/clients", refreshResults);
 
   return (
-    <DashboardLayout title="Manage clients" headerActions={headerActions}>
+    <DashboardLayout title="Manage companies" headerActions={headerActions}>
       <Suspense fallback={<SkeletonEntries />}>
         <Await resolve={clientsData}>
           {(data: any) => {

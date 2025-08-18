@@ -3,7 +3,6 @@ import { Drawer, message } from "antd";
 import { useEffect, useState } from "react";
 import FormSkeleton from "~/components/basics/FormSkeleton";
 import ClientForm from "~/components/views/clients/ClientsForm";
-import ClientSkeleton from "~/components/views/clients/utils/ClientSkeleton";
 import type { ClientI } from "~/interfaces/clients.interface";
 
 type OutletContext = {
@@ -24,7 +23,7 @@ export default function EditClientDrawer() {
       const data = await res.json();
       setClient(data);
     } catch (err) {
-      message.error("Failed to load client data");
+      message.error("Failed to load company data");
     } finally {
       setLoading(false);
     }
@@ -34,7 +33,7 @@ export default function EditClientDrawer() {
     fetchClient();
   }, [clientId]);
 
-  const handleClose = () => navigate("/admin/advanced/clients");
+  const handleClose = () => navigate("/admin/advanced/companies");
 
   const handleSubmit = async (values: any) => {
     setSubmitting(true);
@@ -48,14 +47,14 @@ export default function EditClientDrawer() {
       });
 
       if (res.ok) {
-        message.success("Client updated successfully");
+        message.success("Company updated successfully");
         refreshResults();
         handleClose();
       } else {
-        message.error("Error updating client");
+        message.error("Error updating company");
       }
     } catch (err) {
-      message.error("Error updating client");
+      message.error("Error updating company");
     } finally {
       setSubmitting(false);
     }
@@ -63,7 +62,7 @@ export default function EditClientDrawer() {
 
   return (
     <Drawer
-      title="Edit Client"
+      title="Edit Company"
       open={true}
       onClose={handleClose}
       width={720}

@@ -11,6 +11,8 @@ interface DashboardLayoutProps {
   headerActions?: ReactNode;
   type?: 'basic_section' | 'client_section'
   id?: string;
+  companyStatus?: string;
+  menuType?: "ADMIN" | "USER" | "CLIENT";
 }
 
 const DashboardLayout: FC<PropsWithChildren<DashboardLayoutProps>> = ({
@@ -18,7 +20,9 @@ const DashboardLayout: FC<PropsWithChildren<DashboardLayoutProps>> = ({
   title,
   headerActions,
   id,
-  type = 'basic_section'
+  type = 'basic_section',
+  companyStatus,
+  menuType = "ADMIN"
 }) => {
   const user = useContext(UserContext);
   const isMobile = useMediaQuery({ query: "(max-width: 800px)" });
@@ -40,7 +44,14 @@ const DashboardLayout: FC<PropsWithChildren<DashboardLayoutProps>> = ({
       />
       <div className="flex flex-1 min-h-0">
         <Sidebar collapsed={collapsed} toggleCollapsed={toggleCollapsed} />
-        <ContentLayout type={type} title={title} headerActions={headerActions} id={id} tailwindClass={'mt-8'}>
+        <ContentLayout 
+          type={type} 
+          title={title} 
+          headerActions={headerActions} 
+          id={id} tailwindClass={'mt-8'} 
+          companyStatus={companyStatus} 
+          menuType={menuType}
+        >
           {children}
         </ContentLayout>
       </div>

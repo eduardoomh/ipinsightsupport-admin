@@ -14,6 +14,7 @@ export interface ClientI {
     most_recent_work_entry: null | string;
     most_recent_retainer_activated: null | string;
     rates: RatesI;
+    currentStatus: string;
     createdAt: string;
     updatedAt: string;
 }

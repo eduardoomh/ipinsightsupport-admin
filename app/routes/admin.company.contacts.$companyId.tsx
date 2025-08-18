@@ -24,7 +24,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     request,
     sessionCheck: () => getSessionFromCookie(request),
     resources: [
-      { key: "client", apiPath: `${process.env.APP_URL}/api/clients/${companyId}?fields=id,company` },
+      { key: "client", apiPath: `${process.env.APP_URL}/api/clients/${companyId}?fields=id,company,currentStatus` },
       { key: "contactsByClientData", apiPath: `${process.env.APP_URL}/api/contacts?client_id=${companyId}` },
     ],
   });
@@ -38,7 +38,7 @@ export default function ClientContactsPage() {
   const deleteContact = useDeleteResource("/api/contacts", refreshResults);
 
   return (
-    <DashboardLayout title={client.company} type="client_section" id={client.id}>
+    <DashboardLayout title={client.company} type="client_section" id={client.id} companyStatus={client.currentStatus}>
       <ContentLayout
         title="Contacts"
         type="basic_section"

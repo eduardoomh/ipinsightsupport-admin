@@ -13,3 +13,11 @@ export interface UsersI {
     createdAt: string;
     updatedAt: string;
 }
+
+export type UserI = {
+  id: string;
+  name: string;
+  email: string;
+  role: "ADMIN" | "USER" | "CLIENT"; // o lo que definas
+  company_id?: string;
+};

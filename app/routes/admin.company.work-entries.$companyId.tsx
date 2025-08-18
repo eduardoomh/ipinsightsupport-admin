@@ -36,7 +36,7 @@ export default function ClientEntriesPage() {
   const refreshResults = useRefreshAndResetPagination(`/admin/company/work-entries/${client.id}`);
 
   return (
-    <DashboardLayout title={client.company} type="client_section" id={client.id}>
+    <DashboardLayout title={client.company} type="client_section" id={client.id} companyStatus={client.currentStatus}>
       <ContentLayout title={`Recent work entries`} type="basic_section" size="small" hideHeader={false} headerActions={headerActions}>
         <Suspense fallback={<SkeletonEntries />}>
           <Await resolve={workEntriesData}>

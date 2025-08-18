@@ -23,7 +23,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     request,
     sessionCheck: () => getSessionFromCookie(request),
     resources: [
-      { key: "client", apiPath: `${process.env.APP_URL}/api/clients/${companyId}?fields=id,company` },
+      { key: "client", apiPath: `${process.env.APP_URL}/api/clients/${companyId}?fields=id,company,currentStatus` },
       { key: "retainersByClientData", apiPath: `${process.env.APP_URL}/api/retainers?client_id=${companyId}` },
     ],
   });
@@ -36,7 +36,7 @@ export default function ClientRetainersPage() {
   const refreshResults = useRefreshAndResetPagination(`/admin/company/retainers/${client.id}`);
 
   return (
-    <DashboardLayout title={client.company} type="client_section" id={client.id }>
+    <DashboardLayout title={client.company} type="client_section" id={client.id } companyStatus={client.currentStatus}>
       <ContentLayout title={`Recent retainers`} type="basic_section" size="small" hideHeader={false} headerActions={headerActions}>
         <Suspense fallback={<SkeletonEntries />}>
           <Await resolve={retainersData}>
