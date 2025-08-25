@@ -26,14 +26,6 @@ interface Props {
 }
 
 const DetailedClient: React.FC<Props> = ({ client }) => {
-  const [firstCardHeight, setFirstCardHeight] = useState<number | undefined>(undefined);
-  const secondCardRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (secondCardRef.current) {
-      setFirstCardHeight(secondCardRef.current.offsetHeight);
-    }
-  }, []);
 
   return (
     <>
@@ -82,21 +74,24 @@ const DetailedClient: React.FC<Props> = ({ client }) => {
               [
                 {
                   rate: client?.rates?.engineeringRate || '0',
-                  role: 'Engineering'
+                  role: 'Engineering',
+                  estimated: client?.estimated_engineering_hours || '0'
                 },
                 {
                   rate: client.rates?.architectureRate || '0',
-                  role: 'Architecture'
+                  role: 'Architecture',
+                  estimated: client?.estimated_architecture_hours || '0'
                 },
                 {
                   rate: client.rates?.seniorArchitectureRate || '0',
-                  role: 'Senior architecture'
+                  role: 'Senior architecture',
+                  estimated: client?.estimated_senior_architecture_hours || '0'
                 }
               ].map((rateItem: any) => {
                 return (
                   <DashboardItem
                     label={rateItem.role}
-                    value={`$${rateItem.rate}/hr (0/hrs remaining)`}
+                    value={`$${rateItem.rate}/hr (${rateItem.estimated}/hrs remaining)`}
                     showBorder={true}
                   />
                 )

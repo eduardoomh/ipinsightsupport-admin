@@ -9,8 +9,18 @@ export const loader: LoaderFunction = async () => {
   const history = await prisma.clientStatusHistory.findMany({
     orderBy: { changedAt: "desc" },
     include: {
-      client: true,
-      changedBy: true,
+      client: {
+        select: {
+          id: true,
+          company: true,
+        },
+      },
+      changedBy: {
+        select:{
+          id: true,
+          name: true
+        }
+      },
     },
   });
 

@@ -13,6 +13,9 @@ export interface ClientI {
     remainingFunds: any;
     most_recent_work_entry: null | string;
     most_recent_retainer_activated: null | string;
+    estimated_engineering_hours?: number;
+    estimated_architecture_hours?: number;
+    estimated_senior_architecture_hours?: number;
     rates: RatesI;
     currentStatus: string;
     createdAt: string;

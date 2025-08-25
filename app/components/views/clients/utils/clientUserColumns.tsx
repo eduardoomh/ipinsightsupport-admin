@@ -1,10 +1,11 @@
 // columns/usersColumns.ts
 import { Avatar, Space, TableColumnsType, Tag } from 'antd';
-import { AdminDataType } from './clientsTable.interface';
+import { UserDataType } from './clientsTable.interface';
+import { getClientStatusLabel } from '~/utils/general/getClientStatusLabel';
 
 export const clientUserColumns = (
     navigate: (path: string) => void
-): TableColumnsType<AdminDataType> => [
+): TableColumnsType<UserDataType> => [
         {
             title: "Company",
             dataIndex: "company",
@@ -16,9 +17,16 @@ export const clientUserColumns = (
                     }}
                     onClick={() => navigate(`/company/dashboard/${record.id}`)}
                 >
-                    {record.company}
+                    <p>{record.company}</p>
+                    <br />
+                    <Tag color='blue'>{getClientStatusLabel(record.currentStatus)}</Tag><Tag>{record.timezone}</Tag>
                 </span>
             ),
+        },
+        {
+            title: "Account Manager",
+            dataIndex: "account_manager",
+            render: (_, record) => record.account_manager?.name || "No asignado",
         },
         {
             title: "Team",
@@ -49,6 +57,30 @@ export const clientUserColumns = (
                     </div>
                 );
             },
+        },
+        {
+            title: "Remaining hours",
+            dataIndex: "estimated_hours",
+              render: (_, record) => {
+
+                if(
+                    record.estimated_hours.user_estimated_hours === null ||
+                    record.estimated_hours.user_rate_type === null
+                ){
+                    return(
+                        <div>
+                            <p style={{textAlign: 'center'}}>-</p>
+                        </div>
+                    )
+                }
+
+                return(
+                     <div>
+                        <p style={{textAlign: 'center'}}>{record.estimated_hours.user_estimated_hours} hrs 
+                        <br/> <Tag>{record.estimated_hours.user_rate_type}</Tag></p>
+                     </div>
+                )
+              }
         },
         {
             title: "Last Work Entry",

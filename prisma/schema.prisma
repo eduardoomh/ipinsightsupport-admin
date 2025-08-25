@@ -41,16 +41,16 @@ model User {
 }
 
 model Client {
-  id                             String       @id @default(cuid()) // cuid() genera un hash único
-  company                        String
-  currentStatus                  ClientStatus @default(ADHOC)
-  timezone                       Timezone     @default(CENTRAL)
-  remainingFunds                 Float        @default(0.0)
-  most_recent_work_entry         DateTime?
-  most_recent_retainer_activated DateTime?
-  engineering_hours              Float?
-  architecture_hours             Float?
-  senior_architecture_hours      Float?
+  id                                  String       @id @default(cuid()) // cuid() genera un hash único
+  company                             String
+  currentStatus                       ClientStatus @default(ADHOC)
+  timezone                            Timezone     @default(CENTRAL)
+  remainingFunds                      Float        @default(0.0)
+  most_recent_work_entry              DateTime?
+  most_recent_retainer_activated      DateTime?
+  estimated_engineering_hours         Float?       @default(0.0)
+  estimated_architecture_hours        Float?       @default(0.0)
+  estimated_senior_architecture_hours Float?       @default(0.0)
 
   contacts              Contact[]             @relation("ClientContacts")
   work_entries          WorkEntry[]           @relation("ClientWorkEntry")

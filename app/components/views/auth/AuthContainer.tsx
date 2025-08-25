@@ -13,10 +13,9 @@ interface Props {
 
 const AuthContainer: FC<Props> = ({ type, data }) => {
     return (
-        <section className="grid grid-cols-2 w-[1000px] h-[600px] mx-auto border rounded shadow border-high_blue">
-            <div className="bg-light_blue flex flex-col justify-center items-center">
-                <img src="/IP-Insight-Support-Logo.webp" width={400} />
-                <h6 className="text-xl font-bold">{type === 'login' ? 'Sentinelux System' : type === 'reset_password' ? 'Reset your password' : 'Create your password'}</h6>
+        <section className="grid grid-cols-2 w-[1000px] h-[600px] border rounded shadow border-high_blue">
+            <div className="bg-[#294a5f] flex items-center justify-center aspect-[499/598] w-full h-full">
+                <img src="/sentinelux-login.webp" className="w-full h-full object-contain" />
             </div>
             <div className="p-8 flex items-center bg-white">
                 {

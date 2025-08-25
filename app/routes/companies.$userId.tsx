@@ -13,10 +13,11 @@ import { withPaginationDefer } from "~/utils/pagination/withPaginationDefer";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
 import ClientsUserTable from "~/components/views/clients/ClientsUserTable";
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader: LoaderFunction = async ({ request, params }) => {
+  const userId = params.userId;
   return withPaginationDefer({
     request,
-    apiPath: `${process.env.APP_URL}/api/clients?relations=team_members`,
+    apiPath: `${process.env.APP_URL}/api/clients?relations=team_members,account_manager&user_id=${userId}`,
     sessionCheck: () => getSessionFromCookie(request),
     key: "clientsData",
   });

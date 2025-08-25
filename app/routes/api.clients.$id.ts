@@ -2,6 +2,7 @@
 import type { LoaderFunction, ActionFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { prisma } from "~/config/prisma.server";
+import { getUserId } from "~/config/session.server";
 import { buildDynamicSelect } from "~/utils/fields/buildDynamicSelect";
 
 export const loader: LoaderFunction = async ({ params, request }) => {
@@ -12,8 +13,10 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   }
 
   const url = new URL(request.url);
+  const showTeam = url.searchParams.get("show_team");
   const fieldsParam = url.searchParams.get("fields");
 
+  // Campos por defecto
   const defaultSelect = {
     id: true,
     company: true,
@@ -24,11 +27,36 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     updatedAt: true,
   };
 
+  // Construimos select dinámico según fields
+  const select = buildDynamicSelect(fieldsParam, defaultSelect);
+
   try {
-    const client = await prisma.client.findUnique({
-      where: { id: clientId },
-      select: buildDynamicSelect(fieldsParam, defaultSelect),
-    });
+    let client;
+
+    if (showTeam) {
+  client = await prisma.client.findUnique({
+    where: { id: clientId },
+    select: {
+      ...select, // tus campos dinámicos
+      team_members: {
+        select: {
+          id: true, // solo el id del team_member
+          user: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      },
+    },
+  });
+} else {
+      // Solo select dinámico
+      client = await prisma.client.findUnique({
+        where: { id: clientId },
+        select,
+      });
+    }
 
     if (!client) {
       return json({ error: "Client not found" }, { status: 404 });
@@ -41,14 +69,12 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   }
 };
 
+
 export const action: ActionFunction = async ({ params, request }) => {
   const clientId = params.id;
 
   if (!clientId) {
-    return new Response(JSON.stringify({ error: "Missing client ID" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-    });
+    return json({ error: "Missing client ID" }, { status: 400 });
   }
 
   const method = request.method;
@@ -66,20 +92,14 @@ export const action: ActionFunction = async ({ params, request }) => {
       });
 
       if (!client) {
-        return new Response(JSON.stringify({ error: "Client not found" }), {
-          status: 404,
-          headers: { "Content-Type": "application/json" },
-        });
+        return json({ error: "Client not found" }, { status: 404 });
       }
 
       await prisma.client.delete({
         where: { id: clientId },
       });
 
-      return new Response(JSON.stringify({ deleted: client }), {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      });
+      return json({ deleted: client }, { status: 200 });
     }
 
     if (method === "PUT") {
@@ -87,13 +107,20 @@ export const action: ActionFunction = async ({ params, request }) => {
       const clientJson = formData.get("client") as string;
 
       if (!clientJson) {
-        return new Response(JSON.stringify({ error: "No client data provided" }), {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        });
+        return json({ error: "No client data provided" }, { status: 400 });
       }
 
       const updatedFields = JSON.parse(clientJson);
+
+      // Obtenemos el estado actual para comparar antes de actualizar
+      const existingClient = await prisma.client.findUnique({
+        where: { id: clientId },
+        select: { currentStatus: true },
+      });
+
+      if (!existingClient) {
+        return json({ error: "Client not found" }, { status: 404 });
+      }
 
       const updatedClient = await prisma.client.update({
         where: { id: clientId },
@@ -101,7 +128,7 @@ export const action: ActionFunction = async ({ params, request }) => {
           company: updatedFields.company,
           timezone: updatedFields.timezone,
           account_manager_id: updatedFields.account_manager_id,
-          currentStatus: updatedFields.currentStatus
+          currentStatus: updatedFields.currentStatus,
         },
         select: {
           id: true,
@@ -114,21 +141,30 @@ export const action: ActionFunction = async ({ params, request }) => {
         },
       });
 
-      return new Response(JSON.stringify({ updated: updatedClient }), {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      });
+      // Si cambió el currentStatus, creamos el historial
+      if (
+        updatedFields.currentStatus &&
+        updatedFields.currentStatus !== existingClient.currentStatus
+      ) {
+        const userId = await getUserId(request);
+
+        console.log({userId})
+        await prisma.clientStatusHistory.create({
+          data: {
+            clientId,
+            status: updatedFields.currentStatus,
+            note: `Status updated from ${existingClient.currentStatus} to ${updatedFields.currentStatus}`,
+            changedById: userId
+          },
+        });
+      }
+
+      return json({ updated: updatedClient }, { status: 200 });
     }
 
-    return new Response(JSON.stringify({ error: "Unsupported method" }), {
-      status: 405,
-      headers: { "Content-Type": "application/json" },
-    });
+    return json({ error: "Unsupported method" }, { status: 405 });
   } catch (error) {
     console.error("Error processing client action:", error);
-    return new Response(JSON.stringify({ error: "Server error" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return json({ error: "Server error" }, { status: 500 });
   }
 };

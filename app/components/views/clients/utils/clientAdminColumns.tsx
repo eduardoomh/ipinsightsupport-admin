@@ -51,11 +51,31 @@ export const clientAdminColumns = (
             },
         },
         {
+            title: "Hours Remaining",
+            dataIndex: "estimated_hours",
+            render: (_, record) => (
+                <div>
+                    <div>
+                        <strong>Engineering:</strong>{" "}
+                        {Number(record.estimated_hours.estimated_engineering_hours).toFixed(2)} hours
+                    </div>
+                    <div>
+                        <strong>Architecture:</strong>{" "}
+                        {Number(record.estimated_hours.estimated_architecture_hours).toFixed(2)} hours
+                    </div>
+                    <div>
+                        <strong>Senior Architecture:</strong>{" "}
+                        {Number(record.estimated_hours.estimated_senior_architecture_hours).toFixed(2)} hours
+                    </div>
+                </div>
+            ),
+        },
+        {
             title: "Last Work Entry",
             dataIndex: "most_recent_work_entry",
         },
         {
             title: "Most Recent Retainer",
             dataIndex: "most_recent_retainer_activated",
-        },
+        }
     ];

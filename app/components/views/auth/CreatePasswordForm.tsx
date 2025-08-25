@@ -4,7 +4,7 @@ import { Button, Input, message, Typography, Progress } from "antd";
 import { FC, useState } from "react";
 import InputContainer from "./InputContainer";
 
-const { Text } = Typography;
+const { Text, Title } = Typography;
 
 interface Props {
   type: 'login' | 'reset_password' | 'create_password';
@@ -15,7 +15,7 @@ interface Props {
   };
 }
 
-const CreatePasswordForm: FC<Props> = ({ data }) => {
+const CreatePasswordForm: FC<Props> = ({ data, type }) => {
   const [loading, setLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const [passwordStrength, setPasswordStrength] = useState(0);
@@ -93,6 +93,7 @@ const CreatePasswordForm: FC<Props> = ({ data }) => {
   return (
     <div className="flex flex-col w-full h-auto">
       {contextHolder}
+      <Title className="text-center" level={2}>{type === 'create_password' ? 'Create your password' : 'Reset your password'}</Title>
       <Form method="post" className="space-y-4" onSubmit={handleSubmit} style={{ display: "grid", gap: 16 }}>
         <InputContainer label="New Password">
           <Input.Password

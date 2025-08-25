@@ -27,7 +27,7 @@ const items = (id: string): MenuItem[] => {
         {
             key: 'companies',
             icon: <DesktopOutlined />,
-            label: <Link to="/companies">Companies</Link>,
+            label: <Link to={`/companies/${id}`}>Companies</Link>,
         },
         {
             key: 'work-entries',
@@ -52,7 +52,7 @@ const pathToKey = (id: any): Record<string, string> => {
     return {
         "/": "home",
         "/schedule": "schedule",
-        "/companies": "companies",
+        [`/companies/${id}`]: "companies",
         [`/entries/${id}`]: "personal-entries",
         "/status-report": "status-report",
     }

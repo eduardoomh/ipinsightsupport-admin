@@ -15,6 +15,7 @@ import { ConfigProvider } from "antd";
 import { UserContext } from "./context/UserContext";
 import { AppModeProvider } from "./context/AppModeContext";
 import { getSessionFromCookie } from "./utils/sessions/getSessionFromCookie";
+import 'react-quill/dist/quill.snow.css';
 
 // 🧠 Loader del root
 export async function loader({ request }: LoaderFunctionArgs) {

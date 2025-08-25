@@ -9,9 +9,16 @@ import { clientAdminColumns } from "./utils/clientAdminColumns";
 import usePagination from "~/hooks/usePagination";
 import { useTableLoading } from "~/hooks/useTableLoading";
 
+interface EstimatedHours {
+  estimated_engineering_hours: string | number;
+  estimated_architecture_hours: string | number;
+  estimated_senior_architecture_hours: string | number;
+}
+
 interface DataType {
   id: string;
   company: string;
+  estimated_hours: EstimatedHours;
   team_members: ClientI["team_members"];
   most_recent_work_entry: string;
   most_recent_retainer_activated: string;
@@ -37,6 +44,11 @@ const ClientsAdminTable: FC<Props> = ({ clients, pageInfo, onPageChange, pageSiz
     id: client.id,
     company: client.company,
     team_members: client.team_members || [],
+    estimated_hours: {
+      estimated_engineering_hours: client?.estimated_engineering_hours || 0.0,
+      estimated_architecture_hours: client?.estimated_architecture_hours || 0.0,
+      estimated_senior_architecture_hours: client?.estimated_senior_architecture_hours || 0.0,
+    },
     most_recent_work_entry: client.most_recent_work_entry
       ? dayjs(client.most_recent_work_entry).format("YYYY-MM-DD")
       : "—",

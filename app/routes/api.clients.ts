@@ -13,7 +13,8 @@ export const loader: LoaderFunction = async ({ request }) => {
   const takeParam = url.searchParams.get("take");
   const direction = url.searchParams.get("direction") as "next" | "prev";
   const fieldsParam = url.searchParams.get("fields");
-  const relationsParam = url.searchParams.get("relations"); // ej: "team_members,contacts"
+  const relationsParam = url.searchParams.get("relations");
+  const userIdFilter = url.searchParams.get("user_id");
 
   const take = takeParam ? parseInt(takeParam, 10) : 6;
 
@@ -32,38 +33,65 @@ export const loader: LoaderFunction = async ({ request }) => {
     take,
     direction,
     orderByField: "createdAt",
-    select: dynamicSelect, // usamos select para los campos cliente
+    select: dynamicSelect,
   });
 
-  // Construimos include dinámico según relaciones que pidan
+  // Include dinámico
   if (relationsParam) {
     const relations = relationsParam.split(",").map(r => r.trim());
-
     queryOptions.include = {};
 
     if (relations.includes("team_members")) {
       queryOptions.include.team_members = {
         include: {
           user: {
-            select:{
+            select: {
               id: true,
               name: true,
-              email: true
-            }
-          }, // o select para campos específicos
-        }
+              email: true,
+            },
+          },
+        },
       };
     }
 
     if (relations.includes("contacts")) {
-      queryOptions.include.contacts = true
+      queryOptions.include.contacts = true;
     }
 
-    // Si hay include, no se puede usar select según Prisma, entonces:
-    // Para evitar error, si include tiene keys, eliminamos select para que funcione
+    if (relations.includes("account_manager")) {
+      queryOptions.include.account_manager = {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          is_account_manager: true,
+        },
+      };
+    }
+
     if (Object.keys(queryOptions.include).length > 0) {
       delete queryOptions.select;
     }
+  }
+
+  // Filtrado por user_id en team_members o como account_manager
+  if (userIdFilter) {
+    queryOptions.where = {
+      ...(queryOptions.where || {}),
+      OR: [
+        {
+          team_members: {
+            some: {
+              user_id: userIdFilter,
+            },
+          },
+        },
+        {
+          account_manager_id: userIdFilter,
+        },
+      ],
+    };
   }
 
   const clients = await prisma.client.findMany(queryOptions);
@@ -78,7 +106,6 @@ export const loader: LoaderFunction = async ({ request }) => {
     }
   );
 };
-
 // POST /api/clients → crear nuevo cliente
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();

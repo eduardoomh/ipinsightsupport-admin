@@ -3,6 +3,8 @@ import { WorkEntrySchema } from "~/utils/schemas/workEntrySchema";
 import { prisma } from "~/config/prisma.server";
 import { buildPageInfo } from "~/utils/pagination/buildPageInfo";
 import { buildCursorPaginationQuery } from "~/utils/pagination/buildCursorPaginationQuery";
+import { round2 } from "~/utils/general/round";
+import { safeDiv } from "~/utils/general/safediv";
 
 // GET /api/work-entries → obtener todas las entradas de trabajo
 export const loader: LoaderFunction = async ({ request }) => {
@@ -74,70 +76,66 @@ export const action: ActionFunction = async ({ request }) => {
 
   try {
     const parsedInput = JSON.parse(workEntryJson);
-    // Validar con Zod
     const entry = WorkEntrySchema.parse(parsedInput);
-    // 1️⃣ Obtener usuario completo
-    const user = await prisma.user.findUnique({
-      where: { id: entry.user_id },
-    });
+
+    // 1) Usuario
+    const user = await prisma.user.findUnique({ where: { id: entry.user_id } });
     if (!user) {
-      return new Response(JSON.stringify({ error: "User not found" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
-    // 2️⃣ Obtener tarifas del cliente
-    const clientRate = await prisma.clientRates.findFirst({
-      where: { clientId: entry.client_id },
-    });
-    if (!clientRate) {
-      return new Response(JSON.stringify({ error: "Client rates not found" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
-    // 3️⃣ Seleccionar tarifa según tipo de usuario
-    let rate: number;
-    switch (user.type) {
-      case "engineering":
-        rate = Number(clientRate.engineeringRate);
-        break;
-      case "architecture":
-        rate = Number(clientRate.architectureRate);
-        break;
-      case "senior_architecture":
-        rate = Number(clientRate.seniorArchitectureRate);
-        break;
-      default:
-        return new Response(JSON.stringify({ error: "Invalid user type" }), {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        });
+      return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
     }
 
-    // 4️⃣ Calcular costo total
+    // 2) TeamMember -> rate_type real para este cliente
+    const teamMember = await prisma.teamMember.findFirst({
+      where: { client_id: entry.client_id, user_id: entry.user_id },
+    });
+
+    console.log(teamMember)
+    if (!teamMember) {
+      return new Response(JSON.stringify({ error: "Team member not found" }), { status: 404 });
+    }
+    const rateType = teamMember.rate_type as "engineering" | "architecture" | "senior_architecture";
+
+    // 3) Rates del cliente
+    const clientRate = await prisma.clientRates.findFirst({ where: { clientId: entry.client_id } });
+    if (!clientRate) {
+      return new Response(JSON.stringify({ error: "Client rates not found" }), { status: 404 });
+    }
+
+    const engRate = Number(clientRate.engineeringRate);
+    const archRate = Number(clientRate.architectureRate);
+    const seniorRate = Number(clientRate.seniorArchitectureRate);
+
+    console.log({ engRate, archRate, seniorRate })
+
+    // 4) Rate aplicado al entry (según rateType del teamMember)
+    const rate =
+      rateType === "engineering" ? engRate :
+        rateType === "architecture" ? archRate :
+          rateType === "senior_architecture" ? seniorRate :
+            NaN;
+
+    if (!Number.isFinite(rate) || rate <= 0) {
+      return new Response(JSON.stringify({ error: "Invalid rate configuration for this team member" }), { status: 400 });
+    }
+
+    // 5) Costo y cliente
     const totalCost = rate * entry.hours_billed;
 
-    // 5️⃣ Verificar fondos
-    const client = await prisma.client.findUnique({
-      where: { id: entry.client_id },
-    });
-    console.log("step 3")
+    const client = await prisma.client.findUnique({ where: { id: entry.client_id } });
     if (!client) {
-      return new Response(JSON.stringify({ error: "Client not found" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
+      return new Response(JSON.stringify({ error: "Client not found" }), { status: 404 });
     }
 
-    if (Number(client.remainingFunds) < totalCost) {
-      return new Response(JSON.stringify({ error: "Insufficient funds" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
+    // 6) Saldo restante (puede ser negativo)
+    const fundsAfter = Number(client.remainingFunds) - totalCost;
+    const positiveFunds = Math.max(fundsAfter, 0);
 
-    // 6️⃣ Transacción: crear work entry + actualizar cliente
+    const estimatedEngineeringHours = positiveFunds > 0 ? round2(safeDiv(positiveFunds, engRate)) : 0.0;
+    const estimatedArchitectureHours = positiveFunds > 0 ? round2(safeDiv(positiveFunds, archRate)) : 0.0;
+    const estimatedSeniorArchitectureHours = positiveFunds > 0 ? round2(safeDiv(positiveFunds, seniorRate)) : 0.0;
+
+    console.log({ estimatedArchitectureHours, estimatedEngineeringHours, estimatedSeniorArchitectureHours })
+    // 8) Transacción
     const [savedEntry, updatedClient] = await prisma.$transaction([
       prisma.workEntry.create({
         data: {
@@ -146,7 +144,7 @@ export const action: ActionFunction = async ({ request }) => {
           hours_spent: entry.hours_spent,
           hourly_rate: rate,
           summary: entry.summary,
-          rate_type: user.type,
+          rate_type: rateType,
           client_id: entry.client_id,
           user_id: entry.user_id,
         },
@@ -155,28 +153,28 @@ export const action: ActionFunction = async ({ request }) => {
         where: { id: entry.client_id },
         data: {
           most_recent_work_entry: new Date(entry.billed_on),
-          remainingFunds: Number(client.remainingFunds) - totalCost,
+          remainingFunds: fundsAfter,
+          estimated_engineering_hours: estimatedEngineeringHours,
+          estimated_architecture_hours: estimatedArchitectureHours,
+          estimated_senior_architecture_hours: estimatedSeniorArchitectureHours,
         },
       }),
     ]);
 
-    return new Response(JSON.stringify(savedEntry), {
+
+    console.log({ workEntry: savedEntry, client: updatedClient })
+
+    // Devuelve ambos para que verifiques que sí se guardó
+    return new Response(JSON.stringify({ workEntry: savedEntry, client: updatedClient }), {
       status: 201,
       headers: { "Content-Type": "application/json" },
     });
-  } catch (error) {
-    console.log(error)
-    if (error instanceof Error && "errors" in error) {
-      return new Response(JSON.stringify({ errors: (error as any).errors }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
 
+  } catch (error) {
     console.error("Error creating work entry:", error);
-    return new Response(JSON.stringify({ error: "Error creating work entry" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    if (error instanceof Error && "errors" in error) {
+      return new Response(JSON.stringify({ errors: (error as any).errors }), { status: 400 });
+    }
+    return new Response(JSON.stringify({ error: "Error creating work entry" }), { status: 500 });
   }
 };

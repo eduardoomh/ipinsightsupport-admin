@@ -26,6 +26,9 @@ export const loader: LoaderFunction = async ({ params }) => {
         remainingFunds: true,
         most_recent_work_entry: true,
         most_recent_retainer_activated: true,
+        estimated_architecture_hours: true,
+        estimated_engineering_hours: true,
+        estimated_senior_architecture_hours: true,
         contacts: {
           select: {
             id: true,

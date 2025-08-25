@@ -79,6 +79,7 @@ export default function NewUserDrawerRoute() {
                 handleSubmit={handleSubmit}
                 submitting={submitting}
                 users={users}
+                user={user as any}
             />
         </Drawer>
     );
