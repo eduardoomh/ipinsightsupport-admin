@@ -4,6 +4,7 @@ import { json } from "@remix-run/node";
 import { prisma } from "~/config/prisma.server";
 import { getUserId } from "~/config/session.server";
 import { buildDynamicSelect } from "~/utils/fields/buildDynamicSelect";
+import { ClientStatus, getClientStatusLabel } from "~/utils/general/getClientStatusLabel";
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   const clientId = params.id;
@@ -148,12 +149,11 @@ export const action: ActionFunction = async ({ params, request }) => {
       ) {
         const userId = await getUserId(request);
 
-        console.log({userId})
         await prisma.clientStatusHistory.create({
           data: {
             clientId,
             status: updatedFields.currentStatus,
-            note: `Status updated from ${existingClient.currentStatus} to ${updatedFields.currentStatus}`,
+            note: `Status updated from ${getClientStatusLabel(existingClient.currentStatus as ClientStatus)} to ${getClientStatusLabel(updatedFields.currentStatus as ClientStatus)}`,
             changedById: userId
           },
         });

@@ -12,8 +12,6 @@ export default function NewUserDrawerRoute() {
     const [submitting, setSubmitting] = useState(false);
     const user = useContext(UserContext)
 
-    console.log(user, "esto deberia devolver user")
-
     const handleClose = () => navigate(`/admin/company/retainers/${client.id}`);
 
     const handleSubmit = async (values: any) => {
@@ -35,7 +33,6 @@ export default function NewUserDrawerRoute() {
                 retainerPayload.note = values.note;
             }
 
-            console.log(retainerPayload);
             retainerFormData.append("retainer", JSON.stringify(retainerPayload));
 
             const clientRes = await fetch("/api/retainers", {

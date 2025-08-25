@@ -1,6 +1,7 @@
 // app/routes/api/retainers.ts
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { prisma } from "~/config/prisma.server";
+import { getUserId } from "~/config/session.server";
 import { round2 } from "~/utils/general/round";
 import { safeDiv } from "~/utils/general/safediv";
 import { buildCursorPaginationQuery } from "~/utils/pagination/buildCursorPaginationQuery";
@@ -9,6 +10,16 @@ import { RetainerSchema } from "~/utils/schemas/retainerSchema";
 
 // GET /api/retainers → obtener todos los retainers
 export const loader: LoaderFunction = async ({ request }) => {
+    const userId = await getUserId(request);
+    if (!userId) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+    }
   const url = new URL(request.url);
   const clientId = url.searchParams.get("client_id");
   const cursor = url.searchParams.get("cursor");

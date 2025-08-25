@@ -9,47 +9,55 @@ import { ClientI } from "~/interfaces/clients.interface";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-    const session = await getSessionFromCookie(request);
-    if (!session) return redirect("/login");
+  const session = await getSessionFromCookie(request);
+  if (!session) return redirect("/login");
 
-    const companyId = params.companyId;
-    if (!companyId) {
-        throw new Response("Company ID is required", { status: 400 });
+  const companyId = params.companyId;
+  if (!companyId) {
+    throw new Response("Company ID is required", { status: 400 });
+  }
+
+  const cookieHeader = request.headers.get("Cookie") || "";
+
+  // Obtener datos del cliente
+  const clientRes = await fetch(`${process.env.APP_URL}/api/clients/${companyId}?fields=id,company,currentStatus`, {
+    headers: { Cookie: cookieHeader },
+  });
+  if (!clientRes.ok) {
+    throw new Response("Company not found", { status: 404 });
+  }
+  const client: ClientI = await clientRes.json();
+
+  // Buscar teamMembers para ese cliente
+  const teamRes = await fetch(`${process.env.APP_URL}/api/team-members?client_id=${companyId}&fields=role,rate_type,id,user_id`, {
+    headers: { Cookie: cookieHeader },
+  });
+
+  let teamMembers: any[] = [];
+  let edit = false;
+
+  if (teamRes.ok) {
+    const teamData = await teamRes.json();
+    if (Array.isArray(teamData) && teamData.length > 0) {
+      teamMembers = teamData;
+      edit = true;
     }
+  }
 
-    // Obtener datos del cliente
-    const clientRes = await fetch(`${process.env.APP_URL}/api/clients/${companyId}?fields=id,company,currentStatus`);
-    if (!clientRes.ok) {
-        throw new Response("Company not found", { status: 404 });
+  // Obtener users con paginación (take=100)
+  const usersRes = await fetch(`${process.env.APP_URL}/api/users?take=100&fields=id,name`, {
+    headers: { Cookie: cookieHeader },
+  });
+  let users: any[] = [];
+
+  if (usersRes.ok) {
+    const usersData = await usersRes.json();
+    if (usersData && Array.isArray(usersData.users)) {
+      users = usersData.users;
     }
-    const client: ClientI = await clientRes.json();
+  }
 
-    // Buscar teamMembers para ese cliente
-    const teamRes = await fetch(`${process.env.APP_URL}/api/team-members?client_id=${companyId}&fields=role,rate_type,id,user_id`);
-
-    let teamMembers: any[] = [];
-    let edit = false;
-
-    if (teamRes.ok) {
-        const teamData = await teamRes.json();
-        if (Array.isArray(teamData) && teamData.length > 0) {
-            teamMembers = teamData;
-            edit = true;
-        }
-    }
-
-    // Obtener users con paginación (take=100)
-    const usersRes = await fetch(`${process.env.APP_URL}/api/users?take=100&fields=id,name`);
-    let users: any[] = [];
-
-    if (usersRes.ok) {
-        const usersData = await usersRes.json();
-        if (usersData && Array.isArray(usersData.users)) {
-            users = usersData.users;
-        }
-    }
-
-    return { client, teamMembers, edit, users };
+  return { client, teamMembers, edit, users };
 };
 
 export default function NewUserDrawerRoute() {

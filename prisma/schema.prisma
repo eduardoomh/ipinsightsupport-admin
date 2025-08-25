@@ -202,7 +202,8 @@ model ClientStatusHistory {
   id          String       @id @default(uuid())
   client      Client       @relation("ClientStatusHistory", fields: [clientId], references: [id], onDelete: Cascade)
   clientId    String
-  status      ClientStatus
+  status      ClientStatus?
+  title       String?
   changedAt   DateTime     @default(now())
   changedBy   User?        @relation("ChangedByUserStatusHistory", fields: [changedById], references: [id])
   changedById String?

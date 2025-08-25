@@ -1,7 +1,7 @@
+// app/routes/api/clients.$id.team-members.ts
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { prisma } from "~/config/prisma.server";
-
 
 export const loader: LoaderFunction = async ({ params }) => {
   const clientId = params.id;
@@ -11,36 +11,33 @@ export const loader: LoaderFunction = async ({ params }) => {
   }
 
   try {
-    const client = await prisma.client.findUnique({
+    const teamMembers = await prisma.client.findUnique({
       where: { id: clientId },
       select: {
-        id: true,
-        company: true,
-        timezone: true,
-        currentStatus: true,
-        remainingFunds: true,
-        most_recent_work_entry: true,
-        most_recent_retainer_activated: true,
-        estimated_engineering_hours: true,
-        estimated_architecture_hours: true,
-        estimated_senior_architecture_hours: true,
-        createdAt: true,
-        account_manager: {
+        team_members: {
           select: {
             id: true,
-            name: true,
+            role: true,
+            rate_type: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                type: true,
+              },
+            },
           },
         },
       },
     });
 
-    if (!client) {
+    if (!teamMembers) {
       return json({ error: "Client not found" }, { status: 404 });
     }
 
-    return json(client, { status: 200 });
+    return json(teamMembers.team_members, { status: 200 });
   } catch (error) {
-    console.error("Error loading client profile:", error);
+    console.error("Error loading team members:", error);
     return json({ error: "Server error" }, { status: 500 });
   }
 };

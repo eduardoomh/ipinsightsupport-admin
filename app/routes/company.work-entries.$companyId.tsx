@@ -25,7 +25,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
         request,
         sessionCheck: () => getSessionFromCookie(request),
         resources: [
-            { key: "client", apiPath: `${process.env.APP_URL}/api/clients/${companyId}?fields=id,company&show_team=true` },
+            { key: "client", apiPath: `${process.env.APP_URL}/api/clients/${companyId}?fields=id,company,currentStatus&show_team=true` },
             { key: "workEntriesByClientData", apiPath: `${process.env.APP_URL}/api/work-entries?client_id=${companyId}` }
         ],
     });

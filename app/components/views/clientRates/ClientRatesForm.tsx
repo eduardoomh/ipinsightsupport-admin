@@ -13,7 +13,6 @@ const ClientRatesForm = ({ clientRates, handleSubmit, submitting, edit }: Props)
 
   useEffect(() => {
     if (edit && clientRates) {
-        console.log(clientRates, "vemos")
       form.setFieldsValue({
         engineeringRate: clientRates.engineeringRate ?? undefined,
         architectureRate: clientRates.architectureRate ?? undefined,

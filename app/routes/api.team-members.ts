@@ -4,10 +4,21 @@ import { prisma } from "~/config/prisma.server";
 import { TeamMemberSchema } from "~/utils/schemas/teamMemberSchema";
 import { z } from "zod";
 import { buildDynamicSelect } from "~/utils/fields/buildDynamicSelect";
+import { getUserId } from "~/config/session.server";
 
 // GET /api/team-members
 
 export const loader: LoaderFunction = async ({ request }) => {
+    const userId = await getUserId(request);
+    if (!userId) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+    }
   const url = new URL(request.url);
   const clientId = url.searchParams.get("client_id");
   const fieldsParam = url.searchParams.get("fields");

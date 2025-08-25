@@ -25,7 +25,10 @@ export async function withPaginationDefer({
   const { apiUrl, take } = buildPaginationURL(apiPath, request.url);
 
   const fetchFn = async () => {
-    const res = await fetch(apiUrl.toString());
+    const res = await fetch(apiUrl.toString(), {
+      headers: { Cookie: request.headers.get("Cookie") || "" },
+    });
+    if (res.status === 401) throw redirect("/login");
     if (!res.ok) throw new Error("Failed to fetch data");
     return await res.json();
   };
@@ -48,19 +51,27 @@ export async function withTwoResourcesDefer({
   const session = await sessionCheck();
   if (!session) return redirect("/login");
 
-  // El segundo recurso es el que usamos para paginar, le aplicamos buildPaginationURL
+  const cookieHeader = request.headers.get("Cookie") || "";
+
+  // El segundo recurso es el que usamos para paginar
   const { apiUrl, take } = buildPaginationURL(resources[1].apiPath, request.url);
 
-  // Fetch para el primer recurso, se resuelve de inmediato (evita suspense)
+  // Fetch para el primer recurso
   const fetchFirst = async () => {
-    const res = await fetch(resources[0].apiPath);
+    const res = await fetch(resources[0].apiPath, {
+      headers: { Cookie: cookieHeader },
+    });
+    if (res.status === 401) throw redirect("/login");
     if (!res.ok) throw new Error(`Failed to fetch ${resources[0].key}`);
     return res.json();
   };
 
   // Fetch para el segundo recurso, diferido
   const fetchSecond = async () => {
-    const res = await fetch(apiUrl.toString());
+    const res = await fetch(apiUrl.toString(), {
+      headers: { Cookie: cookieHeader },
+    });
+    if (res.status === 401) throw redirect("/login");
     if (!res.ok) throw new Error(`Failed to fetch ${resources[1].key}`);
     return res.json();
   };

@@ -89,7 +89,6 @@ export const action: ActionFunction = async ({ request }) => {
       where: { client_id: entry.client_id, user_id: entry.user_id },
     });
 
-    console.log(teamMember)
     if (!teamMember) {
       return new Response(JSON.stringify({ error: "Team member not found" }), { status: 404 });
     }
@@ -105,7 +104,6 @@ export const action: ActionFunction = async ({ request }) => {
     const archRate = Number(clientRate.architectureRate);
     const seniorRate = Number(clientRate.seniorArchitectureRate);
 
-    console.log({ engRate, archRate, seniorRate })
 
     // 4) Rate aplicado al entry (según rateType del teamMember)
     const rate =
@@ -134,7 +132,6 @@ export const action: ActionFunction = async ({ request }) => {
     const estimatedArchitectureHours = positiveFunds > 0 ? round2(safeDiv(positiveFunds, archRate)) : 0.0;
     const estimatedSeniorArchitectureHours = positiveFunds > 0 ? round2(safeDiv(positiveFunds, seniorRate)) : 0.0;
 
-    console.log({ estimatedArchitectureHours, estimatedEngineeringHours, estimatedSeniorArchitectureHours })
     // 8) Transacción
     const [savedEntry, updatedClient] = await prisma.$transaction([
       prisma.workEntry.create({
@@ -160,9 +157,6 @@ export const action: ActionFunction = async ({ request }) => {
         },
       }),
     ]);
-
-
-    console.log({ workEntry: savedEntry, client: updatedClient })
 
     // Devuelve ambos para que verifiques que sí se guardó
     return new Response(JSON.stringify({ workEntry: savedEntry, client: updatedClient }), {

@@ -41,7 +41,6 @@ export default function NewUserDrawerRoute() {
                 client_id: client.id
             };
 
-            console.log(workEntryPayload);
             workEntryFormData.append("workEntry", JSON.stringify(workEntryPayload));
 
             const clientRes = await fetch("/api/work-entries", {

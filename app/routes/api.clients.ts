@@ -5,9 +5,21 @@ import { prisma } from "~/config/prisma.server";
 import { buildPageInfo } from "~/utils/pagination/buildPageInfo";
 import { buildCursorPaginationQuery } from "~/utils/pagination/buildCursorPaginationQuery";
 import { buildDynamicSelect } from "~/utils/fields/buildDynamicSelect";
+import { getUserId } from "~/config/session.server";
 
 // GET /api/clients → obtener todos los clientes con relaciones clave
 export const loader: LoaderFunction = async ({ request }) => {
+    const userId = await getUserId(request);
+    if (!userId) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+    }
+    
   const url = new URL(request.url);
   const cursor = url.searchParams.get("cursor");
   const takeParam = url.searchParams.get("take");
@@ -41,19 +53,20 @@ export const loader: LoaderFunction = async ({ request }) => {
     const relations = relationsParam.split(",").map(r => r.trim());
     queryOptions.include = {};
 
-    if (relations.includes("team_members")) {
-      queryOptions.include.team_members = {
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-            },
-          },
+if (relations.includes("team_members")) {
+  queryOptions.include.team_members = {
+    select: {
+      id: true, // solo el id de team_member
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
         },
-      };
-    }
+      },
+    },
+  };
+}
 
     if (relations.includes("contacts")) {
       queryOptions.include.contacts = true;
@@ -63,9 +76,7 @@ export const loader: LoaderFunction = async ({ request }) => {
       queryOptions.include.account_manager = {
         select: {
           id: true,
-          name: true,
-          email: true,
-          is_account_manager: true,
+          name: true
         },
       };
     }

@@ -3,10 +3,26 @@ import type { LoaderFunction, ActionFunction } from "@remix-run/node";
 import { prisma } from "~/config/prisma.server";
 import { ClientStatusHistorySchema } from "~/utils/schemas/clientStatusHistorySchema";
 import { z } from "zod";
+import { getUserId } from "~/config/session.server";
 
-// GET /api/client-status-history
-export const loader: LoaderFunction = async () => {
+export const loader: LoaderFunction = async ({ request }) => {
+  const userId = await getUserId(request);
+  if (!userId) {
+    return new Response(
+      JSON.stringify({ error: "Unauthorized" }),
+      {
+        status: 401,
+        headers: { "Content-Type": "application/json" }
+      }
+    );
+  }
+  const url = new URL(request.url);
+  const clientId = url.searchParams.get("client_id");
+
+  const where = clientId ? { clientId } : undefined;
+
   const history = await prisma.clientStatusHistory.findMany({
+    where,
     orderBy: { changedAt: "desc" },
     include: {
       client: {
@@ -16,10 +32,10 @@ export const loader: LoaderFunction = async () => {
         },
       },
       changedBy: {
-        select:{
+        select: {
           id: true,
-          name: true
-        }
+          name: true,
+        },
       },
     },
   });
@@ -44,15 +60,24 @@ export const action: ActionFunction = async ({ request }) => {
 
   try {
     const parsed = ClientStatusHistorySchema.parse(JSON.parse(historyJson));
+    const userId = await getUserId(request);
+    const data: any = {
+      client: { connect: { id: parsed.clientId } },
+      changedBy: userId ? { connect: { id: userId } } : undefined,
+    };
+
+
+    if (parsed.status) {
+      data.status = parsed.status;
+    }
+    if (parsed.title) {
+      data.title = parsed.title;
+    }
 
     const newHistory = await prisma.clientStatusHistory.create({
       data: {
-        status: parsed.status,
+        ...data,
         note: parsed.note,
-        client: { connect: { id: parsed.clientId } },
-        changedBy: parsed.changedById
-          ? { connect: { id: parsed.changedById } }
-          : undefined,
       },
     });
 

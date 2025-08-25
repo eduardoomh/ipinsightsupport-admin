@@ -9,7 +9,8 @@ export const ClientStatusHistorySchema = z.object({
     "WAITING_ON_AM",
     "WAITING_ON_CLIENT",
     "TRANSFER",
-  ]),
+  ]).optional(),
+  title: z.string().optional(),
   changedById: z.string().optional(), // puede ser nulo si es automático
   note: z.string().min(1, { message: "Debe incluir una nota de cambio" }),
 });

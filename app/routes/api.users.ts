@@ -9,12 +9,25 @@ import { buildDynamicSelect } from "~/utils/fields/buildDynamicSelect";
 import { renderSetPasswordEmailHTML } from "~/utils/emails/set-password";
 import jwt from 'jsonwebtoken';
 import bcrypt from "bcryptjs";
+import { getUserId } from "~/config/session.server";
 
 const resend = new Resend(process.env.RESEND_API_KEY || "re_test_placeholder");
 
 // GET /api/users → obtener todos los usuarios
 
 export const loader: LoaderFunction = async ({ request }) => {
+
+  const userId = await getUserId(request);
+  if (!userId) {
+    return new Response(
+      JSON.stringify({ error: "Unauthorized" }),
+      {
+        status: 401,
+        headers: { "Content-Type": "application/json" }
+      }
+    );
+  }
+
   const url = new URL(request.url);
   const cursor = url.searchParams.get("cursor");
   const takeParam = url.searchParams.get("take");

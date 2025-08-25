@@ -8,7 +8,6 @@ import {
   TeamOutlined,
   SettingOutlined,
   ContactsOutlined,
-  FileAddOutlined,
 } from "@ant-design/icons";
 import { ConfigProvider, Menu } from "antd";
 import type { MenuProps } from "antd";
@@ -78,7 +77,7 @@ const DetailedClientMenu: React.FC<Props> = ({ collapsed, clientId }) => {
         {
           key: "add-note-update",
           icon: <EditOutlined />,
-          label: <Link to="/admin/notes/new">Add Note/Update</Link>,
+          label: <Link to={`/admin/company/notes/${clientId}`}>Add Note/Update</Link>,
         },
       ],
     },

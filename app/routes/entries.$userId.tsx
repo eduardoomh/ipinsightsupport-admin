@@ -46,7 +46,6 @@ export default function UserEntriesPage() {
         <Await resolve={workEntriesData}>
           {(data: any) => {
             const { workEntries, pageInfo } = data;
-            console.log(workEntries, "enttttries")
             const currentEntries = localEntries ?? workEntries;
 
             // Inicializa `localEntries` solo una vez

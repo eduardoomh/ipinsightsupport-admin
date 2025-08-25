@@ -8,11 +8,22 @@ import { buildCursorPaginationQuery } from "~/utils/pagination/buildCursorPagina
 import { buildPageInfo } from "~/utils/pagination/buildPageInfo";
 import { ContactSchema } from "~/utils/schemas/contactSchema";
 import jwt from 'jsonwebtoken';
+import { getUserId } from "~/config/session.server";
 
 const resend = new Resend(process.env.RESEND_API_KEY || "re_test_placeholder");
 
 // GET /api/contacts → obtener todos los contactos
 export const loader: LoaderFunction = async ({ request }) => {
+    const userId = await getUserId(request);
+    if (!userId) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+    }
   const url = new URL(request.url);
   const cursor = url.searchParams.get("cursor");
   const takeParam = url.searchParams.get("take");
@@ -26,15 +37,21 @@ export const loader: LoaderFunction = async ({ request }) => {
     take,
     direction,
     orderByField: "createdAt",
-    select: undefined, // usaremos include
+    // NO ponemos select aquí porque Prisma no permite select + include en la misma query si queremos incluir relaciones
   });
 
-  // Si hay clientId, filtramos
+  // Filtrar por clientId si se pasa
   if (clientId) {
     queryOptions.where = { client_id: clientId };
   }
 
-  queryOptions.include = {
+  // Traemos solo los campos que queremos y la relación client
+  queryOptions.select = {
+    id: true,
+    name: true,
+    email: true,
+    phone: true,
+    createdAt: true,
     client: {
       select: {
         id: true,

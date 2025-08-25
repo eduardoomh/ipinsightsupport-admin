@@ -1,7 +1,7 @@
+// app/routes/api/clients.$id.contacts.ts
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { prisma } from "~/config/prisma.server";
-
 
 export const loader: LoaderFunction = async ({ params }) => {
   const clientId = params.id;
@@ -11,36 +11,27 @@ export const loader: LoaderFunction = async ({ params }) => {
   }
 
   try {
-    const client = await prisma.client.findUnique({
+    const contacts = await prisma.client.findUnique({
       where: { id: clientId },
       select: {
-        id: true,
-        company: true,
-        timezone: true,
-        currentStatus: true,
-        remainingFunds: true,
-        most_recent_work_entry: true,
-        most_recent_retainer_activated: true,
-        estimated_engineering_hours: true,
-        estimated_architecture_hours: true,
-        estimated_senior_architecture_hours: true,
-        createdAt: true,
-        account_manager: {
+        contacts: {
           select: {
             id: true,
             name: true,
+            email: true,
+            phone: true,
           },
         },
       },
     });
 
-    if (!client) {
+    if (!contacts) {
       return json({ error: "Client not found" }, { status: 404 });
     }
 
-    return json(client, { status: 200 });
+    return json(contacts.contacts, { status: 200 });
   } catch (error) {
-    console.error("Error loading client profile:", error);
+    console.error("Error loading contacts:", error);
     return json({ error: "Server error" }, { status: 500 });
   }
 };

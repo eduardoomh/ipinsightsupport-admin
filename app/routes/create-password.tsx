@@ -10,8 +10,6 @@ export default function CreatePasswordRoute() {
 
   useEffect(() => {
     const token = searchParams.get("token");
-    console.log(token, "eltoken")
-
 
     const validateToken = async () => {
       const response = await fetch("/api/auth/validate-token", {
@@ -23,8 +21,6 @@ export default function CreatePasswordRoute() {
       });
 
       const result = await response.json();
-
-      console.log(result)
 
       if (!result.valid) {
 
