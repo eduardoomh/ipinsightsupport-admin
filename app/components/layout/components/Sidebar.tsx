@@ -40,7 +40,7 @@ const Sidebar: FC<Props> = ({ collapsed }) => {
             marginTop: "8px",
             marginBottom: "8px"
           }}>
-          <h1 style={{ color: "#fff", fontSize: "1.4rem", fontWeight: "500", textAlign: "center" }}>Sentinelux  🧠</h1>
+            <img src="/sentinelux-logo.png" height={100} />
         </div>
 
       )}

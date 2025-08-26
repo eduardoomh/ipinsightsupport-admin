@@ -37,7 +37,6 @@ const UserEntriesTable: FC<Props> = ({ entries, pageInfo, onPageChange, pageSize
   const { currentPage, start, updatePage } = usePagination(pageSize, pageInfo, handlePageChange);
   const end = start + entries.length - 1;
 
-
   const columns = userWorkEntriesColumns(navigate);
 
   return (
@@ -50,6 +49,7 @@ const UserEntriesTable: FC<Props> = ({ entries, pageInfo, onPageChange, pageSize
         size="middle"
         rowKey="id"
         loading={loading}
+        pagination={false}
         expandedRowRender={(record) => (
           <div className="text-sm text-gray-700 p-3 bg-gray-50 rounded border border-gray-200">
             <strong>Summary:</strong>{" "}

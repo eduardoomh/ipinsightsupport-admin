@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import { UsersI } from "~/interfaces/users.interface";
 import TextEditor from "~/components/basics/TextEditor";
+import { WorkEntry } from "~/interfaces/workEntries.interface";
 
 interface Props {
   workEntry?: any;
@@ -11,6 +12,7 @@ interface Props {
   edit?: boolean;
   users: UsersI[];
   user?: UsersI;
+  entry?: WorkEntry;
 }
 
 const WorkEntryForm = ({ workEntry, handleSubmit, submitting, edit = false, users, user }: Props) => {
@@ -32,14 +34,14 @@ const WorkEntryForm = ({ workEntry, handleSubmit, submitting, edit = false, user
     }
   }, [workEntry, form]);
 
-  const handleValuesChange = (changedValues: any) => {
-    if (!separateHours && changedValues.hours_billed !== undefined) {
-      form.setFieldsValue({ hours_spent: changedValues.hours_billed });
-    }
-  };
+const handleValuesChange = (changedValues: any) => {
+  if (!workEntry && !separateHours && changedValues.hours_billed !== undefined) {
+    form.setFieldsValue({ hours_spent: changedValues.hours_billed });
+  }
+};
 
   useEffect(() => {
-    if (!separateHours) {
+    if (!separateHours && !workEntry) {
       const billed = form.getFieldValue("hours_billed");
       if (billed !== undefined) {
         form.setFieldsValue({ hours_spent: billed });
@@ -49,7 +51,7 @@ const WorkEntryForm = ({ workEntry, handleSubmit, submitting, edit = false, user
 
   const onFinish = (values: any) => {
     const billedISO = values.billed_on ? dayjs(values.billed_on).toDate().toISOString() : null;
-    const finalHoursSpent = separateHours ? values.hours_spent : values.hours_billed;
+    const finalHoursSpent = (separateHours || workEntry) ? values.hours_spent : values.hours_billed;
 
     handleSubmit({
       ...values,
@@ -74,26 +76,29 @@ const WorkEntryForm = ({ workEntry, handleSubmit, submitting, edit = false, user
       onFinish={onFinish}
       id="work-entry-form"
     >
-      <Form.Item
-        name="user_id"
-        label="User"
-        rules={[{ required: true, message: "Please select a user" }]}
-        initialValue={user?.id}
-      >
-        <Select
-          placeholder="Select a user"
-          optionFilterProp="children"
-          showSearch
-          disabled={!!user} // si existe user, deshabilitado
-        >
-          {(user ? [user] : users).map((u) => (
-            <Select.Option key={u.id} value={u.id}>
-              {u.name}
-            </Select.Option>
-          ))}
-        </Select>
-      </Form.Item>
-
+      {
+        !workEntry && (
+          <Form.Item
+            name="user_id"
+            label="User"
+            rules={[{ required: true, message: "Please select a user" }]}
+            initialValue={user?.id}
+          >
+            <Select
+              placeholder="Select a user"
+              optionFilterProp="children"
+              showSearch
+              disabled={!!user}
+            >
+              {(user ? [user] : users).map((u) => (
+                <Select.Option key={u.id} value={u.id}>
+                  {u.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        )
+      }
       {/* Billed On */}
       <Form.Item
         name="billed_on"
@@ -128,13 +133,17 @@ const WorkEntryForm = ({ workEntry, handleSubmit, submitting, edit = false, user
         <Slider min={0} max={12} step={0.25} tooltip={{ formatter: formatHours }} />
       </Form.Item>
 
-      <Form.Item>
-        <Checkbox checked={separateHours} onChange={(e) => setSeparateHours(e.target.checked)}>
-          Declare different spent hours
-        </Checkbox>
-      </Form.Item>
+      {
+        !workEntry && (
+          <Form.Item>
+            <Checkbox checked={separateHours} onChange={(e) => setSeparateHours(e.target.checked)}>
+              Declare different spent hours
+            </Checkbox>
+          </Form.Item>
+        )
+      }
 
-      {separateHours && (
+      {separateHours || workEntry && (
         <>
           <Alert
             message="This should be the actual time spent on this entry."

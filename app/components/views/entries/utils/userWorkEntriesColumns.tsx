@@ -5,14 +5,14 @@ import dayjs from 'dayjs';
 import { DataType } from './workEntries.interface';
 
 export const userWorkEntriesColumns = (
-    navigate: (path: string) => void
+  navigate: (path: string) => void
 ): TableColumnsType<DataType> => [
     {
       title: "Billed Date",
       dataIndex: "billed_on",
       render: (value: string) => dayjs(value).format("YYYY-MM-DD"),
     },
-{
+    {
       title: "Client",
       key: "client",
       render: (_: any, record: DataType) => (
@@ -21,7 +21,7 @@ export const userWorkEntriesColumns = (
             cursor: "pointer",
             textDecoration: "underline",
           }}
-          onClick={() => navigate(`/admin/company/dashboard/${record.client.id}`)}
+          onClick={() => navigate(`/company/dashboard/${record.client.id}`)}
         >
           {record.client.company}
         </span>
@@ -48,8 +48,11 @@ export const userWorkEntriesColumns = (
       fixed: "right",
       width: 150,
       render: (_: any, record: DataType) => (
-        <Button icon={<EditOutlined style={{ fontSize: "16px" }} />}>
-          Edit
+        <Button
+          icon={<EditOutlined style={{ fontSize: "16px" }} />}
+          onClick={() => navigate(`/entries/${record.user.id}/edit/${record.id}`)}
+        >
+         Edit
         </Button>
       ),
     },

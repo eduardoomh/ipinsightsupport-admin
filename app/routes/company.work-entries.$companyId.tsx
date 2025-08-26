@@ -25,7 +25,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
         request,
         sessionCheck: () => getSessionFromCookie(request),
         resources: [
-            { key: "client", apiPath: `${process.env.APP_URL}/api/clients/${companyId}?fields=id,company,currentStatus&show_team=true` },
+            { key: "client", apiPath: `${process.env.APP_URL}/api/clients/${companyId}?fields=id,company,currentStatus` },
             { key: "workEntriesByClientData", apiPath: `${process.env.APP_URL}/api/work-entries?client_id=${companyId}` }
         ],
     });
@@ -52,10 +52,13 @@ export default function ClientEntriesPage() {
                 size="small" 
                 hideHeader={false} 
                 headerActions={
-                    user.company_id ? null : 
+                    user.company_id ? null : headerActions
+                    /*
                     client.team_members.length > 0 && client.team_members.some(
                         item => item.user.id === user.id) === true ? 
                     headerActions : null}
+                    */
+                }
             >
                 <Suspense fallback={<SkeletonEntries />}>
                     <Await resolve={workEntriesData}>

@@ -89,10 +89,7 @@ export const action: ActionFunction = async ({ request }) => {
       where: { client_id: entry.client_id, user_id: entry.user_id },
     });
 
-    if (!teamMember) {
-      return new Response(JSON.stringify({ error: "Team member not found" }), { status: 404 });
-    }
-    const rateType = teamMember.rate_type as "engineering" | "architecture" | "senior_architecture";
+    let rateType = teamMember?.rate_type as "engineering" | "architecture" | "senior_architecture" || "engineering";
 
     // 3) Rates del cliente
     const clientRate = await prisma.clientRates.findFirst({ where: { clientId: entry.client_id } });
