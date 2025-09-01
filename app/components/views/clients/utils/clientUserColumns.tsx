@@ -2,6 +2,7 @@
 import { Avatar, Space, TableColumnsType, Tag } from 'antd';
 import { UserDataType } from './clientsTable.interface';
 import { getClientStatusLabel } from '~/utils/general/getClientStatusLabel';
+import { getRateTypeLabel } from '~/utils/general/getRateTypeLabel';
 
 export const clientUserColumns = (
     navigate: (path: string) => void
@@ -82,15 +83,21 @@ export const clientUserColumns = (
                 ) {
                     return (
                         <div>
-                            <p style={{ textAlign: 'center' }}>-</p>
+                            <p style={{ textAlign: 'start' }}>  
+                                <Tag>N/A</Tag>
+                            </p>
                         </div>
                     )
                 }
 
                 return (
                     <div>
-                        <p style={{ textAlign: 'center' }}>{record.estimated_hours.user_estimated_hours} hrs
-                            <br /> <Tag>{record.estimated_hours.user_rate_type}</Tag></p>
+                        <p style={{ textAlign: 'start' }}>
+                            <br /> 
+                            <Tag>
+                                <strong>{getRateTypeLabel(record.estimated_hours.user_rate_type)}: <br/></strong> {record.estimated_hours.user_estimated_hours} hrs
+                            </Tag>
+                        </p>
                     </div>
                 )
             }

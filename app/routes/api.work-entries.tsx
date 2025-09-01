@@ -5,6 +5,7 @@ import { buildPageInfo } from "~/utils/pagination/buildPageInfo";
 import { buildCursorPaginationQuery } from "~/utils/pagination/buildCursorPaginationQuery";
 import { round2 } from "~/utils/general/round";
 import { safeDiv } from "~/utils/general/safediv";
+import { getDefaultRates } from "~/utils/general/getDefaultRates";
 
 // GET /api/work-entries → obtener todas las entradas de trabajo
 export const loader: LoaderFunction = async ({ request }) => {
@@ -92,14 +93,18 @@ export const action: ActionFunction = async ({ request }) => {
     let rateType = teamMember?.rate_type as "engineering" | "architecture" | "senior_architecture" || "engineering";
 
     // 3) Rates del cliente
-    const clientRate = await prisma.clientRates.findFirst({ where: { clientId: entry.client_id } });
-    if (!clientRate) {
-      return new Response(JSON.stringify({ error: "Client rates not found" }), { status: 404 });
-    }
+    const defaultRates = getDefaultRates()
+    let engRate = Number(defaultRates.engineering);
+    let archRate = Number(defaultRates.architecture);
+    let seniorRate = Number(defaultRates.senior_architecture);
 
-    const engRate = Number(clientRate.engineeringRate);
-    const archRate = Number(clientRate.architectureRate);
-    const seniorRate = Number(clientRate.seniorArchitectureRate);
+    const clientRate = await prisma.clientRates.findFirst({ where: { clientId: entry.client_id } });
+    
+    if (clientRate) {
+      engRate = Number(clientRate.engineeringRate);
+      archRate = Number(clientRate.architectureRate);
+      seniorRate = Number(clientRate.seniorArchitectureRate);
+    }
 
 
     // 4) Rate aplicado al entry (según rateType del teamMember)

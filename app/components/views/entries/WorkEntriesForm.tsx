@@ -143,7 +143,7 @@ const handleValuesChange = (changedValues: any) => {
         )
       }
 
-      {separateHours || workEntry && (
+      {(separateHours || workEntry) && (
         <>
           <Alert
             message="This should be the actual time spent on this entry."

@@ -27,24 +27,6 @@ const Sidebar: FC<Props> = ({ collapsed }) => {
         boxShadow: "0px 1px 4px rgba(10, 95, 108, 0.3)",
       }}
     >
-      {/* Botón superior */}
-      {!collapsed && (
-        <div
-          style={{
-            border: "1px solid white",
-            borderWidth: "1px 0 1px 0",
-            padding: "4px",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: "8px",
-            marginBottom: "8px"
-          }}>
-            <img src="/sentinelux-logo.png" height={100} />
-        </div>
-
-      )}
-
       {/* Menú scrollable */}
       <div className="flex-1 overflow-y-auto mt-2">
         {mode === "user" ? (

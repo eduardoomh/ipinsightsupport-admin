@@ -55,19 +55,25 @@ export const clientAdminColumns = (
             dataIndex: "estimated_hours",
             render: (_, record) => (
                 <div>
-                    <div>
-                        <strong>Engineering:</strong>{" "}
-                        {Number(record.estimated_hours.estimated_engineering_hours).toFixed(2)} hours
+                    <div style={{marginBottom: '6px'}}>
+                        <Tag>
+                            <strong>Engineering:</strong>{" "}
+                            {Number(record.estimated_hours.estimated_engineering_hours).toFixed(2)} hours
+                        </Tag>
                     </div>
-                    <div>
-                        <strong>Architecture:</strong>{" "}
-                        {Number(record.estimated_hours.estimated_architecture_hours).toFixed(2)} hours
+                    <div style={{marginBottom: '6px'}}>
+                        <Tag>
+                            <strong>Architecture:</strong>{" "}
+                            {Number(record.estimated_hours.estimated_architecture_hours).toFixed(2)} hours
+                        </Tag>
                     </div>
-                    <div>
-                        <strong>Senior Architecture:</strong>{" "}
-                        {Number(record.estimated_hours.estimated_senior_architecture_hours).toFixed(2)} hours
-                    </div>
-                </div>
+                    <div style={{marginBottom: '6px'}}>
+                        <Tag>
+                            <strong>Senior Architecture:</strong>{" "}
+                            {Number(record.estimated_hours.estimated_senior_architecture_hours).toFixed(2)} hours
+                        </Tag>
+                    </div >
+                </div >
             ),
         },
         {

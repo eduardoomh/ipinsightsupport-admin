@@ -3,6 +3,7 @@ import { ClientI } from "~/interfaces/clients.interface";
 import ContentLayout from "~/components/layout/components/ContentLayout";
 import DashboardItem from "../../detailedClients/DashboardItem";
 import SkeletonList from "./SkeletonList";
+import { getDefaultRates } from "~/utils/general/getDefaultRates";
 
 interface Props {
     client: ClientI;
@@ -10,6 +11,7 @@ interface Props {
 
 const RatesSection: React.FC<Props> = ({ client }) => {
     const [rates, setRates] = useState<any>(null);
+    const [defaultRates] = useState(getDefaultRates())
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -37,9 +39,9 @@ const RatesSection: React.FC<Props> = ({ client }) => {
     }
 
     const rateItems = [
-        { rate: rates?.engineeringRate || '0', role: 'Engineering', estimated: client?.estimated_engineering_hours || '0' },
-        { rate: rates?.architectureRate || '0', role: 'Architecture', estimated: client?.estimated_architecture_hours || '0' },
-        { rate: rates?.seniorArchitectureRate || '0', role: 'Senior architecture', estimated: client?.estimated_senior_architecture_hours || '0' },
+        { rate: rates?.engineeringRate || defaultRates.engineering, role: 'Engineering', estimated: client?.estimated_engineering_hours || '0' },
+        { rate: rates?.architectureRate || defaultRates.architecture, role: 'Architecture', estimated: client?.estimated_architecture_hours || '0' },
+        { rate: rates?.seniorArchitectureRate || defaultRates.senior_architecture, role: 'Senior architecture', estimated: client?.estimated_senior_architecture_hours || '0' },
     ];
 
     return (

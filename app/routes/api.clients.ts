@@ -6,6 +6,8 @@ import { buildPageInfo } from "~/utils/pagination/buildPageInfo";
 import { buildCursorPaginationQuery } from "~/utils/pagination/buildCursorPaginationQuery";
 import { buildDynamicSelect } from "~/utils/fields/buildDynamicSelect";
 import { getUserId } from "~/config/session.server";
+import { RateType } from "@prisma/client";
+import { getDefaultRates } from "~/utils/general/getDefaultRates";
 
 // GET /api/clients → obtener todos los clientes con relaciones clave
 export const loader: LoaderFunction = async ({ request }) => {
@@ -57,6 +59,7 @@ if (relations.includes("team_members")) {
   queryOptions.include.team_members = {
     select: {
       id: true, // solo el id de team_member
+      rate_type: true,
       user: {
         select: {
           id: true,
@@ -133,15 +136,32 @@ export const action: ActionFunction = async ({ request }) => {
     const clientParsed = JSON.parse(clientJson);
     const client = ClientSchema.parse(clientParsed); // valida el input
 
-    const savedClient = await prisma.client.create({
-      data: {
-        company: client.company,
-        currentStatus: client.currentStatus ?? "ADHOC",
-        timezone: client.timezone ?? "CENTRAL",
-        remainingFunds: client.remainingFunds ?? 0.0,
-        most_recent_work_entry: client.most_recent_work_entry ?? null,
-        most_recent_retainer_activated: client.most_recent_retainer_activated ?? null,
-      },
+    const savedClient = await prisma.$transaction(async (tx) => {
+      // 1. Crear cliente
+      const newClient = await tx.client.create({
+        data: {
+          company: client.company,
+          currentStatus: client.currentStatus ?? "ADHOC",
+          timezone: client.timezone ?? "CENTRAL",
+          remainingFunds: client.remainingFunds ?? 0.0,
+          most_recent_work_entry: client.most_recent_work_entry ?? null,
+          most_recent_retainer_activated: client.most_recent_retainer_activated ?? null,
+        },
+      });
+
+      // 2. Crear rates con los valores por defecto
+      const defaultRates = getDefaultRates();
+
+      await tx.clientRates.create({
+        data: {
+          clientId: newClient.id,
+          engineeringRate: defaultRates.engineering,
+          architectureRate: defaultRates.architecture,
+          seniorArchitectureRate: defaultRates.senior_architecture,
+        },
+      });
+
+      return newClient;
     });
 
     return new Response(JSON.stringify(savedClient), {

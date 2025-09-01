@@ -2,6 +2,7 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { prisma } from "~/config/prisma.server";
 import { getUserId } from "~/config/session.server";
+import { getDefaultRates } from "~/utils/general/getDefaultRates";
 import { round2 } from "~/utils/general/round";
 import { safeDiv } from "~/utils/general/safediv";
 import { buildCursorPaginationQuery } from "~/utils/pagination/buildCursorPaginationQuery";
@@ -10,16 +11,16 @@ import { RetainerSchema } from "~/utils/schemas/retainerSchema";
 
 // GET /api/retainers → obtener todos los retainers
 export const loader: LoaderFunction = async ({ request }) => {
-    const userId = await getUserId(request);
-    if (!userId) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
-        {
-          status: 401,
-          headers: { "Content-Type": "application/json" }
-        }
-      );
-    }
+  const userId = await getUserId(request);
+  if (!userId) {
+    return new Response(
+      JSON.stringify({ error: "Unauthorized" }),
+      {
+        status: 401,
+        headers: { "Content-Type": "application/json" }
+      }
+    );
+  }
   const url = new URL(request.url);
   const clientId = url.searchParams.get("client_id");
   const cursor = url.searchParams.get("cursor");
@@ -88,22 +89,23 @@ export const action: ActionFunction = async ({ request }) => {
 
   try {
     const parsed = RetainerSchema.parse(JSON.parse(retainerJson));
+    const defaultRates = getDefaultRates()
+
+    let engRate =  defaultRates.engineering;
+    let archRate = defaultRates.architecture;
+    let seniorRate = defaultRates.senior_architecture;
 
     // 1) Obtener clientRates para calcular estimaciones
     const clientRate = await prisma.clientRates.findFirst({
       where: { clientId: parsed.client_id },
     });
-    if (!clientRate) {
-      return new Response(JSON.stringify({ error: "Client rates not found" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
 
     // Normalizamos rates
-    const engRate = Number(clientRate.engineeringRate);
-    const archRate = Number(clientRate.architectureRate);
-    const seniorRate = Number(clientRate.seniorArchitectureRate);
+    if (clientRate) {
+      engRate = Number(clientRate.engineeringRate);
+      archRate = Number(clientRate.architectureRate);
+      seniorRate = Number(clientRate.seniorArchitectureRate);
+    }
 
     // 2) Obtener cliente actual para sumar fondos
     const client = await prisma.client.findUnique({

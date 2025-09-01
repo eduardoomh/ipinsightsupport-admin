@@ -10,7 +10,7 @@ type OutletContext = {
 };
 
 export default function EditWorkEntryDrawer() {
-    const { entryId } = useParams();
+    const { entryId, companyId } = useParams();
     const navigate = useNavigate();
     const { refreshResults } = useOutletContext<OutletContext>();
     const [entry, setEntry] = useState<WorkEntry | null>(null);
@@ -33,13 +33,13 @@ export default function EditWorkEntryDrawer() {
         fetchEntry();
     }, [entryId]);
 
-    const handleClose = () => navigate("/admin/advanced/companies");
+    const handleClose = () => navigate(`/company/work-entries/${companyId}`);
 
     const handleSubmit = async (values: any) => {
         setSubmitting(true);
         try {
             const formData = new FormData();
-            formData.append("entry", JSON.stringify(values));
+            formData.append("entry", JSON.stringify({...values, user_id: entry.user.id, client_id: entry.client.id}));
 
             const res = await fetch(`/api/work-entries/${entryId}`, {
                 method: "PUT",
@@ -76,8 +76,7 @@ export default function EditWorkEntryDrawer() {
                     handleSubmit={handleSubmit}
                     submitting={submitting}
                     users={[]}
-                    user={{} as any}
-                    entry={entry}
+                    workEntry={entry}
                 />
             )}
         </Drawer>
