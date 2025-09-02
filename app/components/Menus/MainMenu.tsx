@@ -31,19 +31,8 @@ const items = (id: string): MenuItem[] => {
         },
         {
             key: 'work-entries',
-            label: 'Work entries',
             icon: <MailOutlined />,
-            children: [
-                {
-                    key: 'personal-entries',
-                    label: <Link to={`/entries/${id}`}>Personal entries</Link>,
-                }
-            ],
-        },
-        {
-            key: 'status-report',
-            icon: <ContainerOutlined />,
-            label: <Link to="/status-report">Status report</Link>,
+            label: <Link to={`/entries/${id}`}>Work entries</Link>,
         }
     ]
 }

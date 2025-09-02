@@ -6,22 +6,21 @@ import { buildPageInfo } from "~/utils/pagination/buildPageInfo";
 import { buildCursorPaginationQuery } from "~/utils/pagination/buildCursorPaginationQuery";
 import { buildDynamicSelect } from "~/utils/fields/buildDynamicSelect";
 import { getUserId } from "~/config/session.server";
-import { RateType } from "@prisma/client";
 import { getDefaultRates } from "~/utils/general/getDefaultRates";
 
 // GET /api/clients → obtener todos los clientes con relaciones clave
 export const loader: LoaderFunction = async ({ request }) => {
-    const userId = await getUserId(request);
-    if (!userId) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
-        {
-          status: 401,
-          headers: { "Content-Type": "application/json" }
-        }
-      );
-    }
-    
+  const userId = await getUserId(request);
+  if (!userId) {
+    return new Response(
+      JSON.stringify({ error: "Unauthorized" }),
+      {
+        status: 401,
+        headers: { "Content-Type": "application/json" }
+      }
+    );
+  }
+
   const url = new URL(request.url);
   const cursor = url.searchParams.get("cursor");
   const takeParam = url.searchParams.get("take");
@@ -29,6 +28,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const fieldsParam = url.searchParams.get("fields");
   const relationsParam = url.searchParams.get("relations");
   const userIdFilter = url.searchParams.get("user_id");
+  const statusFilter = url.searchParams.get("currentStatus"); // 👈 nuevo filtro
 
   const take = takeParam ? parseInt(takeParam, 10) : 6;
 
@@ -38,6 +38,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     timezone: true,
     createdAt: true,
     updatedAt: true,
+    currentStatus: true, // importante si quieres mostrar el estado
   };
 
   const dynamicSelect = buildDynamicSelect(fieldsParam, defaultSelect);
@@ -55,21 +56,21 @@ export const loader: LoaderFunction = async ({ request }) => {
     const relations = relationsParam.split(",").map(r => r.trim());
     queryOptions.include = {};
 
-if (relations.includes("team_members")) {
-  queryOptions.include.team_members = {
-    select: {
-      id: true, // solo el id de team_member
-      rate_type: true,
-      user: {
+    if (relations.includes("team_members")) {
+      queryOptions.include.team_members = {
         select: {
           id: true,
-          name: true,
-          email: true,
+          rate_type: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
         },
-      },
-    },
-  };
-}
+      };
+    }
 
     if (relations.includes("contacts")) {
       queryOptions.include.contacts = true;
@@ -79,7 +80,7 @@ if (relations.includes("team_members")) {
       queryOptions.include.account_manager = {
         select: {
           id: true,
-          name: true
+          name: true,
         },
       };
     }
@@ -89,10 +90,12 @@ if (relations.includes("team_members")) {
     }
   }
 
+  // 👇 Construcción dinámica del where
+  const andConditions: any[] = [];
+
   // Filtrado por user_id en team_members o como account_manager
   if (userIdFilter) {
-    queryOptions.where = {
-      ...(queryOptions.where || {}),
+    andConditions.push({
       OR: [
         {
           team_members: {
@@ -105,7 +108,21 @@ if (relations.includes("team_members")) {
           account_manager_id: userIdFilter,
         },
       ],
-    };
+    });
+  }
+
+  // Filtro por currentStatus (uno o varios valores)
+  if (statusFilter) {
+    const statuses = statusFilter.split(",").map(s => s.trim().toUpperCase());
+    if (statuses.length === 1) {
+      andConditions.push({ currentStatus: statuses[0] });
+    } else {
+      andConditions.push({ currentStatus: { in: statuses } });
+    }
+  }
+
+  if (andConditions.length > 0) {
+    queryOptions.where = { AND: andConditions };
   }
 
   const clients = await prisma.client.findMany(queryOptions);

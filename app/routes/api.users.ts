@@ -10,6 +10,7 @@ import { renderSetPasswordEmailHTML } from "~/utils/emails/set-password";
 import jwt from 'jsonwebtoken';
 import bcrypt from "bcryptjs";
 import { getUserId } from "~/config/session.server";
+import dayjs from "dayjs";
 
 const resend = new Resend(process.env.RESEND_API_KEY || "re_test_placeholder");
 
@@ -84,6 +85,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 // POST /api/users → crear nuevo usuario con validación Zod y contraseña hasheada
+
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
   const userJson = formData.get("user") as string;
@@ -97,14 +99,15 @@ export const action: ActionFunction = async ({ request }) => {
 
   try {
     const userParsed = JSON.parse(userJson);
-
-    // ✅ Validar con Zod
     const user = UserSchema.parse(userParsed);
 
     const defaultPassword = "changeme123";
     const hashedPassword = await bcrypt.hash(defaultPassword, 10);
 
-    // 1️⃣ Crear usuario sin contraseña todavía
+    const month = dayjs().month() + 1;
+    const year = dayjs().year();
+
+    // 1️⃣ Crear usuario primero
     const savedUser = await prisma.user.create({
       data: {
         name: user.name,
@@ -116,26 +119,32 @@ export const action: ActionFunction = async ({ request }) => {
         type: user.type ?? "engineering",
         avatar: user.avatar ?? null,
         last_login: user.last_login ? new Date(user.last_login) : null,
-        password: hashedPassword
+        password: hashedPassword,
       },
     });
 
-    // 2️⃣ Crear token JWT para que el usuario pueda establecer su contraseña
+    // 2️⃣ Crear UserStats con el user_id recién generado
+    const savedStats = await prisma.userStats.create({
+      data: {
+        user_id: savedUser.id,
+        month,
+        year,
+        total_work_entries: 0,
+        companies_as_account_manager: 0,
+        companies_as_team_member: 0,
+        hours_engineering: 0,
+        hours_architecture: 0,
+        hours_senior_architecture: 0,
+      },
+    });
+
+    // 3️⃣ Crear token JWT
     const tokenPayload = { id: savedUser.id, email: savedUser.email, type: 'USER' };
-    const token = jwt.sign(tokenPayload, process.env.JWT_SECRET || "changeme", {
-      expiresIn: "1d",
-    });
+    const token = jwt.sign(tokenPayload, process.env.JWT_SECRET || "changeme", { expiresIn: "1d" });
 
-    // 3️⃣ Construir URL de set password
     const setPasswordUrl = `${process.env.APP_URL}/create-password?token=${token}`;
+    const html = renderSetPasswordEmailHTML({ name: savedUser.name, setPasswordUrl });
 
-    // 4️⃣ Renderizar HTML del email
-    const html = renderSetPasswordEmailHTML({
-      name: savedUser.name,
-      setPasswordUrl,
-    });
-
-    // 5️⃣ Enviar correo con Resend
     await resend.emails.send({
       from: "no-reply@ipinsightsupport.com",
       to: savedUser.email,
@@ -143,19 +152,19 @@ export const action: ActionFunction = async ({ request }) => {
       html,
     });
 
-    // 6️⃣ Retornar usuario sin contraseña
     const { password, ...userWithoutPassword } = savedUser;
 
     return new Response(JSON.stringify({
       message: "User created and invitation email sent",
       user: userWithoutPassword,
+      stats: savedStats,
     }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
 
   } catch (error) {
-    console.log(error)
+    console.error("Error creating user:", error);
     if (error instanceof Error && "errors" in error) {
       return new Response(JSON.stringify({ errors: (error as any).errors }), {
         status: 400,
@@ -163,7 +172,6 @@ export const action: ActionFunction = async ({ request }) => {
       });
     }
 
-    console.error("Error creating user:", error);
     return new Response(JSON.stringify({ error: "Error creating user" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
