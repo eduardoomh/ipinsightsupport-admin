@@ -56,6 +56,7 @@ export const action: ActionFunction = async ({ params, request }) => {
 
   try {
     if (method === "DELETE") {
+      // Verificar si existe
       const user = await prisma.user.findUnique({
         where: { id: userId },
         select: {
@@ -81,8 +82,32 @@ export const action: ActionFunction = async ({ params, request }) => {
         });
       }
 
-      await prisma.user.delete({
-        where: { id: userId },
+      // Transacción: eliminar relaciones y finalmente el usuario
+      await prisma.$transaction(async (tx) => {
+        // Borrar TeamMembers relacionados
+        await tx.teamMember.deleteMany({ where: { user_id: userId } });
+
+        // Borrar UserStats
+        await tx.userStats.deleteMany({ where: { user_id: userId } });
+
+        // Borrar WorkEntries y ScheduleEntries
+        await tx.workEntry.deleteMany({ where: { user_id: userId } });
+        await tx.scheduleEntry.deleteMany({ where: { user_id: userId } });
+
+        // Setear a null account_manager_id en Clients
+        await tx.client.updateMany({
+          where: { account_manager_id: userId },
+          data: { account_manager_id: null },
+        });
+
+        // Setear a null changedById en ClientStatusHistory
+        await tx.clientStatusHistory.updateMany({
+          where: { changedById: userId },
+          data: { changedById: null },
+        });
+
+        // Finalmente borrar el usuario
+        await tx.user.delete({ where: { id: userId } });
       });
 
       return new Response(JSON.stringify({ deleted: user }), {

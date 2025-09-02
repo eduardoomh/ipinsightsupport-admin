@@ -1,6 +1,7 @@
 // app/routes/api/clients.$id.ts
 import type { LoaderFunction, ActionFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
+import dayjs from "dayjs";
 import { prisma } from "~/config/prisma.server";
 import { getUserId } from "~/config/session.server";
 import { buildDynamicSelect } from "~/utils/fields/buildDynamicSelect";
@@ -35,23 +36,23 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     let client;
 
     if (showTeam) {
-  client = await prisma.client.findUnique({
-    where: { id: clientId },
-    select: {
-      ...select, // tus campos dinámicos
-      team_members: {
+      client = await prisma.client.findUnique({
+        where: { id: clientId },
         select: {
-          id: true, // solo el id del team_member
-          user: {
+          ...select, // tus campos dinámicos
+          team_members: {
             select: {
-              id: true,
+              id: true, // solo el id del team_member
+              user: {
+                select: {
+                  id: true,
+                },
+              },
             },
           },
         },
-      },
-    },
-  });
-} else {
+      });
+    } else {
       // Solo select dinámico
       client = await prisma.client.findUnique({
         where: { id: clientId },
@@ -81,6 +82,7 @@ export const action: ActionFunction = async ({ params, request }) => {
   const method = request.method;
 
   try {
+    // ----------------- DELETE -----------------
     if (method === "DELETE") {
       const client = await prisma.client.findUnique({
         where: { id: clientId },
@@ -96,13 +98,22 @@ export const action: ActionFunction = async ({ params, request }) => {
         return json({ error: "Client not found" }, { status: 404 });
       }
 
-      await prisma.client.delete({
-        where: { id: clientId },
-      });
+      // Transacción para borrar todo lo relacionado
+      await prisma.$transaction([
+        prisma.retainer.deleteMany({ where: { client_id: clientId } }),
+        prisma.contact.deleteMany({ where: { client_id: clientId } }),
+        prisma.workEntry.deleteMany({ where: { client_id: clientId } }),
+        prisma.teamMember.deleteMany({ where: { client_id: clientId } }),
+        prisma.clientRates.deleteMany({ where: { clientId } }),
+        prisma.clientStatusHistory.deleteMany({ where: { clientId } }),
+        prisma.scheduleEntry.deleteMany({ where: { client_id: clientId } }),
+        prisma.client.delete({ where: { id: clientId } }),
+      ]);
 
       return json({ deleted: client }, { status: 200 });
     }
 
+    // ----------------- PUT -----------------
     if (method === "PUT") {
       const formData = await request.formData();
       const clientJson = formData.get("client") as string;
@@ -113,10 +124,10 @@ export const action: ActionFunction = async ({ params, request }) => {
 
       const updatedFields = JSON.parse(clientJson);
 
-      // Obtenemos el estado actual para comparar antes de actualizar
+      // Obtenemos el cliente actual para comparar
       const existingClient = await prisma.client.findUnique({
         where: { id: clientId },
-        select: { currentStatus: true },
+        select: { currentStatus: true, account_manager_id: true },
       });
 
       if (!existingClient) {
@@ -136,13 +147,14 @@ export const action: ActionFunction = async ({ params, request }) => {
           company: true,
           timezone: true,
           account_manager: true,
+          account_manager_id: true,
           currentStatus: true,
           createdAt: true,
           updatedAt: true,
         },
       });
 
-      // Si cambió el currentStatus, creamos el historial
+      // ----------------- Historial de status -----------------
       if (
         updatedFields.currentStatus &&
         updatedFields.currentStatus !== existingClient.currentStatus
@@ -153,10 +165,65 @@ export const action: ActionFunction = async ({ params, request }) => {
           data: {
             clientId,
             status: updatedFields.currentStatus,
-            note: `Status updated from ${getClientStatusLabel(existingClient.currentStatus as ClientStatus)} to ${getClientStatusLabel(updatedFields.currentStatus as ClientStatus)}`,
-            changedById: userId
+            note: `Status updated from ${getClientStatusLabel(
+              existingClient.currentStatus as ClientStatus
+            )} to ${getClientStatusLabel(
+              updatedFields.currentStatus as ClientStatus
+            )}`,
+            changedById: userId,
           },
         });
+      }
+
+      // ----------------- Stats de account manager -----------------
+      const month = dayjs().month() + 1;
+      const year = dayjs().year();
+
+      const previousManagerId = existingClient.account_manager_id;
+      const newManagerId = updatedFields.account_manager_id;
+
+      // 1️⃣ Decrementar contador del anterior manager si cambió
+      if (previousManagerId && previousManagerId !== newManagerId) {
+        const prevStats = await prisma.userStats.findFirst({
+          where: { user_id: previousManagerId, month, year },
+        });
+        if (prevStats && (prevStats.companies_as_account_manager ?? 0) > 0) {
+          await prisma.userStats.update({
+            where: { id: prevStats.id },
+            data: {
+              companies_as_account_manager: prevStats.companies_as_account_manager - 1,
+            },
+          });
+        }
+      }
+
+      // 2️⃣ Incrementar contador del nuevo manager o crear stats
+      if (newManagerId) {
+        const newStats = await prisma.userStats.findFirst({
+          where: { user_id: newManagerId, month, year },
+        });
+        if (newStats) {
+          await prisma.userStats.update({
+            where: { id: newStats.id },
+            data: {
+              companies_as_account_manager: (newStats.companies_as_account_manager ?? 0) + 1,
+            },
+          });
+        } else {
+          await prisma.userStats.create({
+            data: {
+              user_id: newManagerId,
+              month,
+              year,
+              total_work_entries: 0,
+              companies_as_account_manager: 1,
+              companies_as_team_member: 0,
+              hours_engineering: 0.0,
+              hours_architecture: 0.0,
+              hours_senior_architecture: 0.0,
+            },
+          });
+        }
       }
 
       return json({ updated: updatedClient }, { status: 200 });

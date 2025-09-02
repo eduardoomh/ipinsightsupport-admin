@@ -22,13 +22,17 @@ export const loader: LoaderFunction = async ({ request }) => {
   const takeParam = url.searchParams.get("take");
   const direction = (url.searchParams.get("direction") as "next" | "prev") ?? "next";
 
-  const filterUserId = url.searchParams.get("user_id");
-  const filterMonth = url.searchParams.get("month") ? parseInt(url.searchParams.get("month")!, 10) : undefined;
-  const filterYear = url.searchParams.get("year") ? parseInt(url.searchParams.get("year")!, 10) : undefined;
+  const filterUserId = url.searchParams.get("user_id") || undefined;
+  const filterMonth = url.searchParams.get("month")
+    ? parseInt(url.searchParams.get("month")!, 10)
+    : undefined;
+  const filterYear = url.searchParams.get("year")
+    ? parseInt(url.searchParams.get("year")!, 10)
+    : undefined;
 
   const take = takeParam ? parseInt(takeParam, 10) : 10;
 
-  // Paginación por cursor usando el campo único "id"
+  // Configuración de paginación
   const { queryOptions, isBackward } = buildCursorPaginationQuery({
     cursor,
     take,
@@ -37,52 +41,58 @@ export const loader: LoaderFunction = async ({ request }) => {
     select: undefined,
   });
 
-  // Construir filtros condicionales
-  const where: any = { ...(queryOptions.where || {}) };
+  // Construcción dinámica de filtros
+  const where: any = {};
   if (filterUserId) where.user_id = filterUserId;
   if (filterMonth !== undefined) where.month = filterMonth;
   if (filterYear !== undefined) where.year = filterYear;
 
-  queryOptions.where = where;
+  if (Object.keys(where).length > 0) {
+    queryOptions.where = where;
+  }
 
-  // Incluir datos básicos del usuario
+  // Incluir usuario relacionado
   queryOptions.include = {
     user: { select: { id: true, name: true, email: true } },
   };
 
+  // Traer stats
   const stats = await prisma.userStats.findMany(queryOptions);
   const { items, pageInfo } = buildPageInfo(stats, take, isBackward, cursor);
 
-  // Calcular mes anterior y siguiente
-  const baseDate = dayjs()
-    .month(filterMonth !== undefined ? filterMonth - 1 : dayjs().month())
-    .year(filterYear ?? dayjs().year());
+  // Cálculo de mes anterior y siguiente solo si hay filtros de mes/año
+  let statsInfo = { hasPrevMonth: false, hasNextMonth: false };
 
-  const prevMonth = baseDate.subtract(1, "month");
-  const nextMonth = baseDate.add(1, "month");
+  if (filterMonth !== undefined || filterYear !== undefined) {
+    const baseDate = dayjs()
+      .month(filterMonth !== undefined ? filterMonth - 1 : dayjs().month())
+      .year(filterYear ?? dayjs().year());
 
-  // Verificar existencia de stats para mes anterior y siguiente
-  const [hasPrevMonth, hasNextMonth] = await Promise.all([
-    prisma.userStats.count({
-      where: {
-        user_id: filterUserId,
-        month: prevMonth.month() + 1,
-        year: prevMonth.year(),
-      },
-    }),
-    prisma.userStats.count({
-      where: {
-        user_id: filterUserId,
-        month: nextMonth.month() + 1,
-        year: nextMonth.year(),
-      },
-    }),
-  ]);
+    const prevMonth = baseDate.subtract(1, "month");
+    const nextMonth = baseDate.add(1, "month");
 
-  const statsInfo = {
-    hasPrevMonth: hasPrevMonth > 0,
-    hasNextMonth: hasNextMonth > 0,
-  };
+    const [hasPrevMonth, hasNextMonth] = await Promise.all([
+      prisma.userStats.count({
+        where: {
+          user_id: filterUserId,
+          month: prevMonth.month() + 1,
+          year: prevMonth.year(),
+        },
+      }),
+      prisma.userStats.count({
+        where: {
+          user_id: filterUserId,
+          month: nextMonth.month() + 1,
+          year: nextMonth.year(),
+        },
+      }),
+    ]);
+
+    statsInfo = {
+      hasPrevMonth: hasPrevMonth > 0,
+      hasNextMonth: hasNextMonth > 0,
+    };
+  }
 
   return new Response(
     JSON.stringify({ userStats: items, pageInfo, statsInfo }),
@@ -92,7 +102,6 @@ export const loader: LoaderFunction = async ({ request }) => {
     }
   );
 };
-
 // =========================
 // POST /api/user-stats → crear/actualizar stats del usuario
 // =========================

@@ -147,8 +147,8 @@ model Retainer {
   client_id String
   client    Client @relation("clientRetainer", fields: [client_id], references: [id])
 
-  created_by_id String
-  created_by    User   @relation("CreatedByUserRetainer", fields: [created_by_id], references: [id])
+  created_by_id String?
+  created_by    User?   @relation("CreatedByUserRetainer", fields: [created_by_id], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -85,60 +85,80 @@ export const action: ActionFunction = async ({ request }) => {
       return new Response(JSON.stringify({ error: "User not found" }), { status: 404 });
     }
 
-    // 2) TeamMember -> rate_type real para este cliente
+    // 2) TeamMember -> determinar rate_type
     const teamMember = await prisma.teamMember.findFirst({
       where: { client_id: entry.client_id, user_id: entry.user_id },
     });
 
-    let rateType = teamMember?.rate_type as "engineering" | "architecture" | "senior_architecture" || "engineering";
+    let rateType =
+      (teamMember?.rate_type as "engineering" | "architecture" | "senior_architecture") ||
+      "engineering";
 
     // 3) Rates del cliente
-    const defaultRates = getDefaultRates()
+    const defaultRates = getDefaultRates();
     let engRate = Number(defaultRates.engineering);
     let archRate = Number(defaultRates.architecture);
     let seniorRate = Number(defaultRates.senior_architecture);
 
-    const clientRate = await prisma.clientRates.findFirst({ where: { clientId: entry.client_id } });
-    
+    const clientRate = await prisma.clientRates.findFirst({
+      where: { clientId: entry.client_id },
+    });
+
     if (clientRate) {
       engRate = Number(clientRate.engineeringRate);
       archRate = Number(clientRate.architectureRate);
       seniorRate = Number(clientRate.seniorArchitectureRate);
     }
 
-
-    // 4) Rate aplicado al entry (según rateType del teamMember)
+    // 4) Determinar rate aplicado
     const rate =
-      rateType === "engineering" ? engRate :
-        rateType === "architecture" ? archRate :
-          rateType === "senior_architecture" ? seniorRate :
-            NaN;
+      rateType === "engineering"
+        ? engRate
+        : rateType === "architecture"
+        ? archRate
+        : rateType === "senior_architecture"
+        ? seniorRate
+        : NaN;
 
     if (!Number.isFinite(rate) || rate <= 0) {
-      return new Response(JSON.stringify({ error: "Invalid rate configuration for this team member" }), { status: 400 });
+      return new Response(
+        JSON.stringify({ error: "Invalid rate configuration for this team member" }),
+        { status: 400 }
+      );
     }
 
     // 5) Costo y cliente
     const totalCost = rate * entry.hours_billed;
 
-    const client = await prisma.client.findUnique({ where: { id: entry.client_id } });
+    const client = await prisma.client.findUnique({
+      where: { id: entry.client_id },
+    });
     if (!client) {
       return new Response(JSON.stringify({ error: "Client not found" }), { status: 404 });
     }
 
-    // 6) Saldo restante (puede ser negativo)
+    // 6) Calcular saldo y horas estimadas
     const fundsAfter = Number(client.remainingFunds) - totalCost;
     const positiveFunds = Math.max(fundsAfter, 0);
 
-    const estimatedEngineeringHours = positiveFunds > 0 ? round2(safeDiv(positiveFunds, engRate)) : 0.0;
-    const estimatedArchitectureHours = positiveFunds > 0 ? round2(safeDiv(positiveFunds, archRate)) : 0.0;
-    const estimatedSeniorArchitectureHours = positiveFunds > 0 ? round2(safeDiv(positiveFunds, seniorRate)) : 0.0;
+    const estimatedEngineeringHours =
+      positiveFunds > 0 ? round2(safeDiv(positiveFunds, engRate)) : 0.0;
+    const estimatedArchitectureHours =
+      positiveFunds > 0 ? round2(safeDiv(positiveFunds, archRate)) : 0.0;
+    const estimatedSeniorArchitectureHours =
+      positiveFunds > 0 ? round2(safeDiv(positiveFunds, seniorRate)) : 0.0;
 
-    // 8) Transacción
-    const [savedEntry, updatedClient] = await prisma.$transaction([
-      prisma.workEntry.create({
+    // 7) Determinar mes y año del workEntry
+    const billedDate = new Date(entry.billed_on);
+    const month = billedDate.getMonth() + 1; // 1-12
+    const year = billedDate.getFullYear();
+
+    // 8) Transacción (WorkEntry + Client + UserStats)
+    const [savedEntry, updatedClient, updatedStats] = await prisma.$transaction(async (tx) => {
+      // Crear el WorkEntry
+      const workEntry = await tx.workEntry.create({
         data: {
-          billed_on: new Date(entry.billed_on),
+          billed_on: billedDate,
           hours_billed: entry.hours_billed,
           hours_spent: entry.hours_spent,
           hourly_rate: rate,
@@ -147,25 +167,69 @@ export const action: ActionFunction = async ({ request }) => {
           client_id: entry.client_id,
           user_id: entry.user_id,
         },
-      }),
-      prisma.client.update({
+      });
+
+      // Actualizar Client
+      const clientUpdated = await tx.client.update({
         where: { id: entry.client_id },
         data: {
-          most_recent_work_entry: new Date(entry.billed_on),
+          most_recent_work_entry: billedDate,
           remainingFunds: fundsAfter,
           estimated_engineering_hours: estimatedEngineeringHours,
           estimated_architecture_hours: estimatedArchitectureHours,
           estimated_senior_architecture_hours: estimatedSeniorArchitectureHours,
         },
-      }),
-    ]);
+      });
 
-    // Devuelve ambos para que verifiques que sí se guardó
-    return new Response(JSON.stringify({ workEntry: savedEntry, client: updatedClient }), {
+      // Buscar o crear UserStats
+      let stats = await tx.userStats.findFirst({
+        where: { user_id: entry.user_id, month, year },
+      });
+
+      if (stats) {
+        stats = await tx.userStats.update({
+          where: { id: stats.id },
+          data: {
+            total_work_entries: stats.total_work_entries + 1,
+            hours_engineering:
+              rateType === "engineering"
+                ? stats.hours_engineering + entry.hours_billed
+                : stats.hours_engineering,
+            hours_architecture:
+              rateType === "architecture"
+                ? stats.hours_architecture + entry.hours_billed
+                : stats.hours_architecture,
+            hours_senior_architecture:
+              rateType === "senior_architecture"
+                ? stats.hours_senior_architecture + entry.hours_billed
+                : stats.hours_senior_architecture,
+          },
+        });
+      } else {
+        stats = await tx.userStats.create({
+          data: {
+            user_id: entry.user_id,
+            month,
+            year,
+            total_work_entries: 1,
+            companies_as_account_manager: 0,
+            companies_as_team_member: 0,
+            hours_engineering: rateType === "engineering" ? entry.hours_billed : 0,
+            hours_architecture: rateType === "architecture" ? entry.hours_billed : 0,
+            hours_senior_architecture:
+              rateType === "senior_architecture" ? entry.hours_billed : 0,
+          },
+        });
+      }
+
+      return [workEntry, clientUpdated, stats];
+    });
+
+    // 9) Respuesta
+    return new Response(JSON.stringify({ workEntry: savedEntry, client: updatedClient, stats: updatedStats }), {
       status: 201,
       headers: { "Content-Type": "application/json" },
     });
-
   } catch (error) {
     console.error("Error creating work entry:", error);
     if (error instanceof Error && "errors" in error) {
