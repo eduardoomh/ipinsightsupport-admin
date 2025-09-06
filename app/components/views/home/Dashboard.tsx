@@ -1,9 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, Row, Col, Table, Skeleton } from "antd";
 import dayjs from "dayjs";
 import StatsCard from "./utils/StatsCard";
 import { CartesianGrid, LineChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Line as ReLine } from "recharts";
 import { useNavigate } from "@remix-run/react";
+
+interface WorkEntry {
+  id: string;
+  billed_on: string;
+  hours_billed: number;
+  hours_spent: number;
+  hourly_rate: number;
+  client: { id: string; company: string };
+  user: { id: string; name: string; email: string };
+}
 
 interface DashboardProps {
   totalWorkEntries: number;
@@ -12,13 +22,7 @@ interface DashboardProps {
   hoursEngineering: number;
   hoursArchitecture: number;
   hoursSeniorArchitecture: number;
-  lastWorkEntry: {
-    id: string;
-    billed_on: string;
-    client: { id: string; company: string };
-    hours: { hours_spent: number; hours_billed: number };
-    hourly_rate: string;
-  }[];
+  lastWorkEntry: WorkEntry[];
   todayEvents: { id: string; title: string; time: string }[];
   loading?: boolean;
 }
@@ -35,27 +39,52 @@ const Dashboard: React.FC<DashboardProps> = ({
   loading = false,
 }) => {
   const navigate = useNavigate();
-  const [selectedMonth] = useState<string>(dayjs().month() + 1 + "");
+  const [workEntriesData, setWorkEntriesData] = useState<{ date: string; entries: number }[]>([]);
+  const [statsLoading, setStatsLoading] = useState(false);
 
-  const workEntriesData = [
-    { date: "2025-08-20", entries: 2 },
-    { date: "2025-08-21", entries: 5 },
-    { date: "2025-08-22", entries: 3 },
-    { date: "2025-08-23", entries: 6 },
-    { date: "2025-08-24", entries: 4 },
-  ];
+  useEffect(() => {
+    const fetchStats = async () => {
+      setStatsLoading(true);
+      try {
+        const res = await fetch("/api/work-entries/stats");
+        const json = await res.json();
+        const data: WorkEntry[] = json.workEntries || [];
+
+        // Agrupar por billed_on
+        const grouped: Record<string, number> = {};
+        data.forEach(entry => {
+          const date = dayjs(entry.billed_on).format("YYYY-MM-DD");
+          grouped[date] = (grouped[date] || 0) + 1;
+        });
+
+        const chartData = Object.entries(grouped)
+          .map(([date, entries]) => ({ date, entries }))
+          .sort((a, b) => dayjs(a.date).isAfter(dayjs(b.date)) ? 1 : -1);
+
+        setWorkEntriesData(chartData);
+      } catch (err) {
+        console.error("Error fetching work entries stats:", err);
+      } finally {
+        setStatsLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
 
   return (
     <div className="py-6 space-y-6">
       {/* Stats */}
       <Row gutter={16}>
-        {[["Total work entries", totalWorkEntries],
+        {[
+          ["Total work entries", totalWorkEntries],
           ["Companies as Account Manager", companiesAsAccountManager],
-          ["Companies as Team Member", companiesAsTeamMember]].map(([label, value]) => (
-            <Col span={8} key={label}>
-             { //@ts-ignore
-             }<StatsCard label={label} value={value as number} loading={loading} />
-            </Col>
+          ["Companies as Team Member", companiesAsTeamMember]
+        ].map(([label, value]) => (
+          <Col span={8} key={label}>
+            { //@ts-ignore 
+            }<StatsCard label={label} value={value as number} loading={loading} />
+          </Col>
         ))}
       </Row>
 
@@ -64,7 +93,7 @@ const Dashboard: React.FC<DashboardProps> = ({
         style={{ border: "1px solid #d3d3d3", marginBottom: '16px' }}
         title={<span style={{ color: "#014a64", fontWeight: 'bold' }}>Work Entries Over Time</span>}
       >
-        {loading ? (
+        {statsLoading ? (
           <Skeleton active paragraph={{ rows: 6 }} />
         ) : (
           <ResponsiveContainer width="100%" height={300}>
@@ -81,13 +110,15 @@ const Dashboard: React.FC<DashboardProps> = ({
 
       {/* Hours */}
       <Row gutter={16}>
-        {[["Hours Engineering", hoursEngineering],
+        {[
+          ["Hours Engineering", hoursEngineering],
           ["Hours Architecture", hoursArchitecture],
-          ["Hours Senior Architecture", hoursSeniorArchitecture]].map(([label, value]) => (
-            <Col span={8} key={label}>
-              {//@ts-ignore
-              }<StatsCard label={label} value={value as number} loading={loading} />
-            </Col>
+          ["Hours Senior Architecture", hoursSeniorArchitecture]
+        ].map(([label, value]) => (
+          <Col span={8} key={label}>
+            { //@ts-ignore 
+            }<StatsCard label={label} value={value as number} loading={loading} />
+          </Col>
         ))}
       </Row>
 
@@ -116,11 +147,11 @@ const Dashboard: React.FC<DashboardProps> = ({
               )
             },
             {
-              title: "Hours", dataIndex: "hours", render: (_, record) => (
+              title: "Hours", dataIndex: "hours_billed", render: (_, record) => (
                 loading ? <Skeleton.Input style={{ width: 80 }} active /> :
                 <div className="leading-snug">
-                  <div>{record.hours.hours_billed} hrs billed</div>
-                  <div className="text-gray-500 text-sm">{record.hours.hours_spent} hrs spent</div>
+                  <div>{record.hours_billed} hrs billed</div>
+                  <div className="text-gray-500 text-sm">{record.hours_spent} hrs spent</div>
                 </div>
               )
             },

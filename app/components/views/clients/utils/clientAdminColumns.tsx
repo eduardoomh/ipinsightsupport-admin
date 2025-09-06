@@ -1,6 +1,8 @@
 // columns/usersColumns.ts
-import { Avatar, Space, TableColumnsType, Tag } from 'antd';
+import { Alert, Avatar, Space, TableColumnsType, Tag } from 'antd';
 import { AdminDataType } from './clientsTable.interface';
+import { getClientStatusLabel } from '~/utils/general/getClientStatusLabel';
+import Note from '~/components/basics/Note';
 
 export const clientAdminColumns = (
     navigate: (path: string) => void
@@ -9,15 +11,33 @@ export const clientAdminColumns = (
             title: "Company",
             dataIndex: "company",
             render: (_, record) => (
-                <span
-                    style={{
-                        cursor: "pointer",
-                        textDecoration: "underline",
-                    }}
-                    onClick={() => navigate(`/admin/company/dashboard/${record.id}`)}
-                >
-                    {record.company}
-                </span>
+                <>
+                    <p
+                        style={{
+                            cursor: "pointer",
+                            textDecoration: "underline",
+                            marginBottom: '6px',
+                        }}
+                        onClick={() => navigate(`/admin/company/dashboard/${record.id}`)}
+                    >
+                        {record.company}
+                    </p>
+                    <span>
+                        <Tag>{record.timezone}</Tag>
+                    </span>
+                    <span>
+                        <Tag color='blue'>{getClientStatusLabel(record.currentStatus)}</Tag>
+                    </span>
+                    {
+                        record.last_note && (
+                            <>
+                                <br />
+                                <br />
+                                <Note note={record.last_note} size="small" />
+                            </>
+                        )
+                    }
+                </>
             ),
         },
         {
@@ -55,19 +75,19 @@ export const clientAdminColumns = (
             dataIndex: "estimated_hours",
             render: (_, record) => (
                 <div>
-                    <div style={{marginBottom: '6px'}}>
+                    <div style={{ marginBottom: '6px' }}>
                         <Tag>
                             <strong>Engineering:</strong>{" "}
                             {Number(record.estimated_hours.estimated_engineering_hours).toFixed(2)} hours
                         </Tag>
                     </div>
-                    <div style={{marginBottom: '6px'}}>
+                    <div style={{ marginBottom: '6px' }}>
                         <Tag>
                             <strong>Architecture:</strong>{" "}
                             {Number(record.estimated_hours.estimated_architecture_hours).toFixed(2)} hours
                         </Tag>
                     </div>
-                    <div style={{marginBottom: '6px'}}>
+                    <div style={{ marginBottom: '6px' }}>
                         <Tag>
                             <strong>Senior Architecture:</strong>{" "}
                             {Number(record.estimated_hours.estimated_senior_architecture_hours).toFixed(2)} hours

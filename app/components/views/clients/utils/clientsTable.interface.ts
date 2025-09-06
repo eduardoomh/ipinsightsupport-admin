@@ -1,6 +1,7 @@
 import { ClientI } from "~/interfaces/clients.interface";
 import { UsersI } from "~/interfaces/users.interface";
 import { ClientStatus } from '../../../../utils/general/getClientStatusLabel';
+import { ClientStatusHistoryI } from "~/interfaces/clientStatusHistory";
 
 export interface DataType {
     id: string;
@@ -18,8 +19,11 @@ interface EstimatedHours {
 export interface AdminDataType {
   id: string;
   company: string;
+  currentStatus: any;
   team_members: ClientI["team_members"];
   estimated_hours: EstimatedHours;
+  last_note?: ClientStatusHistoryI | null ;
+  timezone: any;
   most_recent_work_entry: string;
   most_recent_retainer_activated: string;
 

@@ -18,7 +18,9 @@ interface EstimatedHours {
 interface DataType {
   id: string;
   company: string;
+  currentStatus: string;
   estimated_hours: EstimatedHours;
+  timezone: any;
   team_members: ClientI["team_members"];
   most_recent_work_entry: string;
   most_recent_retainer_activated: string;
@@ -43,7 +45,10 @@ const ClientsAdminTable: FC<Props> = ({ clients, pageInfo, onPageChange, pageSiz
   const dataSource: DataType[] = clients.map((client: ClientI) => ({
     id: client.id,
     company: client.company,
+    timezone: client.timezone,
+    currentStatus: client.currentStatus,
     team_members: client.team_members || [],
+    last_note: client?.lastNote || null,
     estimated_hours: {
       estimated_engineering_hours: client?.estimated_engineering_hours || 0.0,
       estimated_architecture_hours: client?.estimated_architecture_hours || 0.0,

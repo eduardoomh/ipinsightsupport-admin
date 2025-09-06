@@ -12,13 +12,10 @@ import { getDefaultRates } from "~/utils/general/getDefaultRates";
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await getUserId(request);
   if (!userId) {
-    return new Response(
-      JSON.stringify({ error: "Unauthorized" }),
-      {
-        status: 401,
-        headers: { "Content-Type": "application/json" }
-      }
-    );
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   const url = new URL(request.url);
@@ -28,7 +25,8 @@ export const loader: LoaderFunction = async ({ request }) => {
   const fieldsParam = url.searchParams.get("fields");
   const relationsParam = url.searchParams.get("relations");
   const userIdFilter = url.searchParams.get("user_id");
-  const statusFilter = url.searchParams.get("currentStatus"); // 👈 nuevo filtro
+  const statusFilter = url.searchParams.get("currentStatus");
+  const lastNote = url.searchParams.get("last_note") === "true";
 
   const take = takeParam ? parseInt(takeParam, 10) : 6;
 
@@ -38,7 +36,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     timezone: true,
     createdAt: true,
     updatedAt: true,
-    currentStatus: true, // importante si quieres mostrar el estado
+    currentStatus: true,
   };
 
   const dynamicSelect = buildDynamicSelect(fieldsParam, defaultSelect);
@@ -51,10 +49,13 @@ export const loader: LoaderFunction = async ({ request }) => {
     select: dynamicSelect,
   });
 
-  // Include dinámico
+  // --- Construir includes dinámicos ---
+  let useInclude = false;
+  queryOptions.include = {};
+
   if (relationsParam) {
-    const relations = relationsParam.split(",").map(r => r.trim());
-    queryOptions.include = {};
+    useInclude = true;
+    const relations = relationsParam.split(",").map((r) => r.trim());
 
     if (relations.includes("team_members")) {
       queryOptions.include.team_members = {
@@ -62,11 +63,7 @@ export const loader: LoaderFunction = async ({ request }) => {
           id: true,
           rate_type: true,
           user: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-            },
+            select: { id: true, name: true, email: true },
           },
         },
       };
@@ -78,42 +75,49 @@ export const loader: LoaderFunction = async ({ request }) => {
 
     if (relations.includes("account_manager")) {
       queryOptions.include.account_manager = {
-        select: {
-          id: true,
-          name: true,
-        },
+        select: { id: true, name: true },
       };
-    }
-
-    if (Object.keys(queryOptions.include).length > 0) {
-      delete queryOptions.select;
     }
   }
 
-  // 👇 Construcción dinámica del where
+  if (lastNote) {
+    useInclude = true;
+    queryOptions.include.client_status_history = {
+      take: 1,
+      orderBy: { changedAt: "desc" },
+      select: {
+        id: true,
+        note: true,
+        status: true,
+        title: true,
+        changedAt: true,
+        changedBy: { select: { id: true, name: true } },
+      },
+    };
+  }
+
+  // ⚖️ Elegir entre include o select
+  if (!useInclude) {
+    queryOptions.select = dynamicSelect;
+    delete queryOptions.include;
+  } else {
+    delete queryOptions.select;
+  }
+
+  // --- WHERE dinámico ---
   const andConditions: any[] = [];
 
-  // Filtrado por user_id en team_members o como account_manager
   if (userIdFilter) {
     andConditions.push({
       OR: [
-        {
-          team_members: {
-            some: {
-              user_id: userIdFilter,
-            },
-          },
-        },
-        {
-          account_manager_id: userIdFilter,
-        },
+        { team_members: { some: { user_id: userIdFilter } } },
+        { account_manager_id: userIdFilter },
       ],
     });
   }
 
-  // Filtro por currentStatus (uno o varios valores)
   if (statusFilter) {
-    const statuses = statusFilter.split(",").map(s => s.trim().toUpperCase());
+    const statuses = statusFilter.split(",").map((s) => s.trim().toUpperCase());
     if (statuses.length === 1) {
       andConditions.push({ currentStatus: statuses[0] });
     } else {
@@ -125,18 +129,32 @@ export const loader: LoaderFunction = async ({ request }) => {
     queryOptions.where = { AND: andConditions };
   }
 
+  // --- Query ---
   const clients = await prisma.client.findMany(queryOptions);
 
-  const { items, pageInfo } = buildPageInfo(clients, take, isBackward, cursor);
-
-  return new Response(
-    JSON.stringify({ clients: items, pageInfo }),
-    {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
+  // --- Transformar lastNote ---
+  const items = clients.map((client: any) => {
+    if (lastNote) {
+      const lastNoteObj = client.client_status_history?.[0] || null;
+      const { client_status_history, ...rest } = client;
+      return { ...rest, lastNote: lastNoteObj };
     }
+    return client;
+  });
+
+  const { items: paginatedItems, pageInfo } = buildPageInfo(
+    items,
+    take,
+    isBackward,
+    cursor
   );
+
+  return new Response(JSON.stringify({ clients: paginatedItems, pageInfo }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
 };
+
 // POST /api/clients → crear nuevo cliente
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();

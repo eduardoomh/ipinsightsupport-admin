@@ -1,3 +1,4 @@
+import { ClientStatusHistoryI } from "./clientStatusHistory";
 import { ContactI } from "./contact.interface";
 import { RatesI } from "./rates.interface";
 import { TeamMembersI } from "./teamMembers.interface";
@@ -18,6 +19,7 @@ export interface ClientI {
     estimated_senior_architecture_hours?: number;
     rates: RatesI;
     currentStatus: string;
+    lastNote?: ClientStatusHistoryI;
     createdAt: string;
     updatedAt: string;
 }
