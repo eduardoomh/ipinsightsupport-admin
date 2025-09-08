@@ -8,6 +8,7 @@ import RatesSection from "./components/RatesSection";
 import TeamMembersSection from "./components/TeamMemberSection";
 import ContactsSection from "./components/ContactSection";
 import ClientStatusHistorySection from "./components/ClientStatusHistorySection";
+import { getTimezoneLabel } from "~/utils/general/getTimezoneLabel";
 
 const { Text } = Typography;
 
@@ -34,7 +35,7 @@ const DetailedClient: React.FC<Props> = ({ client }) => {
       <ContentLayout title="Profile" type="basic_section" size="small">
         <Row>
           <Col span={12}>
-            <DashboardItem label="Region" value={client.timezone} showBorder={true} />
+            <DashboardItem label="Region" value={getTimezoneLabel(client.timezone as any)} showBorder={true} />
             <DashboardItem label="Remaining funds" value={`$${client.remainingFunds}`} showBorder={true} />
             <DashboardItem
               label="Account manager"

@@ -24,6 +24,7 @@
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "dnd-kit": "^0.0.2",
+    "framer-motion": "^12.23.12",
     "isbot": "^4.1.0",
     "jsonwebtoken": "^9.0.2",
     "react": "^18.2.0",

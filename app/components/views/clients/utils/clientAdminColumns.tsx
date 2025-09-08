@@ -3,6 +3,7 @@ import { Alert, Avatar, Space, TableColumnsType, Tag } from 'antd';
 import { AdminDataType } from './clientsTable.interface';
 import { getClientStatusLabel } from '~/utils/general/getClientStatusLabel';
 import Note from '~/components/basics/Note';
+import { getTimezoneLabel } from '~/utils/general/getTimezoneLabel';
 
 export const clientAdminColumns = (
     navigate: (path: string) => void
@@ -23,7 +24,7 @@ export const clientAdminColumns = (
                         {record.company}
                     </p>
                     <span>
-                        <Tag>{record.timezone}</Tag>
+                        <Tag>{getTimezoneLabel(record.timezone)}</Tag>
                     </span>
                     <span>
                         <Tag color='blue'>{getClientStatusLabel(record.currentStatus)}</Tag>

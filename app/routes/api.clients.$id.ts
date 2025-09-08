@@ -6,6 +6,7 @@ import { prisma } from "~/config/prisma.server";
 import { getUserId } from "~/config/session.server";
 import { buildDynamicSelect } from "~/utils/fields/buildDynamicSelect";
 import { ClientStatus, getClientStatusLabel } from "~/utils/general/getClientStatusLabel";
+import { getTimezoneLabel } from "~/utils/general/getTimezoneLabel";
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   const clientId = params.id;
@@ -138,7 +139,7 @@ export const action: ActionFunction = async ({ params, request }) => {
         where: { id: clientId },
         data: {
           company: updatedFields.company,
-          timezone: updatedFields.timezone,
+          timezone: getTimezoneLabel(updatedFields.timezone as any) as any,
           account_manager_id: updatedFields.account_manager_id,
           currentStatus: updatedFields.currentStatus,
         },

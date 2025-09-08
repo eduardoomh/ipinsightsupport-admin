@@ -1,7 +1,11 @@
 import { useNavigate, useParams } from "@remix-run/react";
-import { Divider, Modal, message } from "antd";
+import { Divider, Modal, message, Skeleton, Card, Avatar } from "antd";
 import { useEffect, useState } from "react";
+import { ContactCard } from "~/components/basics/ContactCard";
+import { ContactProfileInfo } from "~/components/views/contacts/ContactProfileInfo";
 import { ContactI } from "~/interfaces/contact.interface";
+import { getClientStatusLabel } from '../utils/general/getClientStatusLabel';
+import { ShopOutlined } from "@ant-design/icons";
 
 export default function InfoContactModal() {
     const { contactId } = useParams();
@@ -29,7 +33,7 @@ export default function InfoContactModal() {
 
     return (
         <Modal
-            title={`Contact Info`}
+            title="Contact Info"
             open={true}
             onCancel={handleClose}
             footer={null}
@@ -37,35 +41,36 @@ export default function InfoContactModal() {
             destroyOnClose
         >
             {loading ? (
-                <div className="text-center py-8">Loading contact data...</div>
+                <div className="p-4">
+                    <Card bordered className="mb-6" style={{ borderColor: "#d9d9d9" }}>
+                        <Skeleton.Avatar active size={60} shape="circle" className="mb-4" />
+                        <Skeleton active paragraph={{ rows: 3 }} />
+                    </Card>
+                    <Card bordered style={{ borderColor: "#d9d9d9" }}>
+                        <Skeleton active paragraph={{ rows: 4 }} />
+                    </Card>
+                </div>
             ) : contact ? (
                 <div className="p-4">
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-                        <div>
-                            <p className="text-sm text-gray-500">Name</p>
-                            <p>{contact.name}</p>
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-500">Email</p>
-                            <p>{contact.email}</p>
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-500">Phone</p>
-                            <p>{contact.phone}</p>
-                        </div>
-                    </div>
+                    <ContactCard contact={contact} />
+                    <ContactProfileInfo contact={contact} />
 
                     {contact.client && (
                         <>
                             <Divider />
-                            <h2 className="text-l font-semibold mb-4">Related Client</h2>
-                            <div className="w-full flex items-center gap-4 border p-4 shadow-sm bg-white rounded-none">
-                                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-semibold text-sm uppercase">
-                                    {contact.client.company?.slice(0, 2)}
-                                </div>
+                            <h2 className="text-l font-semibold mb-4">Related Company</h2>
+                            <div
+                                className="w-full flex items-center gap-4 border p-4 shadow-sm bg-white rounded-none cursor-pointer hover:bg-gray-50 transition-colors"
+                                onClick={() => navigate(`/admin/company/dashboard/${contact.client.id}`)}
+                            >
+                                <Avatar
+                                    size={40}
+                                    icon={<ShopOutlined />}
+                                    style={{ backgroundColor: "#096584" }}
+                                />
                                 <div>
                                     <p className="font-medium">{contact.client.company}</p>
-                                    <p className="text-sm text-gray-500">{contact.client.timezone}</p>
+                                    <p className="text-sm text-gray-500">{getClientStatusLabel(contact.client.currentStatus as any)}</p>
                                 </div>
                             </div>
                         </>

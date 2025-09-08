@@ -2,7 +2,6 @@
 import { LoaderFunction } from "@remix-run/node";
 import {
   Await,
-  useLoaderData
 } from "@remix-run/react";
 import { Suspense } from "react";
 
@@ -11,7 +10,6 @@ import SkeletonEntries from "~/components/skeletons/SkeletonEntries";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 import { withPaginationDefer } from "~/utils/pagination/withPaginationDefer";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
-import NoData from "~/components/basics/NoData";
 import RetainersTable from "~/components/views/retainers/RetainersTable";
 
 export const loader: LoaderFunction = async ({ request }) => {

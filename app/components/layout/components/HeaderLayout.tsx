@@ -2,6 +2,7 @@ import { FC } from "react";
 import TagMode from "./HeaderComponents/TagMode";
 import CollapsedButton from "./HeaderComponents/CollapsedButton";
 import UserPopover from "./HeaderComponents/UserPopover";
+import SearchModal from "~/components/search/SearchModal";
 
 interface Props {
     title: string;
@@ -35,6 +36,7 @@ const HeaderLayout: FC<Props> = ({ user, collapsed, toggleCollapsed }) => {
                 }
 
             </div>
+            <SearchModal />
             <UserPopover user={user} />
         </div>
     );

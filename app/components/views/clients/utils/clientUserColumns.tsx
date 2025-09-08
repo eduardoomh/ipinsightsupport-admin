@@ -3,6 +3,7 @@ import { Avatar, Space, TableColumnsType, Tag } from 'antd';
 import { UserDataType } from './clientsTable.interface';
 import { getClientStatusLabel } from '~/utils/general/getClientStatusLabel';
 import { getRateTypeLabel } from '~/utils/general/getRateTypeLabel';
+import { getTimezoneLabel } from '~/utils/general/getTimezoneLabel';
 
 export const clientUserColumns = (
     navigate: (path: string) => void
@@ -20,7 +21,7 @@ export const clientUserColumns = (
                 >
                     <p>{record.company}</p>
                     <br />
-                    <Tag color='blue'>{getClientStatusLabel(record.currentStatus)}</Tag><Tag>{record.timezone}</Tag>
+                    <Tag color='blue'>{getClientStatusLabel(record.currentStatus)}</Tag><Tag>{getTimezoneLabel(record.timezone as any)}</Tag>
                 </span>
             ),
         },

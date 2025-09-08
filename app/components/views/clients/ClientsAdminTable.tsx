@@ -8,6 +8,7 @@ import PaginationControls from "~/components/tables/PaginationControls";
 import { clientAdminColumns } from "./utils/clientAdminColumns";
 import usePagination from "~/hooks/usePagination";
 import { useTableLoading } from "~/hooks/useTableLoading";
+import { getTimezoneLabel } from "~/utils/general/getTimezoneLabel";
 
 interface EstimatedHours {
   estimated_engineering_hours: string | number;
@@ -45,7 +46,7 @@ const ClientsAdminTable: FC<Props> = ({ clients, pageInfo, onPageChange, pageSiz
   const dataSource: DataType[] = clients.map((client: ClientI) => ({
     id: client.id,
     company: client.company,
-    timezone: client.timezone,
+    timezone: getTimezoneLabel(client.timezone as any),
     currentStatus: client.currentStatus,
     team_members: client.team_members || [],
     last_note: client?.lastNote || null,

@@ -11,6 +11,7 @@ import { clientUserColumns } from "./utils/clientUserColumns";
 import { UsersI } from "~/interfaces/users.interface";
 import { ClientStatus } from '../../../utils/general/getClientStatusLabel';
 import { UserContext } from "~/context/UserContext";
+import { getTimezoneLabel } from "~/utils/general/getTimezoneLabel";
 
 interface EstimatedHours {
   estimated_engineering_hours: string | number;
@@ -82,7 +83,7 @@ const ClientsUserTable: FC<Props> = ({ clients, pageInfo, onPageChange, pageSize
         user_estimated_hours: estimatedHoursForUser,
         user_rate_type: userRateType
       },
-      timezone: client.timezone,
+      timezone: getTimezoneLabel(client.timezone as any),
       currentStatus: client.currentStatus as ClientStatus,
       most_recent_work_entry: client.most_recent_work_entry
         ? dayjs(client.most_recent_work_entry).format("YYYY-MM-DD")

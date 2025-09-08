@@ -1,5 +1,6 @@
 import { Button, Form, Input, Select } from "antd";
 import { useEffect } from "react";
+import { getTimezoneLabel } from "~/utils/general/getTimezoneLabel";
 
 const { Option } = Select;
 
@@ -88,10 +89,7 @@ const CompanyForm = ({
             <Select placeholder="Select a timezone">
               {TIMEZONES.map((tz) => (
                 <Option key={tz} value={tz}>
-                  {tz
-                    .replace("_", " ")
-                    .toLowerCase()
-                    .replace(/\b\w/g, (l) => l.toUpperCase())}
+                  {getTimezoneLabel(tz as any)}
                 </Option>
               ))}
             </Select>

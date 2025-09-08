@@ -18,7 +18,7 @@ const TagMode = () => {
     setMode(currentMode === "user" ? "admin" : "user");
 
     setTimeout(() => {
-      navigate(currentMode === "user" ? "/admin/home" : "/");
+      navigate(currentMode === "user" ? "/admin/companies" : "/");
     }, 1);
   };
 

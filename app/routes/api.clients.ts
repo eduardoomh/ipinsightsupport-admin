@@ -7,6 +7,7 @@ import { buildCursorPaginationQuery } from "~/utils/pagination/buildCursorPagina
 import { buildDynamicSelect } from "~/utils/fields/buildDynamicSelect";
 import { getUserId } from "~/config/session.server";
 import { getDefaultRates } from "~/utils/general/getDefaultRates";
+import { getTimezoneLabel } from "~/utils/general/getTimezoneLabel";
 
 // GET /api/clients → obtener todos los clientes con relaciones clave
 export const loader: LoaderFunction = async ({ request }) => {
@@ -176,8 +177,8 @@ export const action: ActionFunction = async ({ request }) => {
       const newClient = await tx.client.create({
         data: {
           company: client.company,
-          currentStatus: client.currentStatus ?? "ADHOC",
-          timezone: client.timezone ?? "CENTRAL",
+          currentStatus: client.currentStatus ?? "TRANSFER",
+          timezone: getTimezoneLabel(client.timezone as any) as any ?? "CENTRAL",
           remainingFunds: client.remainingFunds ?? 0.0,
           most_recent_work_entry: client.most_recent_work_entry ?? null,
           most_recent_retainer_activated: client.most_recent_retainer_activated ?? null,
