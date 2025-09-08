@@ -14,6 +14,7 @@ import AdminWorkEntriesTable from "~/components/views/entries/AdminWorkEntriesTa
 import { useDashboardHeaderActions } from "~/hooks/useDashboardHeaderActions";
 import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPagination";
 import { UserContext } from "~/context/UserContext";
+import UserEntriesTable from "~/components/views/entries/UserEntriesTable";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
     const companyId = params.companyId;
@@ -46,11 +47,11 @@ export default function ClientEntriesPage() {
             companyStatus={client.currentStatus}
             menuType={user.company_id ? "CLIENT" : "USER"}
         >
-            <ContentLayout 
-                title={`Recent work entries`} 
-                type="basic_section" 
-                size="small" 
-                hideHeader={false} 
+            <ContentLayout
+                title={`Recent work entries`}
+                type="basic_section"
+                size="small"
+                hideHeader={false}
                 headerActions={
                     user.company_id ? null : headerActions
                     /*
@@ -67,11 +68,12 @@ export default function ClientEntriesPage() {
 
                             return (
                                 <>
-                                    <AdminWorkEntriesTable
+                                    <UserEntriesTable
                                         entries={workEntries}
                                         pageInfo={pageInfo}
                                         onPageChange={handlePageChange}
                                         pageSize={take}
+                                        baseUrl={`/company/work-entries/${client.id}`}
                                     />
                                     <Outlet context={{ refreshResults, client }} />
                                 </>

@@ -1,6 +1,6 @@
 // routes/admin/advanced/work-entries/index.tsx
 import { LoaderFunction } from "@remix-run/node";
-import { Await } from "@remix-run/react";
+import { Await, Outlet } from "@remix-run/react";
 import { Suspense } from "react";
 
 import DashboardLayout from "~/components/layout/DashboardLayout";
@@ -10,6 +10,7 @@ import AdminWorkEntriesTable from "~/components/views/entries/AdminWorkEntriesTa
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 import { withPaginationDefer } from "~/utils/pagination/withPaginationDefer";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
+import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPagination";
 
 export const loader: LoaderFunction = async ({ request }) => {
   return withPaginationDefer({
@@ -22,6 +23,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function AdminWorkEntries() {
   const { data: workEntriesData, take, handlePageChange } = useCursorPagination("workEntries");
+  const refreshResults = useRefreshAndResetPagination(`/admin/work-entries`);
 
   return (
     <DashboardLayout title="Work entries">
@@ -31,12 +33,16 @@ export default function AdminWorkEntries() {
             const { workEntries, pageInfo } = data;
 
             return (
-              <AdminWorkEntriesTable
-                entries={workEntries}
-                pageInfo={pageInfo}
-                onPageChange={handlePageChange}
-                pageSize={take}
-              />
+              <>
+                <AdminWorkEntriesTable
+                  entries={workEntries}
+                  pageInfo={pageInfo}
+                  onPageChange={handlePageChange}
+                  pageSize={take}
+                  baseUrl={`/admin/work-entries`}
+                />
+                <Outlet context={{ refreshResults }} />
+              </>
             );
           }}
         </Await>

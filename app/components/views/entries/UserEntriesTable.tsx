@@ -26,9 +26,10 @@ interface Props {
   pageInfo: PageInfo;
   onPageChange: (cursor: string, direction: "next" | "prev") => void;
   pageSize: number;
+  baseUrl: string;
 }
 
-const UserEntriesTable: FC<Props> = ({ entries, pageInfo, onPageChange, pageSize }) => {
+const UserEntriesTable: FC<Props> = ({ entries, pageInfo, onPageChange, pageSize, baseUrl }) => {
   const [expandedRowKey, setExpandedRowKey] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -37,7 +38,11 @@ const UserEntriesTable: FC<Props> = ({ entries, pageInfo, onPageChange, pageSize
   const { currentPage, start, updatePage } = usePagination(pageSize, pageInfo, handlePageChange);
   const end = start + entries.length - 1;
 
-  const columns = userWorkEntriesColumns(navigate);
+  let columns = userWorkEntriesColumns(navigate, baseUrl);
+
+  if(baseUrl.includes("company")){
+    columns = columns.filter(item => item.key !== 'client')
+  }
 
   return (
     <>

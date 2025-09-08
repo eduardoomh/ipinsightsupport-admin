@@ -50,6 +50,7 @@ export default function ClientEntriesPage() {
                     pageInfo={pageInfo}
                     onPageChange={handlePageChange}
                     pageSize={take}
+                    baseUrl={`/admin/company/work-entries/${client.id}`}
                   />
                   <Outlet context={{ refreshResults, client }} />
                 </>

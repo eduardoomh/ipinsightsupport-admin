@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Card, Row, Col, Table, Skeleton } from "antd";
+import { Row, Col } from "antd";
 import dayjs from "dayjs";
 import StatsCard from "./utils/StatsCard";
-import { CartesianGrid, LineChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Line as ReLine } from "recharts";
 import { useNavigate } from "@remix-run/react";
+import { userWorkEntriesColumns } from "../entries/utils/userWorkEntriesColumns";
+import WorkEntriesChart from "./utils/WorkEntriesChart";
+import LastWorkEntryTable from "./utils/LastWorkEntryTable";
+import TodayEventsTable from "./utils/TodayEventsTable";
 
-interface WorkEntry {
+export interface WorkEntry {
   id: string;
   billed_on: string;
   hours_billed: number;
@@ -22,7 +25,6 @@ interface DashboardProps {
   hoursEngineering: number;
   hoursArchitecture: number;
   hoursSeniorArchitecture: number;
-  lastWorkEntry: WorkEntry[];
   todayEvents: { id: string; title: string; time: string }[];
   loading?: boolean;
 }
@@ -34,14 +36,19 @@ const Dashboard: React.FC<DashboardProps> = ({
   hoursEngineering,
   hoursArchitecture,
   hoursSeniorArchitecture,
-  lastWorkEntry,
   todayEvents,
   loading = false,
 }) => {
   const navigate = useNavigate();
-  const [workEntriesData, setWorkEntriesData] = useState<{ date: string; entries: number }[]>([]);
+  const [workEntriesData, setWorkEntriesData] = useState<{ date: string; hours: number }[]>([]);
   const [statsLoading, setStatsLoading] = useState(false);
+  const [lastWorkEntryData, setLastWorkEntryData] = useState<WorkEntry | null>(null);
+  const [lastLoading, setLastLoading] = useState(false);
 
+  let columns: any = userWorkEntriesColumns(navigate, null);
+  columns = columns.filter(item => item.key !== "operation");
+
+  // 📊 Fetch stats
   useEffect(() => {
     const fetchStats = async () => {
       setStatsLoading(true);
@@ -50,16 +57,16 @@ const Dashboard: React.FC<DashboardProps> = ({
         const json = await res.json();
         const data: WorkEntry[] = json.workEntries || [];
 
-        // Agrupar por billed_on
         const grouped: Record<string, number> = {};
         data.forEach(entry => {
           const date = dayjs(entry.billed_on).format("YYYY-MM-DD");
-          grouped[date] = (grouped[date] || 0) + 1;
+          const hours = Number(entry.hours_billed) || 0;
+          grouped[date] = (grouped[date] || 0) + hours;
         });
 
         const chartData = Object.entries(grouped)
-          .map(([date, entries]) => ({ date, entries }))
-          .sort((a, b) => dayjs(a.date).isAfter(dayjs(b.date)) ? 1 : -1);
+          .map(([date, hours]) => ({ date, hours }))
+          .sort((a, b) => dayjs(a.date).diff(dayjs(b.date)));
 
         setWorkEntriesData(chartData);
       } catch (err) {
@@ -72,14 +79,33 @@ const Dashboard: React.FC<DashboardProps> = ({
     fetchStats();
   }, []);
 
+  // 📌 Fetch last work entry
+  useEffect(() => {
+    const fetchLastWorkEntry = async () => {
+      setLastLoading(true);
+      try {
+        const res = await fetch("/api/work-entries/last");
+        const json = await res.json();
+        const workEntry: WorkEntry | null = json.workEntry || null;
+        setLastWorkEntryData(workEntry);
+      } catch (err) {
+        console.error("Error fetching last work entry:", err);
+      } finally {
+        setLastLoading(false);
+      }
+    };
+
+    fetchLastWorkEntry();
+  }, []);
+
   return (
     <div className="py-6 space-y-6">
-      {/* Stats */}
+      {/* 🔢 Stats */}
       <Row gutter={16}>
         {[
           ["Total work entries", totalWorkEntries],
           ["Companies as Account Manager", companiesAsAccountManager],
-          ["Companies as Team Member", companiesAsTeamMember]
+          ["Companies as Team Member", companiesAsTeamMember],
         ].map(([label, value]) => (
           <Col span={8} key={label}>
             { //@ts-ignore 
@@ -88,32 +114,15 @@ const Dashboard: React.FC<DashboardProps> = ({
         ))}
       </Row>
 
-      {/* Work Entries Over Time */}
-      <Card
-        style={{ border: "1px solid #d3d3d3", marginBottom: '16px' }}
-        title={<span style={{ color: "#014a64", fontWeight: 'bold' }}>Work Entries Over Time</span>}
-      >
-        {statsLoading ? (
-          <Skeleton active paragraph={{ rows: 6 }} />
-        ) : (
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={workEntriesData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <ReLine type="monotone" dataKey="entries" stroke="#1890ff" strokeWidth={2} />
-            </LineChart>
-          </ResponsiveContainer>
-        )}
-      </Card>
+      {/* 📊 Chart */}
+      <WorkEntriesChart data={workEntriesData} loading={statsLoading} />
 
-      {/* Hours */}
+      {/* ⏱ Hours */}
       <Row gutter={16}>
         {[
           ["Hours Engineering", hoursEngineering],
           ["Hours Architecture", hoursArchitecture],
-          ["Hours Senior Architecture", hoursSeniorArchitecture]
+          ["Hours Senior Architecture", hoursSeniorArchitecture],
         ].map(([label, value]) => (
           <Col span={8} key={label}>
             { //@ts-ignore 
@@ -122,64 +131,11 @@ const Dashboard: React.FC<DashboardProps> = ({
         ))}
       </Row>
 
-      {/* Last Work Entry */}
-      <Card
-        style={{ border: "1px solid #d3d3d3", marginBottom: '16px' }}
-        title={<span style={{ color: "#014a64", fontWeight: 'bold' }}>Last Work Entry</span>}
-      >
-        <Table
-          dataSource={loading ? [] : lastWorkEntry}
-          rowKey="id"
-          className="custom-table"
-          pagination={false}
-          loading={loading}
-          columns={[
-            { title: "Billed Date", dataIndex: "billed_on", key: "billed_on" },
-            {
-              title: "Client", dataIndex: "client", render: (_, record) => (
-                loading ? <Skeleton.Input style={{ width: 120 }} active /> :
-                <span
-                  style={{ cursor: "pointer", textDecoration: "underline" }}
-                  onClick={() => navigate(`/company/dashboard/${record.client.id}`)}
-                >
-                  {record.client.company}
-                </span>
-              )
-            },
-            {
-              title: "Hours", dataIndex: "hours_billed", render: (_, record) => (
-                loading ? <Skeleton.Input style={{ width: 80 }} active /> :
-                <div className="leading-snug">
-                  <div>{record.hours_billed} hrs billed</div>
-                  <div className="text-gray-500 text-sm">{record.hours_spent} hrs spent</div>
-                </div>
-              )
-            },
-            {
-              title: "Hourly rate", dataIndex: "hourly_rate", render: (data) =>
-                loading ? <Skeleton.Input style={{ width: 60 }} active /> : <p>${data}/h</p>
-            },
-          ]}
-        />
-      </Card>
+      {/* 📌 Last Work Entry */}
+      <LastWorkEntryTable data={lastWorkEntryData as any} columns={columns} loading={lastLoading} />
 
-      {/* Today Events */}
-      <Card
-        style={{ border: "1px solid #d3d3d3", marginBottom: '16px' }}
-        title={<span style={{ color: "#014a64", fontWeight: 'bold' }}>Today Events</span>}
-      >
-        <Table
-          dataSource={loading ? [] : todayEvents}
-          rowKey="id"
-          className="custom-table"
-          pagination={false}
-          loading={loading}
-          columns={[
-            { title: "Title", dataIndex: "title", key: "title", render: (text) => loading ? <Skeleton.Input style={{ width: 120 }} active /> : text },
-            { title: "Time", dataIndex: "time", key: "time", render: (text) => loading ? <Skeleton.Input style={{ width: 80 }} active /> : text },
-          ]}
-        />
-      </Card>
+      {/* 📅 Today Events */}
+      <TodayEventsTable events={todayEvents} loading={loading} />
     </div>
   );
 };

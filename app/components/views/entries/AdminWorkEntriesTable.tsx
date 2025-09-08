@@ -15,9 +15,10 @@ interface Props {
   pageInfo: PageInfo;
   onPageChange: (cursor: string, direction: "next" | "prev") => void;
   pageSize: number;
+  baseUrl: string;
 }
 
-const AdminWorkEntriesTable: FC<Props> = ({ entries, pageInfo, onPageChange, pageSize }) => {
+const AdminWorkEntriesTable: FC<Props> = ({ entries, pageInfo, onPageChange, pageSize, baseUrl }) => {
   const [expandedRowKey, setExpandedRowKey] = useState<string | null>(null);
   const navigate = useNavigate();
 
@@ -26,7 +27,11 @@ const AdminWorkEntriesTable: FC<Props> = ({ entries, pageInfo, onPageChange, pag
   const { currentPage, start, updatePage } = usePagination(pageSize, pageInfo, handlePageChange);
   const end = start + entries.length - 1;
 
-  const columns = workEntriesColumns(navigate);
+  let columns = workEntriesColumns(navigate, baseUrl);
+
+  if(baseUrl.includes("/admin/company/")){
+    columns = columns.filter(item => item.key !== 'client')
+  }
 
   return (
     <>

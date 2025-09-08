@@ -58,6 +58,7 @@ export default function UserEntriesPage() {
                   pageInfo={pageInfo}
                   onPageChange={handlePageChange}
                   pageSize={take}
+                  baseUrl={`/entries/${userId}`}
                 />
                 <Outlet context={{ refreshResults }} />
               </>

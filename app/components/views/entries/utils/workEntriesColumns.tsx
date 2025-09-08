@@ -5,8 +5,9 @@ import dayjs from 'dayjs';
 import { DataType } from './workEntries.interface';
 
 export const workEntriesColumns = (
-    navigate: (path: string) => void
-): TableColumnsType<DataType> => [
+    navigate: (path: string) => void,
+    baseUrl: string
+): TableColumnsType<DataType> =>  [
     {
       title: "Billed Date",
       dataIndex: "billed_on",
@@ -57,7 +58,10 @@ export const workEntriesColumns = (
       fixed: "right",
       width: 150,
       render: (_: any, record: DataType) => (
-        <Button icon={<EditOutlined style={{ fontSize: "16px" }} />}>
+        <Button 
+          icon={<EditOutlined style={{ fontSize: "16px" }} />}
+          onClick={() => navigate(`${baseUrl}/edit/${record.id}`)}
+          >
           Edit
         </Button>
       ),
