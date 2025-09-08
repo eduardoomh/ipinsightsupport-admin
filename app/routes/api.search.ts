@@ -69,7 +69,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
           { user: { name: { contains: q, mode: "insensitive" } } },
         ],
       },
-      take: 20,
+      take: 3,
       orderBy: { billed_on: "desc" },
       select: {
         id: true,
@@ -89,7 +89,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
           { client: { company: { contains: q, mode: "insensitive" } } },
         ],
       },
-      take: 20,
+      take: 1,
       orderBy: { date_activated: "desc" },
       select: {
         id: true,

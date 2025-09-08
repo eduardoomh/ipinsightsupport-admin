@@ -102,17 +102,6 @@ const SearchResultsList: React.FC<Props> = ({ results, loading, onClickResult, q
             </div>
           </div>
         ))}
-
-        <div
-          className="mt-2 text-center cursor-pointer hover:underline"
-          style={{ color: "#096584" }}
-          onClick={() => {
-            navigate(`/search?q=${encodeURIComponent(query)}`);
-            closeModal();
-          }}
-        >
-          Ver más resultados...
-        </div>
       </div>
     );
   }
