@@ -1,7 +1,6 @@
 // ContactProfileInfo.tsx
 import { Descriptions } from "antd";
 import { ClientI } from "~/interfaces/clients.interface";
-import type { ContactI } from "~/interfaces/contact.interface";
 import { getTimezoneLabel } from '../../../utils/general/getTimezoneLabel';
 import { getClientStatusLabel } from "~/utils/general/getClientStatusLabel";
 

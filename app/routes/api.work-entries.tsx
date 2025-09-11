@@ -115,10 +115,10 @@ export const action: ActionFunction = async ({ request }) => {
       rateType === "engineering"
         ? engRate
         : rateType === "architecture"
-        ? archRate
-        : rateType === "senior_architecture"
-        ? seniorRate
-        : NaN;
+          ? archRate
+          : rateType === "senior_architecture"
+            ? seniorRate
+            : NaN;
 
     if (!Number.isFinite(rate) || rate <= 0) {
       return new Response(
@@ -182,6 +182,7 @@ export const action: ActionFunction = async ({ request }) => {
       });
 
       // Buscar o crear UserStats
+      // Buscar o crear UserStats
       let stats = await tx.userStats.findFirst({
         where: { user_id: entry.user_id, month, year },
       });
@@ -222,6 +223,48 @@ export const action: ActionFunction = async ({ request }) => {
         });
       }
 
+      // Buscar o crear AdminStats
+      let adminStats = await tx.adminStats.findFirst({
+        where: { month, year },
+      });
+
+      if (adminStats) {
+        adminStats = await tx.adminStats.update({
+          where: { id: adminStats.id },
+          data: {
+            total_work_entries: adminStats.total_work_entries + 1,
+            hours_engineering:
+              rateType === "engineering"
+                ? adminStats.hours_engineering + entry.hours_billed
+                : adminStats.hours_engineering,
+            hours_architecture:
+              rateType === "architecture"
+                ? adminStats.hours_architecture + entry.hours_billed
+                : adminStats.hours_architecture,
+            hours_senior_architecture:
+              rateType === "senior_architecture"
+                ? adminStats.hours_senior_architecture + entry.hours_billed
+                : adminStats.hours_senior_architecture,
+            hours_total: adminStats.hours_total + entry.hours_billed,
+          },
+        });
+      } else {
+        adminStats = await tx.adminStats.create({
+          data: {
+            month,
+            year,
+            total_work_entries: 1,
+            total_retainers: 0,
+            total_clients: 0,
+            retainers_amount: 0,
+            hours_total: entry.hours_billed,
+            hours_engineering: rateType === "engineering" ? entry.hours_billed : 0,
+            hours_architecture: rateType === "architecture" ? entry.hours_billed : 0,
+            hours_senior_architecture:
+              rateType === "senior_architecture" ? entry.hours_billed : 0,
+          },
+        });
+      }
       return [workEntry, clientUpdated, stats];
     });
 

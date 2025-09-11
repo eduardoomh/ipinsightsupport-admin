@@ -1,7 +1,6 @@
 import { LoaderFunction } from "@remix-run/node";
 import { prisma } from "~/config/prisma.server";
 import { getUserId } from "~/config/session.server";
-
 export const loader: LoaderFunction = async ({ request }) => {
   // 1️⃣ Obtener el userId de la sesión
   const userId = await getUserId(request);
@@ -12,20 +11,31 @@ export const loader: LoaderFunction = async ({ request }) => {
     });
   }
 
-  // 2️⃣ Determinar el mes actual
+  // 2️⃣ Revisar query params
+  const url = new URL(request.url);
+  const isAdmin = url.searchParams.get("admin") === "true";
+
+  // 3️⃣ Determinar el mes actual
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
 
-  // 3️⃣ Query para traer todos los work entries del mes de este usuario
-  const workEntries = await prisma.workEntry.findMany({
-    where: {
-      user_id: userId,
-      created_at: {
-        gte: startOfMonth,
-        lt: startOfNextMonth,
-      },
+  // 4️⃣ Construir filtro dinámico
+  const whereFilter: any = {
+    created_at: {
+      gte: startOfMonth,
+      lt: startOfNextMonth,
     },
+  };
+
+  if (!isAdmin) {
+    // Solo filtrar por userId si no es admin
+    whereFilter.user_id = userId;
+  }
+
+  // 5️⃣ Query
+  const workEntries = await prisma.workEntry.findMany({
+    where: whereFilter,
     include: {
       client: {
         select: {

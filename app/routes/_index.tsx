@@ -19,9 +19,10 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   return null;
 };
+
 export default function Index() {
   const user = useContext(UserContext);
-  const [stats, setStats] = useState<any>(null); // stats que vienen del API
+  const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -62,7 +63,6 @@ export default function Index() {
         hoursEngineering={stats?.hours_engineering ?? 0}
         hoursArchitecture={stats?.hours_architecture ?? 0}
         hoursSeniorArchitecture={stats?.hours_senior_architecture ?? 0}
-        lastWorkEntry={[]}
         todayEvents={[]}
         loading={loading}
       />

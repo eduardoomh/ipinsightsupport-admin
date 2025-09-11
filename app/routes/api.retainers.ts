@@ -91,7 +91,7 @@ export const action: ActionFunction = async ({ request }) => {
     const parsed = RetainerSchema.parse(JSON.parse(retainerJson));
     const defaultRates = getDefaultRates()
 
-    let engRate =  defaultRates.engineering;
+    let engRate = defaultRates.engineering;
     let archRate = defaultRates.architecture;
     let seniorRate = defaultRates.senior_architecture;
 
@@ -151,19 +151,59 @@ export const action: ActionFunction = async ({ request }) => {
     }
 
     // Ejecutar la creación del retainer y la actualización del cliente en una transacción
-    const [newRetainer] = await prisma.$transaction([
-      prisma.retainer.create({ data: retainerData }),
-      prisma.client.update({
+
+    const activatedDate = new Date(parsed.date_activated);
+    const month = activatedDate.getMonth() + 1;
+    const year = activatedDate.getFullYear();
+
+    const [newRetainer, updatedClient, updatedAdminStats] = await prisma.$transaction(async (tx) => {
+      // Crear el Retainer
+      const retainer = await tx.retainer.create({ data: retainerData });
+
+      // Actualizar Cliente
+      const clientUpdated = await tx.client.update({
         where: { id: parsed.client_id },
         data: {
           remainingFunds: fundsAfter,
-          most_recent_retainer_activated: new Date(parsed.date_activated),
+          most_recent_retainer_activated: activatedDate,
           estimated_engineering_hours: estimatedEngineeringHours,
           estimated_architecture_hours: estimatedArchitectureHours,
           estimated_senior_architecture_hours: estimatedSeniorArchitectureHours,
         },
-      }),
-    ]);
+      });
+
+      // Actualizar AdminStats
+      let adminStats = await tx.adminStats.findFirst({
+        where: { month, year },
+      });
+
+      if (adminStats) {
+        adminStats = await tx.adminStats.update({
+          where: { id: adminStats.id },
+          data: {
+            total_retainers: adminStats.total_retainers + 1,
+            retainers_amount: adminStats.retainers_amount + parsed.amount,
+          },
+        });
+      } else {
+        adminStats = await tx.adminStats.create({
+          data: {
+            month,
+            year,
+            total_work_entries: 0,
+            total_retainers: 1,
+            total_clients: 0,
+            retainers_amount: parsed.amount,
+            hours_total: 0,
+            hours_engineering: 0,
+            hours_architecture: 0,
+            hours_senior_architecture: 0,
+          },
+        });
+      }
+
+      return [retainer, clientUpdated, adminStats];
+    });
 
     return new Response(JSON.stringify(newRetainer), {
       status: 201,

@@ -231,6 +231,22 @@ model UserStats {
   @@unique([user_id, month, year], name: "user_month_year_unique")
 }
 
+model AdminStats {
+  id                           String @id @default(uuid())
+
+  month                        Int?
+  year                         Int?
+
+  total_work_entries           Int?   @default(0)
+  total_retainers              Int?   @default(0)
+  total_clients                Int?   @default(0)
+  retainers_amount             Float? @default(0.0)
+  hours_total                  Float? @default(0.0)
+  hours_engineering            Float? @default(0.0)
+  hours_architecture           Float? @default(0.0)
+  hours_senior_architecture    Float? @default(0.0)
+}
+
 enum ClientStatus {
   ADHOC
   IN_PROGRESS

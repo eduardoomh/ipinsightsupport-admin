@@ -6,7 +6,6 @@ import { prisma } from "~/config/prisma.server";
 import { getUserId } from "~/config/session.server";
 import { buildDynamicSelect } from "~/utils/fields/buildDynamicSelect";
 import { ClientStatus, getClientStatusLabel } from "~/utils/general/getClientStatusLabel";
-import { getTimezoneLabel } from "~/utils/general/getTimezoneLabel";
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   const clientId = params.id;
@@ -100,16 +99,34 @@ export const action: ActionFunction = async ({ params, request }) => {
       }
 
       // Transacción para borrar todo lo relacionado
-      await prisma.$transaction([
-        prisma.retainer.deleteMany({ where: { client_id: clientId } }),
-        prisma.contact.deleteMany({ where: { client_id: clientId } }),
-        prisma.workEntry.deleteMany({ where: { client_id: clientId } }),
-        prisma.teamMember.deleteMany({ where: { client_id: clientId } }),
-        prisma.clientRates.deleteMany({ where: { clientId } }),
-        prisma.clientStatusHistory.deleteMany({ where: { clientId } }),
-        prisma.scheduleEntry.deleteMany({ where: { client_id: clientId } }),
-        prisma.client.delete({ where: { id: clientId } }),
-      ]);
+      await prisma.$transaction(async (tx) => {
+        await tx.retainer.deleteMany({ where: { client_id: clientId } });
+        await tx.contact.deleteMany({ where: { client_id: clientId } });
+        await tx.workEntry.deleteMany({ where: { client_id: clientId } });
+        await tx.teamMember.deleteMany({ where: { client_id: clientId } });
+        await tx.clientRates.deleteMany({ where: { clientId } });
+        await tx.clientStatusHistory.deleteMany({ where: { clientId } });
+        await tx.scheduleEntry.deleteMany({ where: { client_id: clientId } });
+        await tx.client.delete({ where: { id: clientId } });
+      
+        // 📊 Ajustar AdminStats si existe
+        const now = new Date();
+        const month = now.getMonth() + 1;
+        const year = now.getFullYear();
+      
+        const adminStats = await tx.adminStats.findFirst({
+          where: { month, year },
+        });
+      
+        if (adminStats && (adminStats.total_clients ?? 0) > 0) {
+          await tx.adminStats.update({
+            where: { id: adminStats.id },
+            data: {
+              total_clients: adminStats.total_clients - 1,
+            },
+          });
+        }
+      });
 
       return json({ deleted: client }, { status: 200 });
     }
@@ -139,7 +156,7 @@ export const action: ActionFunction = async ({ params, request }) => {
         where: { id: clientId },
         data: {
           company: updatedFields.company,
-          timezone: getTimezoneLabel(updatedFields.timezone as any) as any,
+          timezone: updatedFields.timezone as any,
           account_manager_id: updatedFields.account_manager_id,
           currentStatus: updatedFields.currentStatus,
         },

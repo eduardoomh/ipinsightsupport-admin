@@ -7,7 +7,6 @@ import { buildCursorPaginationQuery } from "~/utils/pagination/buildCursorPagina
 import { buildDynamicSelect } from "~/utils/fields/buildDynamicSelect";
 import { getUserId } from "~/config/session.server";
 import { getDefaultRates } from "~/utils/general/getDefaultRates";
-import { getTimezoneLabel } from "~/utils/general/getTimezoneLabel";
 
 // GET /api/clients → obtener todos los clientes con relaciones clave
 export const loader: LoaderFunction = async ({ request }) => {
@@ -172,13 +171,17 @@ export const action: ActionFunction = async ({ request }) => {
     const clientParsed = JSON.parse(clientJson);
     const client = ClientSchema.parse(clientParsed); // valida el input
 
+    const now = new Date();
+    const month = now.getMonth() + 1;
+    const year = now.getFullYear();
+
     const savedClient = await prisma.$transaction(async (tx) => {
       // 1. Crear cliente
       const newClient = await tx.client.create({
         data: {
           company: client.company,
           currentStatus: client.currentStatus ?? "TRANSFER",
-          timezone: getTimezoneLabel(client.timezone as any) as any ?? "CENTRAL",
+          timezone: client.timezone ?? "CENTRAL",
           remainingFunds: client.remainingFunds ?? 0.0,
           most_recent_work_entry: client.most_recent_work_entry ?? null,
           most_recent_retainer_activated: client.most_recent_retainer_activated ?? null,
@@ -196,6 +199,35 @@ export const action: ActionFunction = async ({ request }) => {
           seniorArchitectureRate: defaultRates.senior_architecture,
         },
       });
+
+      // 3. Actualizar AdminStats
+      let adminStats = await tx.adminStats.findFirst({
+        where: { month, year },
+      });
+
+      if (adminStats) {
+        await tx.adminStats.update({
+          where: { id: adminStats.id },
+          data: {
+            total_clients: adminStats.total_clients + 1,
+          },
+        });
+      } else {
+        await tx.adminStats.create({
+          data: {
+            month,
+            year,
+            total_clients: 1,
+            total_work_entries: 0,
+            total_retainers: 0,
+            retainers_amount: 0,
+            hours_total: 0,
+            hours_engineering: 0,
+            hours_architecture: 0,
+            hours_senior_architecture: 0,
+          },
+        });
+      }
 
       return newClient;
     });

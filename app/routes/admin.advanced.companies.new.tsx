@@ -3,7 +3,6 @@ import { useOutletContext, useNavigate } from "@remix-run/react";
 import { message, Drawer } from "antd";
 import { useState } from "react";
 import ClientForm from "~/components/views/clients/ClientsForm";
-import { getTimezoneLabel } from "~/utils/general/getTimezoneLabel";
 
 export default function NewUserDrawerRoute() {
   const navigate = useNavigate();
@@ -20,7 +19,7 @@ export default function NewUserDrawerRoute() {
       const clientFormData = new FormData();
       const clientPayload = {
         company: values.company,
-        timezone: getTimezoneLabel(values.timezone as any),
+        timezone: values.timezone,
       };
       clientFormData.append("client", JSON.stringify(clientPayload));
 
