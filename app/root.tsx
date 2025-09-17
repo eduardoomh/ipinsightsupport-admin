@@ -7,7 +7,7 @@ import {
   useLoaderData,
   useLocation
 } from "@remix-run/react";
-import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 
 import "./tailwind.css";
@@ -16,6 +16,7 @@ import { UserContext } from "./context/UserContext";
 import { AppModeProvider } from "./context/AppModeContext";
 import { getSessionFromCookie } from "./utils/sessions/getSessionFromCookie";
 import 'react-quill/dist/quill.snow.css';
+import 'antd/dist/reset.css'; 
 
 // 🧠 Loader del root
 export async function loader({ request }: LoaderFunctionArgs) {

@@ -1,37 +1,76 @@
-// routes/admin/advanced/work-entries/index.tsx
 import { LoaderFunction } from "@remix-run/node";
-import { Await, Outlet } from "@remix-run/react";
+import { Await, Outlet, useLoaderData } from "@remix-run/react";
 import { Suspense } from "react";
-
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import SkeletonEntries from "~/components/skeletons/SkeletonEntries";
 import AdminWorkEntriesTable from "~/components/views/entries/AdminWorkEntriesTable";
-
+import HeaderActions from "~/components/filters/HeaderActions";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 import { withPaginationDefer } from "~/utils/pagination/withPaginationDefer";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
 import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPagination";
+import { useFilters } from "~/hooks/useFilters";
 
 export const loader: LoaderFunction = async ({ request }) => {
+  const url = new URL(request.url);
+  const filter = url.searchParams.get("filter");
+  const from = url.searchParams.get("from");
+  const to = url.searchParams.get("to");
+
+  const apiUrl = new URL(`${process.env.APP_URL}/api/work-entries`);
+
+  if (filter === "date" && from && to) {
+    apiUrl.searchParams.set("filter", "date");
+    apiUrl.searchParams.set("from", from);
+    apiUrl.searchParams.set("to", to);
+  } else if (filter === "recent") {
+    apiUrl.searchParams.set("filter", "recent");
+  }
+
   return withPaginationDefer({
     request,
-    apiPath: `${process.env.APP_URL}/api/work-entries`,
+    apiPath: apiUrl.toString(),
     sessionCheck: () => getSessionFromCookie(request),
     key: "workEntries",
   });
 };
 
 export default function AdminWorkEntries() {
-  const { data: workEntriesData, take, handlePageChange } = useCursorPagination("workEntries");
-  const refreshResults = useRefreshAndResetPagination(`/admin/work-entries`);
+  const initialData = useLoaderData<typeof loader>();
+
+  const {
+    selectedFilter,
+    setSelectedFilter,
+    dateRange,
+    setDateRange,
+    dataPromise,
+    handleApplyFilter,
+    handleResetFilter,
+  } = useFilters();
+
+  const { data: workEntriesData, take, handlePageChange } =
+    useCursorPagination("workEntries");
+
+  const headerActions = (
+    <HeaderActions
+      title="Filter entries"
+      path="/api/work-entries"
+      fileName="work-entries"
+      selectedFilter={selectedFilter}
+      setSelectedFilter={setSelectedFilter}
+      dateRange={dateRange}
+      setDateRange={setDateRange}
+      handleApplyFilter={handleApplyFilter}
+      handleResetFilter={handleResetFilter}
+    />
+  );
 
   return (
-    <DashboardLayout title="Work entries">
+    <DashboardLayout title="Work entries" headerActions={headerActions}>
       <Suspense fallback={<SkeletonEntries />}>
-        <Await resolve={workEntriesData}>
+        <Await resolve={dataPromise || initialData.workEntries}>
           {(data: any) => {
             const { workEntries, pageInfo } = data;
-
             return (
               <>
                 <AdminWorkEntriesTable
@@ -41,7 +80,13 @@ export default function AdminWorkEntries() {
                   pageSize={take}
                   baseUrl={`/admin/work-entries`}
                 />
-                <Outlet context={{ refreshResults }} />
+                <Outlet
+                  context={{
+                    refreshResults: useRefreshAndResetPagination(
+                      `/admin/work-entries`
+                    ),
+                  }}
+                />
               </>
             );
           }}

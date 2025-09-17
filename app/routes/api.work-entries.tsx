@@ -11,7 +11,10 @@ import { getDefaultRates } from "~/utils/general/getDefaultRates";
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
   const clientId = url.searchParams.get("client_id"); // filtro opcional por cliente
-  const userId = url.searchParams.get("user_id"); // <-- nuevo filtro opcional por usuario
+  const userId = url.searchParams.get("user_id");     // filtro opcional por usuario
+  const filter = url.searchParams.get("filter");      // filtro opcional
+  const from = url.searchParams.get("from");          // fecha inicio
+  const to = url.searchParams.get("to");              // fecha fin
   const cursor = url.searchParams.get("cursor");
   const takeParam = url.searchParams.get("take");
   const direction = url.searchParams.get("direction") as "next" | "prev";
@@ -22,16 +25,29 @@ export const loader: LoaderFunction = async ({ request }) => {
     cursor,
     take,
     direction,
-    orderByField: "created_at",
-    select: undefined, // usamos include
+    orderByField: "created_at", // paginación sigue usando created_at
+    select: undefined,          // usamos include
   });
 
-  // Agregamos filtros opcionales
+  // Agregamos filtros opcionales existentes
   queryOptions.where = {
     ...(queryOptions.where || {}),
     ...(clientId ? { client_id: clientId } : {}),
     ...(userId ? { user_id: userId } : {}),
   };
+
+  // Filtro de fechas por billed_on
+  if (filter === "date" && from && to) {
+    queryOptions.where = {
+      ...queryOptions.where,
+      billed_on: {
+        gte: new Date(from),
+        lte: new Date(to),
+      },
+    };
+  } else if (filter === "recent") {
+    // Se mantiene la paginación por created_at descendente
+  }
 
   // Incluimos solo los campos necesarios
   queryOptions.include = {
