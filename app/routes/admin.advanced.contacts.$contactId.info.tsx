@@ -53,7 +53,7 @@ export default function InfoContactModal() {
             ) : contact ? (
                 <div className="p-4">
                     <ContactCard contact={contact} />
-                    <ContactProfileInfo contact={contact} />
+                    <ContactProfileInfo contact={contact} hasNotPassword={!contact.has_password} />
 
                     {contact.client && (
                         <>

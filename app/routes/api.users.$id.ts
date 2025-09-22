@@ -1,6 +1,7 @@
 // app/routes/api/users.$id.ts
 import type { LoaderFunction, ActionFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
+import bcrypt from "bcryptjs";
 import { prisma } from "~/config/prisma.server";
 
 // GET /api/users/:id
@@ -25,6 +26,7 @@ export const loader: LoaderFunction = async ({ params }) => {
         type: true,
         avatar: true,
         last_login: true,
+        password: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -34,7 +36,24 @@ export const loader: LoaderFunction = async ({ params }) => {
       return json({ error: "User not found" }, { status: 404 });
     }
 
-    return json(user, { status: 200 });
+    // Default password
+    const defaultPassword = "changeme123";
+
+    // Comparar el hash del user con la contraseña por default
+    const isDefaultPassword = await bcrypt.compare(defaultPassword, user.password);
+
+    const userWithoutPassword = {
+      ...user,
+      password: undefined,
+    };
+
+    const userWithPasswordFlag = {
+      ...userWithoutPassword,
+      has_password: !isDefaultPassword,
+    };
+
+
+    return json(userWithPasswordFlag, { status: 200 });
   } catch (error) {
     console.error("Error fetching user:", error);
     return json({ error: "Server error" }, { status: 500 });

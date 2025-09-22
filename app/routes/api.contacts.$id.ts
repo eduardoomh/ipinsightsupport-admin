@@ -1,4 +1,5 @@
 import type { LoaderFunction, ActionFunction } from "@remix-run/node";
+import bcrypt from "bcryptjs";
 import { prisma } from "~/config/prisma.server";
 import { ContactSchema } from "~/utils/schemas/contactSchema";
 
@@ -26,7 +27,20 @@ export const loader: LoaderFunction = async ({ params }) => {
     });
   }
 
-  return new Response(JSON.stringify(contact), {
+  const defaultPassword = "changeme123";
+
+  const isDefaultPassword = contact.password
+    ? await bcrypt.compare(defaultPassword, contact.password)
+    : false;
+
+  const contactWithPasswordFlag = {
+    ...contact,
+    has_password: contact.password ? !isDefaultPassword : false, 
+  };
+
+  delete (contactWithPasswordFlag as any).password;
+
+  return new Response(JSON.stringify(contactWithPasswordFlag), {
     status: 200,
     headers: { "Content-Type": "application/json" },
   });

@@ -10,6 +10,7 @@ export interface UsersI {
     type: 'engineering' | 'archtecture' | 'senior_architecture',
     avatar: string,
     last_login: null,
+    has_password?: boolean,
     createdAt: string;
     updatedAt: string;
 }

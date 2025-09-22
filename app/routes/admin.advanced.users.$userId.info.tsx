@@ -78,7 +78,7 @@ export default function InfoUserModal() {
       ) : user ? (
         <>
           <AvatarCard user={user} />
-          <UserProfileInfo user={user} stats={stats} statsLoading={statsLoading} />
+          <UserProfileInfo user={user} stats={stats} statsLoading={statsLoading} hasNotPassword={!user.has_password} />
         </>
       ) : (
         <div className="text-center text-red-500">User not found</div>

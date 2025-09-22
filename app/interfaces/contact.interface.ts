@@ -7,6 +7,7 @@ export interface ContactI {
     phone: string;
     client_id: string | null;
     client: ClientI;
+    has_password?: boolean;
     createdAt: string;
     updatedAt: string;
 }
