@@ -17,12 +17,16 @@ export const loader: LoaderFunction = async ({ request }) => {
       JSON.stringify({ error: "Unauthorized" }),
       {
         status: 401,
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
       }
     );
   }
+
   const url = new URL(request.url);
   const clientId = url.searchParams.get("client_id");
+  const filter = url.searchParams.get("filter"); // nuevo filtro
+  const from = url.searchParams.get("from");     // fecha inicio
+  const to = url.searchParams.get("to");         // fecha fin
   const cursor = url.searchParams.get("cursor");
   const takeParam = url.searchParams.get("take");
   const direction = url.searchParams.get("direction") as "next" | "prev";
@@ -37,33 +41,39 @@ export const loader: LoaderFunction = async ({ request }) => {
     select: undefined,
   });
 
-  // Si viene client_id, agrega filtro
-  if (clientId) {
+  // Filtro por client_id si viene
+  queryOptions.where = {
+    ...(queryOptions.where || {}),
+    ...(clientId ? { client_id: clientId } : {}),
+  };
+
+  // Filtro por fechas
+  if (filter === "date" && from && to) {
     queryOptions.where = {
-      ...(queryOptions.where || {}),
-      client_id: clientId,
+      ...queryOptions.where,
+      date_activated: {
+        gte: new Date(from),
+        lte: new Date(to),
+      },
     };
+  } else if (filter === "recent") {
+    // Mantener orden descendente por date_activated, no hace falta cambiar where
   }
 
-  // Solo traer campos específicos de client y created_by
+  // Selección de relaciones
   queryOptions.include = {
     client: {
-      select: {
-        id: true,
-        company: true,
-      },
+      select: { id: true, company: true },
     },
     created_by: {
-      select: {
-        id: true,
-        name: true,
-        email: true,
-      },
+      select: { id: true, name: true, email: true },
     },
   };
 
+  // Ejecuta la query
   const retainers = await prisma.retainer.findMany(queryOptions);
 
+  // Construcción de información de paginación
   const { items, pageInfo } = buildPageInfo(retainers, take, isBackward, cursor);
 
   return new Response(

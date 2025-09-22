@@ -14,21 +14,22 @@ const resend = new Resend(process.env.RESEND_API_KEY || "re_test_placeholder");
 
 // GET /api/contacts → obtener todos los contactos
 export const loader: LoaderFunction = async ({ request }) => {
-    const userId = await getUserId(request);
-    if (!userId) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
-        {
-          status: 401,
-          headers: { "Content-Type": "application/json" }
-        }
-      );
-    }
+  const userId = await getUserId(request);
+  if (!userId) {
+    return new Response(
+      JSON.stringify({ error: "Unauthorized" }),
+      { status: 401, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
   const url = new URL(request.url);
   const cursor = url.searchParams.get("cursor");
   const takeParam = url.searchParams.get("take");
   const direction = url.searchParams.get("direction") as "next" | "prev";
   const clientId = url.searchParams.get("client_id");
+  const filter = url.searchParams.get("filter"); // opcional: e.g., "recent" o "date"
+  const from = url.searchParams.get("from");     // fecha inicio
+  const to = url.searchParams.get("to");         // fecha fin
 
   const take = takeParam ? parseInt(takeParam, 10) : 6;
 
@@ -37,15 +38,27 @@ export const loader: LoaderFunction = async ({ request }) => {
     take,
     direction,
     orderByField: "createdAt",
-    // NO ponemos select aquí porque Prisma no permite select + include en la misma query si queremos incluir relaciones
   });
 
-  // Filtrar por clientId si se pasa
+  // Filtro por clientId
   if (clientId) {
-    queryOptions.where = { client_id: clientId };
+    queryOptions.where = { ...(queryOptions.where || {}), client_id: clientId };
   }
 
-  // Traemos solo los campos que queremos y la relación client
+  // Filtro de fechas
+  if (filter === "date" && from && to) {
+    queryOptions.where = {
+      ...(queryOptions.where || {}),
+      createdAt: {
+        gte: new Date(from),
+        lte: new Date(to),
+      },
+    };
+  } else if (filter === "recent") {
+    // Filtro de contactos más recientes, si se necesita
+  }
+
+  // Seleccionamos solo los campos necesarios e incluimos relación client
   queryOptions.select = {
     id: true,
     name: true,

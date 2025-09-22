@@ -15,18 +15,13 @@ import dayjs from "dayjs";
 const resend = new Resend(process.env.RESEND_API_KEY || "re_test_placeholder");
 
 // GET /api/users → obtener todos los usuarios
-
 export const loader: LoaderFunction = async ({ request }) => {
-
   const userId = await getUserId(request);
   if (!userId) {
-    return new Response(
-      JSON.stringify({ error: "Unauthorized" }),
-      {
-        status: 401,
-        headers: { "Content-Type": "application/json" }
-      }
-    );
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   const url = new URL(request.url);
@@ -34,7 +29,9 @@ export const loader: LoaderFunction = async ({ request }) => {
   const takeParam = url.searchParams.get("take");
   const direction = url.searchParams.get("direction") as "next" | "prev";
   const fieldsParam = url.searchParams.get("fields");
-  const filter = url.searchParams.get("filter"); // Nuevo parámetro
+  const filter = url.searchParams.get("filter"); // filtro especial
+  const from = url.searchParams.get("from");     // fecha inicio
+  const to = url.searchParams.get("to");         // fecha fin
 
   const take = takeParam ? parseInt(takeParam, 10) : 6;
 
@@ -71,17 +68,29 @@ export const loader: LoaderFunction = async ({ request }) => {
     };
   }
 
+  // Filtro de fechas
+  if (from && to) {
+    const fromDate = new Date(from);
+    const toDate = new Date(to);
+    if (!isNaN(fromDate.getTime()) && !isNaN(toDate.getTime())) {
+      queryOptions.where = {
+        ...(queryOptions.where || {}),
+        createdAt: {
+          gte: fromDate,
+          lte: toDate,
+        },
+      };
+    }
+  }
+
   const users = await prisma.user.findMany(queryOptions);
 
   const { items, pageInfo } = buildPageInfo(users, take, isBackward, cursor);
 
-  return new Response(
-    JSON.stringify({ users: items, pageInfo }),
-    {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    }
-  );
+  return new Response(JSON.stringify({ users: items, pageInfo }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
 };
 
 // POST /api/users → crear nuevo usuario con validación Zod y contraseña hasheada

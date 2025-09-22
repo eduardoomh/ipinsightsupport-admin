@@ -28,6 +28,10 @@ export const loader: LoaderFunction = async ({ request }) => {
   const statusFilter = url.searchParams.get("currentStatus");
   const lastNote = url.searchParams.get("last_note") === "true";
 
+  // 🔥 Nuevos params de fechas
+  const from = url.searchParams.get("from");
+  const to = url.searchParams.get("to");
+
   const take = takeParam ? parseInt(takeParam, 10) : 6;
 
   const defaultSelect = {
@@ -122,6 +126,20 @@ export const loader: LoaderFunction = async ({ request }) => {
       andConditions.push({ currentStatus: statuses[0] });
     } else {
       andConditions.push({ currentStatus: { in: statuses } });
+    }
+  }
+
+  // ⏰ Nuevo filtro de fechas
+  if (from && to) {
+    const fromDate = new Date(from);
+    const toDate = new Date(to);
+    if (!isNaN(fromDate.getTime()) && !isNaN(toDate.getTime())) {
+      andConditions.push({
+        createdAt: {
+          gte: fromDate,
+          lte: toDate,
+        },
+      });
     }
   }
 

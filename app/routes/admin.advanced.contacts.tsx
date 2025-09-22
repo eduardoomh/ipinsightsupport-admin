@@ -1,11 +1,6 @@
 // routes/admin/advanced/contacts/index.tsx
 import { LoaderFunction } from "@remix-run/node";
-import {
-  Await,
-  Outlet,
-  useNavigate,
-  useRevalidator
-} from "@remix-run/react";
+import { Await, Outlet } from "@remix-run/react";
 import { Suspense } from "react";
 
 import DashboardLayout from "~/components/layout/DashboardLayout";
@@ -15,13 +10,30 @@ import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 import { withPaginationDefer } from "~/utils/pagination/withPaginationDefer";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
 import { useDeleteResource } from "~/hooks/useDeleteResource";
+import { useFilters } from "~/hooks/useFilters";
+import HeaderActions from "~/components/filters/HeaderActions";
 import { useDashboardHeaderActions } from "~/hooks/useDashboardHeaderActions";
 import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPagination";
 
 export const loader: LoaderFunction = async ({ request }) => {
+  const url = new URL(request.url);
+  const filter = url.searchParams.get("filter");
+  const from = url.searchParams.get("from");
+  const to = url.searchParams.get("to");
+
+  const apiUrl = new URL(`${process.env.APP_URL}/api/contacts`);
+
+  if (filter === "date" && from && to) {
+    apiUrl.searchParams.set("filter", "date");
+    apiUrl.searchParams.set("from", from);
+    apiUrl.searchParams.set("to", to);
+  } else if (filter === "recent") {
+    apiUrl.searchParams.set("filter", "recent");
+  }
+
   return withPaginationDefer({
     request,
-    apiPath: `${process.env.APP_URL}/api/contacts`,
+    apiPath: apiUrl.toString(),
     sessionCheck: () => getSessionFromCookie(request),
     key: "contactsData",
   });
@@ -29,9 +41,40 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function ContactsPage() {
   const { data: contactsData, take, handlePageChange } = useCursorPagination("contactsData");
-  const headerActions = useDashboardHeaderActions("/admin/advanced/contacts/new", "Create Contact");
   const refreshResults = useRefreshAndResetPagination("/admin/advanced/contacts");
   const deleteContact = useDeleteResource("/api/contacts", refreshResults);
+
+  // --- Filtros tipo admin ---
+  const {
+    selectedFilter,
+    setSelectedFilter,
+    dateRange,
+    setDateRange,
+    handleApplyFilter,
+    handleResetFilter,
+  } = useFilters();
+
+  // --- Botón de crear contacto ---
+  const createButton = useDashboardHeaderActions("/admin/advanced/contacts/new", "Create");
+
+  // --- Combinamos filtros + createButton en HeaderActions ---
+  const headerActions = (
+    <HeaderActions
+      title="Filter contacts"
+      path="/api/contacts"
+      fileName="contacts"
+      selectedFilter={selectedFilter}
+      setSelectedFilter={setSelectedFilter}
+      dateRange={dateRange}
+      setDateRange={setDateRange}
+      handleApplyFilter={handleApplyFilter}
+      handleResetFilter={handleResetFilter}
+      createButton={{
+        label: "Create",
+        path: "/admin/advanced/contacts/new"
+      }}
+    />
+  );
 
   return (
     <DashboardLayout title="Manage contacts" headerActions={headerActions}>

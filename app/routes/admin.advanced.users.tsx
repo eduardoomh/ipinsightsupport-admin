@@ -1,25 +1,39 @@
 // routes/admin/advanced/users/index.tsx
 import { LoaderFunction } from "@remix-run/node";
-import {
-  Await,
-  Outlet
-} from "@remix-run/react";
+import { Await, Outlet } from "@remix-run/react";
 import { Suspense } from "react";
+import { Dayjs } from "dayjs";
 
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import SkeletonEntries from "~/components/skeletons/SkeletonEntries";
 import UsersTable from "~/components/views/users/UsersTable";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 import { withPaginationDefer } from "~/utils/pagination/withPaginationDefer";
-import { useDeleteResource } from "~/hooks/useDeleteResource";
-import { useDashboardHeaderActions } from "~/hooks/useDashboardHeaderActions";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
 import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPagination";
+import { useFilters } from "~/hooks/useFilters";
+import { useDeleteResource } from "~/hooks/useDeleteResource";
+import HeaderActions from "~/components/filters/HeaderActions";
 
 export const loader: LoaderFunction = async ({ request }) => {
+  const url = new URL(request.url);
+  const filter = url.searchParams.get("filter");
+  const from = url.searchParams.get("from");
+  const to = url.searchParams.get("to");
+
+  const apiUrl = new URL(`${process.env.APP_URL}/api/users`);
+
+  if (filter === "date" && from && to) {
+    apiUrl.searchParams.set("filter", "date");
+    apiUrl.searchParams.set("from", from);
+    apiUrl.searchParams.set("to", to);
+  } else if (filter === "recent") {
+    apiUrl.searchParams.set("filter", "recent");
+  }
+
   return withPaginationDefer({
     request,
-    apiPath: `${process.env.APP_URL}/api/users`,
+    apiPath: apiUrl.toString(),
     sessionCheck: () => getSessionFromCookie(request),
     key: "usersData",
   });
@@ -27,9 +41,39 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function UsersPage() {
   const { data: usersData, take, handlePageChange } = useCursorPagination("usersData");
-  const headerActions = useDashboardHeaderActions("/admin/advanced/users/new", "Create User");
   const refreshResults = useRefreshAndResetPagination("/admin/advanced/users");
   const deleteUser = useDeleteResource("/api/users", refreshResults);
+
+  // Hooks para filtros
+  const {
+    selectedFilter,
+    setSelectedFilter,
+    dateRange,
+    setDateRange,
+    handleApplyFilter,
+    handleResetFilter,
+  } = useFilters();
+
+  // Botón de creación
+  const createButton = {
+    label: "Create User",
+    path: "/admin/advanced/users/new",
+  };
+
+  const headerActions = (
+    <HeaderActions
+      title="Filter users"
+      path="/api/users"
+      fileName="users"
+      selectedFilter={selectedFilter as "recent" | "date" | null}
+      setSelectedFilter={setSelectedFilter}
+      dateRange={dateRange as [Dayjs, Dayjs] | null}
+      setDateRange={setDateRange}
+      handleApplyFilter={handleApplyFilter}
+      handleResetFilter={handleResetFilter}
+      createButton={createButton}
+    />
+  );
 
   return (
     <DashboardLayout title="Manage users" headerActions={headerActions}>
