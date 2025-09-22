@@ -23,14 +23,14 @@ const items: MenuItem[] = [
         label: <Link to="/admin/companies">Companies</Link>,
     },
     {
-        key: 'schedule', // ✅ corregido
+        key: 'schedule',
         icon: <DesktopOutlined />,
         label: <Link to="/admin/schedule">Schedule</Link>,
     },
     {
-        key: 'retainers', // ✅ corregido
+        key: 'balances',
         icon: <DesktopOutlined />,
-        label: <Link to="/admin/retainers">Retainers</Link>,
+        label: <Link to="/admin/balances">Balances</Link>,
     },
     {
         key: 'admin-work-entries',
@@ -61,9 +61,9 @@ const items: MenuItem[] = [
         ],
     },
     {
-        key: 'admin-status-report',
+        key: 'admin-reports',
         icon: <ContainerOutlined />,
-        label: <Link to="/admin/status-report">Status report</Link>,
+        label: <Link to="/admin/reports">Reports</Link>,
     }
 ];
 
@@ -71,13 +71,13 @@ const pathToKey: Record<string, string> = {
     "/admin/home": "home",
     "/admin/companies": "companies",
     "/admin/schedule": "schedule",
-    "/admin/retainers": "retainers",
+    "/admin/balances": "balances",
     "/admin/work-entries": "admin-work-entries",
     "/admin/advanced/users": "advanced-users",
     "/admin/advanced/companies": "advanced-companies",
     "/admin/advanced/contacts": "advanced-contacts",
     "/admin/advanced/logs": "advanced-logs",
-    "/admin/status-report": "admin-status-report",
+    "/admin/reports": "admin-reports",
 };
 
 type Props = {

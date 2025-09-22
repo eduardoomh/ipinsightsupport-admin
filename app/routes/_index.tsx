@@ -1,4 +1,4 @@
-import { LoaderFunction, redirect } from "@remix-run/node";
+import { LoaderFunction, MetaFunction, redirect } from "@remix-run/node";
 import dayjs from "dayjs";
 import { useContext, useEffect, useState } from "react";
 import DashboardLayout from "~/components/layout/DashboardLayout";
@@ -19,6 +19,11 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   return null;
 };
+
+export const meta: MetaFunction = () => [
+  { title: "Dashboard | Sentinelux" },
+  { name: "description", content: "Dashboard page from Sentinelux" },
+];
 
 export default function Index() {
   const user = useContext(UserContext);

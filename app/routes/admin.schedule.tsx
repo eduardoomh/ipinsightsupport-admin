@@ -1,4 +1,4 @@
-import { LoaderFunction } from "@remix-run/node";
+import { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/react";
 import NoData from "~/components/basics/NoData";
 import DashboardLayout from "~/components/layout/DashboardLayout";
@@ -13,6 +13,11 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   return null;
 };
+
+export const meta: MetaFunction = () => [
+  { title: "Schedule | Sentinelux" },
+  { name: "description", content: "Schedule page from Sentinelux Admin" },
+];
 
 export default function AdminSchedule() {
   return (

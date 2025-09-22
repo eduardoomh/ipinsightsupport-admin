@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { LoaderFunction } from "@remix-run/node";
+import { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/react";
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
@@ -14,6 +14,11 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   return null;
 };
+
+export const meta: MetaFunction = () => [
+  { title: "Schedule | Sentinelux" },
+  { name: "description", content: "Schedule page from Sentinelux" },
+];
 
 export default function Schedule() {
   const [CalendarComponent, setCalendarComponent] = useState<React.FC | null>(null);

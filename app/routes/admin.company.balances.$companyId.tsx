@@ -1,5 +1,5 @@
 // routes/admin/advanced/retainers/$clientId.tsx
-import { LoaderFunction } from "@remix-run/node";
+import { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { Await, Outlet, useLoaderData } from "@remix-run/react";
 import { Suspense } from "react";
 
@@ -29,15 +29,20 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   });
 };
 
+export const meta: MetaFunction = () => [
+  { title: "Company Balances | Sentinelux" },
+  { name: "description", content: "Balances page from Sentinelux Admin" },
+];
+
 export default function ClientRetainersPage() {
   const { client, take } = useLoaderData<typeof loader>();
   const { data: retainersData, handlePageChange } = useCursorPagination("retainersByClientData");
-  const headerActions = useDashboardHeaderActions(`/admin/company/retainers/${client.id}/new`, "Create Retainer");
-  const refreshResults = useRefreshAndResetPagination(`/admin/company/retainers/${client.id}`);
+  const headerActions = useDashboardHeaderActions(`/admin/company/balances/${client.id}/new`, "Create Balance");
+  const refreshResults = useRefreshAndResetPagination(`/admin/company/balances/${client.id}`);
 
   return (
     <DashboardLayout title={client.company} type="client_section" id={client.id } companyStatus={client.currentStatus}>
-      <ContentLayout title={`Recent retainers`} type="basic_section" size="small" hideHeader={false} headerActions={headerActions}>
+      <ContentLayout title={`Recent balances`} type="basic_section" size="small" hideHeader={false} headerActions={headerActions}>
         <Suspense fallback={<SkeletonEntries />}>
           <Await resolve={retainersData}>
             {(data: any) => {

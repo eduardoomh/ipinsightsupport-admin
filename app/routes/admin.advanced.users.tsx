@@ -1,5 +1,5 @@
 // routes/admin/advanced/users/index.tsx
-import { LoaderFunction } from "@remix-run/node";
+import { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { Await, Outlet } from "@remix-run/react";
 import { Suspense } from "react";
 import { Dayjs } from "dayjs";
@@ -38,6 +38,11 @@ export const loader: LoaderFunction = async ({ request }) => {
     key: "usersData",
   });
 };
+
+export const meta: MetaFunction = () => [
+  { title: "Manage Users | Sentinelux" },
+  { name: "description", content: "Home page from Sentinelux Admin" },
+];
 
 export default function UsersPage() {
   const { data: usersData, take, handlePageChange } = useCursorPagination("usersData");

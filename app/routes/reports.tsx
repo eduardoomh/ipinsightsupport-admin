@@ -1,4 +1,4 @@
-import { LoaderFunction, redirect } from "@remix-run/node";
+import { LoaderFunction, MetaFunction, redirect } from "@remix-run/node";
 import NoData from "~/components/basics/NoData";
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
@@ -13,10 +13,15 @@ export const loader: LoaderFunction = async ({ request }) => {
   return null;
 };
 
+export const meta: MetaFunction = () => [
+  { title: "Reports | Sentinelux" },
+  { name: "description", content: "Reports page from Sentinelux Admin" },
+];
+
 export default function StatusReport() {
   return (
         <DashboardLayout
-          title={`Status Report`}
+          title={`Reports`}
         >
           <NoData />
         </DashboardLayout>

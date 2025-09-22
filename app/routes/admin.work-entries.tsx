@@ -1,4 +1,4 @@
-import { LoaderFunction } from "@remix-run/node";
+import { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { Await, Outlet, useLoaderData } from "@remix-run/react";
 import { Suspense } from "react";
 import DashboardLayout from "~/components/layout/DashboardLayout";
@@ -34,6 +34,11 @@ export const loader: LoaderFunction = async ({ request }) => {
     key: "workEntries",
   });
 };
+
+export const meta: MetaFunction = () => [
+  { title: "Work entries | Sentinelux" },
+  { name: "description", content: "Work entries page from Sentinelux Admin" },
+];
 
 export default function AdminWorkEntries() {
   const initialData = useLoaderData<typeof loader>();

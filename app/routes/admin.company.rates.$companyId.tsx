@@ -1,4 +1,4 @@
-import { LoaderFunction, redirect } from "@remix-run/node";
+import { LoaderFunction, MetaFunction, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { message } from "antd";
 import { useState } from "react";
@@ -39,6 +39,11 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
   return { client, clientRates, edit };
 };
+
+export const meta: MetaFunction = () => [
+  { title: "Company Rates | Sentinelux" },
+  { name: "description", content: "Rates page from Sentinelux Admin" },
+];
 
 export default function NewUserDrawerRoute() {
     const { client, clientRates, edit } = useLoaderData<{ client: ClientI, clientRates: any, edit: boolean }>();

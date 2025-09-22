@@ -12,7 +12,7 @@ export default function NewUserDrawerRoute() {
     const [submitting, setSubmitting] = useState(false);
     const user = useContext(UserContext)
 
-    const handleClose = () => navigate(`/admin/company/retainers/${client.id}`);
+    const handleClose = () => navigate(`/admin/company/balances/${client.id}`);
 
     const handleSubmit = async (values: any) => {
         setSubmitting(true);
@@ -21,7 +21,7 @@ export default function NewUserDrawerRoute() {
             const retainerFormData = new FormData();
 
             const retainerPayload: any = {
-                amount: Number(values.amount), // asegurar que sea numérico
+                amount: Number(values.amount),
                 date_activated: values.date_activated,
                 is_credit: values.is_credit,
                 //@ts-ignore
@@ -46,7 +46,7 @@ export default function NewUserDrawerRoute() {
 
             await clientRes.json();
 
-            message.success("Retainer created successfully");
+            message.success("Balance created successfully");
             refreshResults();
         } catch (err: any) {
             console.error(err);
@@ -58,7 +58,7 @@ export default function NewUserDrawerRoute() {
 
     return (
         <Drawer
-            title="Create New Retainer"
+            title="Create New Balance"
             open={true}
             onClose={handleClose}
             footer={null}

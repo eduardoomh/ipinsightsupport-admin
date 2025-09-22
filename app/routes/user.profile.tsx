@@ -1,4 +1,4 @@
-import { LoaderFunction, redirect } from "@remix-run/node";
+import { LoaderFunction, MetaFunction, redirect } from "@remix-run/node";
 import { message, Skeleton } from "antd";
 import { useContext, useEffect, useState } from "react";
 import { AvatarCard } from "~/components/basics/AvatarCard";
@@ -24,6 +24,11 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   return null;
 };
+
+export const meta: MetaFunction = () => [
+  { title: "Profile | Sentinelux" },
+  { name: "description", content: "Profile page from Sentinelux" },
+];
 
 export default function UserProfile() {
   const userData = useContext(UserContext);

@@ -56,12 +56,12 @@ export default function NewRetainersPage() {
       });
 
       if (!clientRes.ok) {
-        throw new Error("Failed to create retainer");
+        throw new Error("Failed to create balance");
       }
 
       await clientRes.json();
 
-      message.success("Retainer created successfully");
+      message.success("Balance created successfully");
     } catch (err: any) {
       console.error(err);
       message.error(err.message || "Something went wrong");

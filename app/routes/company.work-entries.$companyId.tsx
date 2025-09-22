@@ -10,7 +10,6 @@ import { withTwoResourcesDefer } from "~/utils/pagination/withPaginationDefer";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import ContentLayout from "~/components/layout/components/ContentLayout";
-import AdminWorkEntriesTable from "~/components/views/entries/AdminWorkEntriesTable";
 import { useDashboardHeaderActions } from "~/hooks/useDashboardHeaderActions";
 import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPagination";
 import { UserContext } from "~/context/UserContext";

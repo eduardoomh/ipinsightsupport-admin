@@ -101,7 +101,7 @@ const SearchModal: React.FC = () => {
                     return {
                         id: r.id,
                         type: "retainer",
-                        title: `Last retainer: $${r.amount} USD`,
+                        title: `Last balance: $${r.amount} USD`,
                         subtitle: `activated: ${formattedDate}`,
                         clientId: r.client.id,
                     };
@@ -135,7 +135,7 @@ const SearchModal: React.FC = () => {
                 }
                 break;
             case "retainer":
-                if (res.clientId) navigate(`/admin/company/retainers/${res.clientId}`);
+                if (res.clientId) navigate(`/admin/company/balances/${res.clientId}`);
                 break;
         }
         setOpen(false);

@@ -45,9 +45,9 @@ const DetailedClientMenu: React.FC<Props> = ({ collapsed, clientId }) => {
       label: <Link to={`/admin/company/work-entries/${clientId}`}>Work Entries</Link>,
     },
     {
-      key: "retainers",
+      key: "balances",
       icon: <DollarOutlined />,
-      label: <Link to={`/admin/company/retainers/${clientId}`}>Retainers</Link>,
+      label: <Link to={`/admin/company/balances/${clientId}`}>Balances</Link>,
     },
     {
       key: "contacts",

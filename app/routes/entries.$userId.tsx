@@ -1,5 +1,5 @@
 // routes/admin/entries/$id.tsx
-import { LoaderFunction } from "@remix-run/node";
+import { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { Await, Outlet, useParams } from "@remix-run/react";
 import { Suspense } from "react";
 
@@ -21,6 +21,11 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     key: "workEntriesData",
   });
 };
+
+export const meta: MetaFunction = () => [
+  { title: "Work entries | Sentinelux" },
+  { name: "description", content: "Work entries page from Sentinelux" },
+];
 
 export default function UserEntriesPage() {
   const { userId } = useParams();

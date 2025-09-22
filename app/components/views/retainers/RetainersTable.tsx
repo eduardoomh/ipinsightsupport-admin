@@ -21,7 +21,7 @@ const RetainersTable: FC<Props> = ({ retainers, onDelete, pageInfo, onPageChange
     const handleDelete = (id: string) => {
         if (onDelete) {
             onDelete(id);
-            message.success("Retainer deleted successfully");
+            message.success("Balance deleted successfully");
         }
     };
 

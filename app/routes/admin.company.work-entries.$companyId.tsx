@@ -1,5 +1,5 @@
 // routes/admin/advanced/retainers/$clientId.tsx
-import { LoaderFunction } from "@remix-run/node";
+import { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { Await, Outlet, useLoaderData } from "@remix-run/react";
 import { Suspense } from "react";
 
@@ -28,6 +28,11 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     ],
   });
 };
+
+export const meta: MetaFunction = () => [
+  { title: "Company Work entries | Sentinelux" },
+  { name: "description", content: "Work entries page from Sentinelux Admin" },
+];
 
 export default function ClientEntriesPage() {
   const { client, take } = useLoaderData<typeof loader>();

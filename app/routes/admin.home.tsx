@@ -1,3 +1,4 @@
+import { MetaFunction } from "@remix-run/node";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import DashboardLayout from "~/components/layout/DashboardLayout";
@@ -16,6 +17,11 @@ interface AdminStats {
   hours_architecture: number;
   hours_senior_architecture: number;
 }
+
+export const meta: MetaFunction = () => [
+  { title: "Admin Home | Sentinelux" },
+  { name: "description", content: "Home page from Sentinelux Admin" },
+];
 
 export default function AdminHome() {
   const [loading, setLoading] = useState(false);

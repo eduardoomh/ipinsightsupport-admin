@@ -1,5 +1,5 @@
 // app/routes/login.tsx
-import type { LoaderFunction } from "@remix-run/node";
+import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { getSession } from "~/sessions.server";
 import AuthContainer from "~/components/views/auth/AuthContainer";
@@ -11,6 +11,11 @@ export const loader: LoaderFunction = async ({ request }) => {
   }
   return null;
 };
+
+export const meta: MetaFunction = () => [
+  { title: "Login | Sentinelux" },
+  { name: "description", content: "Login page from Sentinelux" },
+];
 
 export default function LoginRoute() {
 

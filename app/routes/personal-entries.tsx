@@ -1,4 +1,4 @@
-import { LoaderFunction } from "@remix-run/node";
+import { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/react";
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import PersonalEntriesTable from "~/components/views/entries/PersonalEntriesTable";
@@ -13,6 +13,11 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   return null;
 };
+
+export const meta: MetaFunction = () => [
+  { title: "Personal entries | Sentinelux" },
+  { name: "description", content: "Personal entries page from Sentinelux" },
+];
 
 export default function PersonalEntries() {
   return (

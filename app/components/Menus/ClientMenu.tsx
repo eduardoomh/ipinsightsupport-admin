@@ -29,9 +29,9 @@ const items: MenuItem[] = [
     label: <Link to="/admin/work-entries">Work Entries</Link>,
   },
   {
-    key: "retainers",
+    key: "balances",
     icon: <DollarOutlined />,
-    label: <Link to="/admin/retainers">Retainers</Link>,
+    label: <Link to="/admin/balances">Balances</Link>,
   },
   {
     key: "invoices",
@@ -90,10 +90,10 @@ const items: MenuItem[] = [
 const pathToKey: Record<string, string> = {
   "/admin/dashboard": "dashboard",
   "/admin/work-entries": "work-entries",
-  "/admin/retainers": "retainers",
+  "/admin/balances": "balances",
   "/admin/invoices": "invoices",
   "/admin/statistics": "statistics",
-  "/admin/retainers/new": "add-retainer",
+  "/admin/balances/new": "add-balance",
   "/admin/account-manager/edit": "edit-account-manager",
   "/admin/region/edit": "edit-region",
   "/admin/status/edit": "change-status",

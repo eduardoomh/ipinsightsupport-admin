@@ -1,6 +1,5 @@
 // columns/retainerColumns.ts
-import { DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
-import { TableColumnsType, Button, Popconfirm, Tag } from 'antd';
+import { TableColumnsType, Tag } from 'antd';
 import dayjs from "dayjs";
 import { RetainerType } from './retainers.interface';
 

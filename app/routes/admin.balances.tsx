@@ -1,4 +1,4 @@
-import { LoaderFunction } from "@remix-run/node";
+import { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { Await } from "@remix-run/react";
 import { Suspense } from "react";
 
@@ -40,6 +40,11 @@ export const loader: LoaderFunction = async ({ request }) => {
   });
 };
 
+export const meta: MetaFunction = () => [
+  { title: "Balances | Sentinelux" },
+  { name: "description", content: "Balances page from Sentinelux Admin" },
+];
+
 export default function AdminRetainers() {
   const initialData = useCursorPagination("retainersData");
   const { data: retainersData, take, handlePageChange } = initialData;
@@ -55,9 +60,9 @@ export default function AdminRetainers() {
 
   const headerActions = (
     <HeaderActions
-      title="Filter retainers"
+      title="Filter balances"
       path="/api/retainers"
-      fileName="retainers"
+      fileName="balances"
       selectedFilter={selectedFilter}
       setSelectedFilter={setSelectedFilter}
       dateRange={dateRange}
@@ -68,7 +73,7 @@ export default function AdminRetainers() {
   );
 
   return (
-    <DashboardLayout title="Retainers" headerActions={headerActions}>
+    <DashboardLayout title="Balances" headerActions={headerActions}>
       <Suspense fallback={<SkeletonEntries />}>
         <Await resolve={retainersData}>
           {(data: any) => {

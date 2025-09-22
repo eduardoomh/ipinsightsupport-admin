@@ -1,5 +1,5 @@
 // routes/admin/advanced/clients/index.tsx
-import { LoaderFunction } from "@remix-run/node";
+import { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { Await, Outlet } from "@remix-run/react";
 import { Suspense } from "react";
 
@@ -38,6 +38,11 @@ export const loader: LoaderFunction = async ({ request }) => {
     key: "clientsData",
   });
 };
+
+export const meta: MetaFunction = () => [
+  { title: "Manage Companies | Sentinelux" },
+  { name: "description", content: "Manage Companies page from Sentinelux Admin" },
+];
 
 export default function ClientsPage() {
   const { data: clientsData, take, handlePageChange } = useCursorPagination("clientsData");

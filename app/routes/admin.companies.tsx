@@ -1,5 +1,5 @@
 // routes/admin/advanced/clients/admin.tsx
-import { LoaderFunction } from "@remix-run/node";
+import { LoaderFunction, MetaFunction } from "@remix-run/node";
 import {
   Await,
   useFetcher,
@@ -32,6 +32,11 @@ export const loader: LoaderFunction = async ({ request }) => {
     key: "clientsData",
   });
 };
+
+export const meta: MetaFunction = () => [
+  { title: "Companies | Sentinelux" },
+  { name: "description", content: "Companies page from Sentinelux Admin" },
+];
 
 const ClientStatus = {
   ALL: "SHOW ALL",

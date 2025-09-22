@@ -1,4 +1,4 @@
-import { LoaderFunction, redirect } from "@remix-run/node";
+import { LoaderFunction, MetaFunction, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import DetailedClient from "~/components/views/clients/DetailedClient";
@@ -23,6 +23,11 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
   return { client };
 };
+
+export const meta: MetaFunction = () => [
+  { title: "Company Dashboard | Sentinelux" },
+  { name: "description", content: "Dashboard page from Sentinelux Admin" },
+];
 
 export default function ClientLayout() {
   const { client } = useLoaderData<typeof loader>();

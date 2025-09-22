@@ -1,5 +1,5 @@
 // routes/admin/advanced/clients/admin.tsx
-import { LoaderFunction } from "@remix-run/node";
+import { LoaderFunction, MetaFunction } from "@remix-run/node";
 import {
   Await,
   useFetcher,
@@ -40,6 +40,11 @@ const ClientStatus = {
   WAITING_ON_CLIENT: 'WAITING_ON_CLIENT',
   TRANSFER: 'TRANSFER'
 };
+
+export const meta: MetaFunction = () => [
+  { title: "Companies | Sentinelux" },
+  { name: "description", content: "Companies page from Sentinelux" },
+];
 
 export default function AdminClients() {
   const initialData = useLoaderData();

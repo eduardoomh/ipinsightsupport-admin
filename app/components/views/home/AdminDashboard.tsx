@@ -50,9 +50,9 @@ const AdminDashboard: React.FC<Props> = ({ adminStats, loading }) => {
       <Row gutter={16}>
         {[
           ["Total Work Entries", adminStats?.total_work_entries ?? 0],
-          ["Total Retainers", adminStats?.total_retainers ?? 0],
+          ["Total Balances", adminStats?.total_retainers ?? 0],
           ["Total Companies", adminStats?.total_clients ?? 0],
-          ["Retainers Amount", adminStats?.retainers_amount ?? 0],
+          ["Balances Total Amount", adminStats?.retainers_amount ?? 0],
         ].map(([label, value]) => (
           <Col span={6} key={label}>
             {/* @ts-ignore */}

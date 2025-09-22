@@ -59,7 +59,7 @@ const RetainerForm = ({ retainer, handleSubmit, submitting }: Props) => {
                 valuePropName="checked"
             >
                 <Alert
-                    message="If checked, this retainer will be excluded from being counted as monetary revenue for reporting purposes."
+                    message="If checked, this balance will be excluded from being counted as monetary revenue for reporting purposes."
                     type="info"
                     showIcon
                     style={{ marginBottom: 8 }}
@@ -75,7 +75,7 @@ const RetainerForm = ({ retainer, handleSubmit, submitting }: Props) => {
                 loading={submitting}
                 block
             >
-                Save Retainer
+                Save Balance
             </Button>
         </Form>
     );

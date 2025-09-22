@@ -1,5 +1,5 @@
 // routes/admin/advanced/contacts/$companyId.tsx
-import { LoaderFunction } from "@remix-run/node";
+import { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { Await, useLoaderData } from "@remix-run/react";
 import { Suspense, useState } from "react";
 
@@ -27,6 +27,11 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     ],
   });
 };
+
+export const meta: MetaFunction = () => [
+  { title: "Company Edit | Sentinelux" },
+  { name: "description", content: "Edit page from Sentinelux Admin" },
+];
 
 export default function ClientContactsPage() {
   const { client } = useLoaderData<typeof loader>();

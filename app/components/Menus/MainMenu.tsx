@@ -43,7 +43,7 @@ const pathToKey = (id: any): Record<string, string> => {
         "/schedule": "schedule",
         [`/companies/${id}`]: "companies",
         [`/entries/${id}`]: "personal-entries",
-        "/status-report": "status-report",
+        "/reports": "reports",
     }
 
 };

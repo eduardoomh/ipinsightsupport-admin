@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "@remix-run/react";
 import AuthContainer from "~/components/views/auth/AuthContainer";
+import { MetaFunction } from "@remix-run/node";
+
+export const meta: MetaFunction = () => [
+  { title: "Create password | Sentinelux" },
+  { name: "description", content: "Create password page from Sentinelux" },
+];
 
 export default function CreatePasswordRoute() {
   const [searchParams] = useSearchParams();

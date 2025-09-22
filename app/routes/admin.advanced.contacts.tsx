@@ -1,5 +1,5 @@
 // routes/admin/advanced/contacts/index.tsx
-import { LoaderFunction } from "@remix-run/node";
+import { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { Await, Outlet } from "@remix-run/react";
 import { Suspense } from "react";
 
@@ -38,6 +38,11 @@ export const loader: LoaderFunction = async ({ request }) => {
     key: "contactsData",
   });
 };
+
+export const meta: MetaFunction = () => [
+  { title: "Manage Contacts | Sentinelux" },
+  { name: "description", content: "Manage Contacts page from Sentinelux Admin" },
+];
 
 export default function ContactsPage() {
   const { data: contactsData, take, handlePageChange } = useCursorPagination("contactsData");
