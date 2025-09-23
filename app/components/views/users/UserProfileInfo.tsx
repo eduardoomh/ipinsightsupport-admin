@@ -86,8 +86,8 @@ export const UserProfileInfo = ({
         <Descriptions.Item label="Created At">
           {user.createdAt ? new Date(user.createdAt).toLocaleString() : "-"}
         </Descriptions.Item>
-        <Descriptions.Item label="Updated At">
-          {user.updatedAt ? new Date(user.updatedAt).toLocaleString() : "-"}
+        <Descriptions.Item label="Last Login">
+          {user.updatedAt ? new Date(user.last_login ? user.last_login : user.updatedAt).toLocaleString() : "-"}
         </Descriptions.Item>
       </Descriptions>
 

@@ -16,11 +16,28 @@ export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
   const userIdFilter = url.searchParams.get("user_id");
   const statusFilter = url.searchParams.get("currentStatus");
-  const lastNote = url.searchParams.get("last_note") === "true";
+  const filter = url.searchParams.get("filter"); // "recent" | "date"
+  const from = url.searchParams.get("from");
+  const to = url.searchParams.get("to");
 
   const where: any = {};
   if (userIdFilter) where.account_manager_id = userIdFilter;
   if (statusFilter) where.currentStatus = statusFilter;
+
+  // Filtro por rango de fechas
+  if (filter === "date" && from && to) {
+    const start = new Date(from);
+    start.setHours(0, 0, 0, 0);
+
+    const endExclusive = new Date(to);
+    endExclusive.setHours(0, 0, 0, 0);
+    endExclusive.setDate(endExclusive.getDate() + 1); // incluir todo el día "to"
+
+    where.createdAt = {
+      gte: start,
+      lt: endExclusive,
+    };
+  }
 
   const encoder = new TextEncoder();
   const csvStream = stringify({

@@ -1,10 +1,11 @@
 // ~/components/basics/SearchModal.tsx
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import { Input } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "@remix-run/react";
 import SearchResultsList from "./SearchResultsList";
+import { UserContext } from "~/context/UserContext";
 
 interface SearchResult {
     id: string;
@@ -26,6 +27,7 @@ const SearchModal: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [results, setResults] = useState<SearchResult[]>([]);
     const [isWorkEntriesByUser, setIsWorkEntriesByUser] = useState(false)
+    const user = useContext(UserContext)
     const navigate = useNavigate();
 
     useEffect(() => setMounted(true), []);
@@ -52,23 +54,29 @@ const SearchModal: React.FC = () => {
             const data = await res.json();
 
             const latestRetainer = data.retainers.length > 0 ? [data.retainers[0]] : [];
-            setIsWorkEntriesByUser(data.users.length > 0)
+            setIsWorkEntriesByUser(data.users.length > 0);
 
             const mapped: SearchResult[] = [
-                ...data.users.map((u: any) => ({
-                    id: u.id,
-                    type: "user",
-                    title: u.name,
-                    subtitle: u.email,
-                    avatarUrl: u.avatar,
-                })),
-                ...data.contacts.map((c: any) => ({
-                    id: c.id,
-                    type: "contact",
-                    title: c.name,
-                    subtitle: c.email,
-                    clientId: c.client_id,
-                })),
+                // Solo mapear users y contacts si es admin
+                ...(user?.role === "ADMIN"
+                    ? data.users.map((u: any) => ({
+                        id: u.id,
+                        type: "user",
+                        title: u.name,
+                        subtitle: u.email,
+                        avatarUrl: u.avatar,
+                    }))
+                    : []),
+                ...(user?.role === "ADMIN"
+                    ? data.contacts.map((c: any) => ({
+                        id: c.id,
+                        type: "contact",
+                        title: c.name,
+                        subtitle: c.email,
+                        clientId: c.client_id,
+                    }))
+                    : []),
+                // Siempre mapear clients
                 ...data.clients.map((c: any) => ({
                     id: c.id,
                     type: "client",
@@ -77,6 +85,7 @@ const SearchModal: React.FC = () => {
                     timezone: c.timezone,
                     remainingFunds: c.remainingFunds,
                 })),
+                // Mapear work entries
                 ...data.workEntries.map((w: any) => {
                     const formattedDate = new Date(w.billed_on).toLocaleDateString("en-US", {
                         year: "numeric",
@@ -89,23 +98,26 @@ const SearchModal: React.FC = () => {
                         title: `Work entry: ${w.hours_billed} Hours`,
                         subtitle: `${formattedDate} • ${w.client.company}`,
                         userId: w.user.id,
-                        clientId: w.client.id
-                    }
-                }),
-                ...latestRetainer.map((r: any) => {
-                    const formattedDate = new Date(r.date_activated).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                    });
-                    return {
-                        id: r.id,
-                        type: "retainer",
-                        title: `Last balance: $${r.amount} USD`,
-                        subtitle: `activated: ${formattedDate}`,
-                        clientId: r.client.id,
+                        clientId: w.client.id,
                     };
                 }),
+                // Solo admins ven retainers
+                ...(user?.role === "ADMIN"
+                    ? latestRetainer.map((r: any) => {
+                        const formattedDate = new Date(r.date_activated).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                        });
+                        return {
+                            id: r.id,
+                            type: "retainer",
+                            title: `Last balance: $${r.amount} USD`,
+                            subtitle: `activated: ${formattedDate}`,
+                            clientId: r.client.id,
+                        };
+                    })
+                    : []),
             ];
 
             setResults(mapped);
@@ -117,25 +129,31 @@ const SearchModal: React.FC = () => {
     };
 
     const handleClickResult = (res: SearchResult, isWorkEntriesByUser: boolean) => {
+        const basePath = user?.role === "ADMIN" ? "/admin" : "";
+
         switch (res.type) {
             case "user":
-                navigate(`/admin/advanced/users/${res.id}/info`);
-                break;
             case "contact":
-                navigate(`/admin/advanced/contacts/${res.id}/info`);
+                // Solo admins pueden navegar aquí
+                if (user?.role === "ADMIN") {
+                    navigate(`${basePath}/${res.type === "user" ? "advanced/users" : "advanced/contacts"}/${res.id}/info`);
+                }
                 break;
             case "client":
-                navigate(`/admin/company/dashboard/${res.id}`);
+                navigate(`${basePath}/company/dashboard/${res.id}`);
                 break;
             case "workEntry":
                 if (!isWorkEntriesByUser) {
-                    navigate(`/admin/company/work-entries/${res.clientId}`);
+                    navigate(`${basePath}/company/work-entries/${res.clientId}`);
                 } else if (res.userId) {
-                    navigate(`/admin/user/work-entries/${res.userId}`);
+                    navigate(`${basePath}/user/work-entries/${res.userId}`);
                 }
                 break;
             case "retainer":
-                if (res.clientId) navigate(`/admin/company/balances/${res.clientId}`);
+                // Solo admins pueden ver retainer
+                if (user?.role === "ADMIN" && res.clientId) {
+                    navigate(`${basePath}/company/balances/${res.clientId}`);
+                }
                 break;
         }
         setOpen(false);

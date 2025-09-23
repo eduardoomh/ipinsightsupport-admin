@@ -13,20 +13,19 @@ import { RetainerSchema } from "~/utils/schemas/retainerSchema";
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await getUserId(request);
   if (!userId) {
-    return new Response(
-      JSON.stringify({ error: "Unauthorized" }),
-      {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   const url = new URL(request.url);
   const clientId = url.searchParams.get("client_id");
-  const filter = url.searchParams.get("filter"); // nuevo filtro
-  const from = url.searchParams.get("from");     // fecha inicio
-  const to = url.searchParams.get("to");         // fecha fin
+  const createdById = url.searchParams.get("user_id");
+  const filter = url.searchParams.get("filter"); // "recent" or "date"
+  const from = url.searchParams.get("from"); // expected YYYY-MM-DD
+  const to = url.searchParams.get("to");     // expected YYYY-MM-DD
+  const isCreditParam = url.searchParams.get("is_credit");
   const cursor = url.searchParams.get("cursor");
   const takeParam = url.searchParams.get("take");
   const direction = url.searchParams.get("direction") as "next" | "prev";
@@ -41,48 +40,54 @@ export const loader: LoaderFunction = async ({ request }) => {
     select: undefined,
   });
 
-  // Filtro por client_id si viene
-  queryOptions.where = {
-    ...(queryOptions.where || {}),
-    ...(clientId ? { client_id: clientId } : {}),
-  };
+  // Construimos where limpio
+  const where: any = { ...(queryOptions.where || {}) };
 
-  // Filtro por fechas
+  // company / user filters
+  if (clientId) where.client_id = clientId;
+  if (createdById) where.created_by_id = createdById;
+
+  // fecha: usar startOfDay(from) y endExclusive = startOfDay(next day after to)
   if (filter === "date" && from && to) {
-    queryOptions.where = {
-      ...queryOptions.where,
-      date_activated: {
-        gte: new Date(from),
-        lte: new Date(to),
-      },
+    // parsear fechas (esperamos YYYY-MM-DD). Usamos objetos Date y normalizamos.
+    const start = new Date(from);
+    start.setHours(0, 0, 0, 0);
+
+    const endExclusive = new Date(to);
+    endExclusive.setHours(0, 0, 0, 0);
+    endExclusive.setDate(endExclusive.getDate() + 1); // inicio del día siguiente
+
+    where.date_activated = {
+      gte: start,
+      lt: endExclusive, // < inicio del día siguiente -> incluye todo el día "to"
     };
-  } else if (filter === "recent") {
-    // Mantener orden descendente por date_activated, no hace falta cambiar where
+
+    // opcional: debug para verificar valores de start/end
+    // console.debug("date filter", { from, to, start: start.toISOString(), endExclusive: endExclusive.toISOString() });
   }
 
-  // Selección de relaciones
+  // is_credit
+  if (isCreditParam !== null) {
+    // convertimos "true"/"false" a boolean
+    where.is_credit = isCreditParam === "true";
+  }
+
+  // asignamos where a queryOptions
+  queryOptions.where = where;
+
+  // include relations
   queryOptions.include = {
-    client: {
-      select: { id: true, company: true },
-    },
-    created_by: {
-      select: { id: true, name: true, email: true },
-    },
+    client: { select: { id: true, company: true } },
+    created_by: { select: { id: true, name: true, email: true } },
   };
 
-  // Ejecuta la query
   const retainers = await prisma.retainer.findMany(queryOptions);
-
-  // Construcción de información de paginación
   const { items, pageInfo } = buildPageInfo(retainers, take, isBackward, cursor);
 
-  return new Response(
-    JSON.stringify({ retainers: items, pageInfo }),
-    {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    }
-  );
+  return new Response(JSON.stringify({ retainers: items, pageInfo }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
 };
 
 // POST /api/retainers → crear un nuevo retainer

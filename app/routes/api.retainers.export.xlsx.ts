@@ -11,12 +11,34 @@ export const loader: LoaderFunction = async ({ request }) => {
   const filter = url.searchParams.get("filter");
   const from = url.searchParams.get("from");
   const to = url.searchParams.get("to");
+  const isCreditParam = url.searchParams.get("is_credit");
 
   const where: any = {};
+
+  // Filtro por compañía
   if (clientId) where.client_id = clientId;
+
+  // Filtro por usuario
   if (userId) where.created_by_id = userId;
+
+  // Filtro por rango de fechas
   if (filter === "date" && from && to) {
-    where.date_activated = { gte: new Date(from), lte: new Date(to) };
+    const start = new Date(from);
+    start.setHours(0, 0, 0, 0);
+
+    const endExclusive = new Date(to);
+    endExclusive.setHours(0, 0, 0, 0);
+    endExclusive.setDate(endExclusive.getDate() + 1); // incluye todo el día "to"
+
+    where.date_activated = {
+      gte: start,
+      lt: endExclusive,
+    };
+  }
+
+  // Filtro crédito/débito
+  if (isCreditParam !== null) {
+    where.is_credit = isCreditParam === "true";
   }
 
   const passThrough = new PassThrough();

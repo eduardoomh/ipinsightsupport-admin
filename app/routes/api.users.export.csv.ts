@@ -30,8 +30,7 @@ export const loader: LoaderFunction = async ({ request }) => {
       "is_active",
       "is_account_manager",
       "last_login",
-      "createdAt",
-      "updatedAt",
+      "createdAt"
     ],
   });
 
@@ -63,8 +62,7 @@ export const loader: LoaderFunction = async ({ request }) => {
             is_active: user.is_active,
             is_account_manager: user.is_account_manager,
             last_login: user.last_login?.toISOString(),
-            createdAt: user.createdAt?.toISOString(),
-            updatedAt: user.updatedAt?.toISOString(),
+            createdAt: user.createdAt?.toISOString()
           });
         }
 

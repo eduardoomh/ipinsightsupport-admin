@@ -34,13 +34,18 @@ export const action: ActionFunction = async ({ request }) => {
     const passwordValid = user.password
       ? await bcrypt.compare(password, user.password)
       : false;
-
+ 
     if (!passwordValid) {
       return new Response(
         JSON.stringify({ error: "Credenciales inválidas" }),
         { status: 401, headers: { "Content-Type": "application/json" } }
       );
     }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { last_login: new Date() },
+    });
 
     role = user.is_admin ? "ADMIN" : "USER";
     sessionUser = {

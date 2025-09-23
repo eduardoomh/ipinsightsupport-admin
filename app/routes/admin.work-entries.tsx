@@ -27,6 +27,12 @@ export const loader: LoaderFunction = async ({ request }) => {
     apiUrl.searchParams.set("filter", "recent");
   }
 
+  const clientId = url.searchParams.get("client_id");
+  const userId = url.searchParams.get("user_id");
+
+  if (clientId) apiUrl.searchParams.set("client_id", clientId);
+  if (userId) apiUrl.searchParams.set("user_id", userId);
+
   return withPaginationDefer({
     request,
     apiPath: apiUrl.toString(),
@@ -48,6 +54,10 @@ export default function AdminWorkEntries() {
     setSelectedFilter,
     dateRange,
     setDateRange,
+    companyId,
+    setCompanyId,
+    userId,
+    setUserId,
     dataPromise,
     handleApplyFilter,
     handleResetFilter,
@@ -67,6 +77,12 @@ export default function AdminWorkEntries() {
       setDateRange={setDateRange}
       handleApplyFilter={handleApplyFilter}
       handleResetFilter={handleResetFilter}
+      enableCompanyFilter
+      companyId={companyId}
+      setCompanyId={setCompanyId}
+      enableUserFilter
+      userId={userId}
+      setUserId={setUserId}
     />
   );
 

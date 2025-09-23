@@ -7,67 +7,61 @@ import { round2 } from "~/utils/general/round";
 import { safeDiv } from "~/utils/general/safediv";
 import { getDefaultRates } from "~/utils/general/getDefaultRates";
 
-// GET /api/work-entries → obtener todas las entradas de trabajo
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
-  const clientId = url.searchParams.get("client_id"); // filtro opcional por cliente
-  const userId = url.searchParams.get("user_id");     // filtro opcional por usuario
-  const filter = url.searchParams.get("filter");      // filtro opcional
-  const from = url.searchParams.get("from");          // fecha inicio
-  const to = url.searchParams.get("to");              // fecha fin
+
+  // Filtros desde URL
+  const clientId = url.searchParams.get("client_id");
+  const userId = url.searchParams.get("user_id");
+  const filter = url.searchParams.get("filter");
+  const from = url.searchParams.get("from");
+  const to = url.searchParams.get("to");
   const cursor = url.searchParams.get("cursor");
-  const takeParam = url.searchParams.get("take");
-  const direction = url.searchParams.get("direction") as "next" | "prev";
+  const take = url.searchParams.get("take") ? parseInt(url.searchParams.get("take")!, 10) : 10;
+  const direction = url.searchParams.get("direction") as "next" | "prev" | undefined;
 
-  const take = takeParam ? parseInt(takeParam, 10) : 10;
-
+  // Obtenemos queryOptions para paginación
   const { queryOptions, isBackward } = buildCursorPaginationQuery({
     cursor,
     take,
     direction,
-    orderByField: "created_at", // paginación sigue usando created_at
-    select: undefined,          // usamos include
+    orderByField: "billed_on",
+    select: undefined,
   });
 
-  // Agregamos filtros opcionales existentes
-  queryOptions.where = {
-    ...(queryOptions.where || {}),
-    ...(clientId ? { client_id: clientId } : {}),
-    ...(userId ? { user_id: userId } : {}),
-  };
+  // 🔹 Construimos un where limpio
+  const where: any = {};
 
-  // Filtro de fechas por billed_on
-  if (filter === "date" && from && to) {
-    queryOptions.where = {
-      ...queryOptions.where,
-      billed_on: {
-        gte: new Date(from),
-        lte: new Date(to),
-      },
-    };
-  } else if (filter === "recent") {
-    // Se mantiene la paginación por created_at descendente
+  // Aplicar filtros solo si existen
+  if (clientId) {
+    where.client_id = clientId;
   }
 
-  // Incluimos solo los campos necesarios
+  if (userId) {
+    where.user_id = userId;
+  }
+
+  // Si el filtro es "date", aplicamos el rango de fechas
+  if (filter === "date" && from && to) {
+    where.billed_on = {
+      gte: new Date(from),
+      lte: new Date(to),
+    };
+  }
+
+  // 🔹 Asignamos el where limpio a queryOptions
+  queryOptions.where = where;
+
+  // 🔹 Incluimos relaciones
   queryOptions.include = {
-    client: {
-      select: {
-        id: true,
-        company: true,
-      },
-    },
-    user: {
-      select: {
-        id: true,
-        name: true,
-        email: true,
-      },
-    },
+    client: { select: { id: true, company: true } },
+    user: { select: { id: true, name: true, email: true } },
   };
 
+  // 🔹 Ejecutamos query
   const workEntries = await prisma.workEntry.findMany(queryOptions);
 
+  // 🔹 Construimos pageInfo
   const { items, pageInfo } = buildPageInfo(workEntries, take, isBackward, cursor);
 
   return new Response(

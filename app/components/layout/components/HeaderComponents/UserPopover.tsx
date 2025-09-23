@@ -8,7 +8,7 @@ interface Props {
         id: string;
         name: string;
         email: string;
-        role: "ADMIN" | "USER";
+        role: "ADMIN" | "USER" | "CLIENT";
     };
 }
 

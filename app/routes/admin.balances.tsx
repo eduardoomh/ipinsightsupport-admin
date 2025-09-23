@@ -14,10 +14,10 @@ import { useFilters } from "~/hooks/useFilters";
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
   const clientId = url.searchParams.get("client_id");
-  const userId = url.searchParams.get("user_id");
   const filter = url.searchParams.get("filter");
   const from = url.searchParams.get("from");
   const to = url.searchParams.get("to");
+  const isCredit = url.searchParams.get("is_credit");
 
   const apiUrl = new URL(`${process.env.APP_URL}/api/retainers`);
 
@@ -30,7 +30,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   }
 
   if (clientId) apiUrl.searchParams.set("client_id", clientId);
-  if (userId) apiUrl.searchParams.set("user_id", userId);
+  if (isCredit) apiUrl.searchParams.set("is_credit", isCredit);
 
   return withPaginationDefer({
     request,
@@ -54,6 +54,10 @@ export default function AdminRetainers() {
     setSelectedFilter,
     dateRange,
     setDateRange,
+    companyId,
+    setCompanyId,
+    isCredit,
+    setIsCredit,
     handleApplyFilter,
     handleResetFilter,
   } = useFilters();
@@ -69,6 +73,11 @@ export default function AdminRetainers() {
       setDateRange={setDateRange}
       handleApplyFilter={handleApplyFilter}
       handleResetFilter={handleResetFilter}
+      enableCompanyFilter
+      companyId={companyId}
+      setCompanyId={setCompanyId}
+      isCredit={isCredit}
+      setIsCredit={setIsCredit}
     />
   );
 

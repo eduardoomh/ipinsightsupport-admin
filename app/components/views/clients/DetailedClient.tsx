@@ -61,7 +61,7 @@ const DetailedClient: React.FC<Props> = ({ client }) => {
           </Col>
           <Col span={12}>
             <DashboardItem label="Most Recent Work Entry" value={formatDateWithAgo(client.most_recent_work_entry)} showBorder={true} />
-            <DashboardItem label="Most Recent Retainer Activate" value={formatDateWithAgo(client.most_recent_retainer_activated)} showBorder={true} />
+            <DashboardItem label="Most Recent Retainer Activated" value={formatDateWithAgo(client.most_recent_retainer_activated)} showBorder={true} />
             <DashboardItem label="Created" value={formatDateWithAgo(client.createdAt)} />
           </Col>
         </Row>

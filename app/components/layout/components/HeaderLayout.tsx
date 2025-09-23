@@ -12,7 +12,7 @@ interface Props {
         id: string;
         name: string;
         email: string;
-        role: "ADMIN" | "USER";
+        role: "ADMIN" | "USER" | "CLIENT";
     };
 }
 
@@ -36,7 +36,11 @@ const HeaderLayout: FC<Props> = ({ user, collapsed, toggleCollapsed }) => {
                 }
 
             </div>
-            <SearchModal />
+            {
+                user.role !== "CLIENT" && (
+                    <SearchModal />
+                )
+            }
             <UserPopover user={user} />
         </div>
     );

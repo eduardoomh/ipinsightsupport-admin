@@ -37,8 +37,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     { header: "Is Active", key: "is_active", width: 10 },
     { header: "Is Account Manager", key: "is_account_manager", width: 15 },
     { header: "Last Login", key: "last_login", width: 20 },
-    { header: "Created At", key: "createdAt", width: 20 },
-    { header: "Updated At", key: "updatedAt", width: 20 },
+    { header: "Created At", key: "createdAt", width: 20 }
   ];
 
   const batchSize = 2000;
