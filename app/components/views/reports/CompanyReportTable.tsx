@@ -3,8 +3,8 @@ import { FC } from "react";
 import PaginationControls from "~/components/tables/PaginationControls";
 import usePagination from "~/hooks/usePagination";
 import { PageInfo } from "~/interfaces/pagination.interface";
-import { companyReportColumns } from "./utils/CompanyReportColumns";
-import { CompanyReportI } from "./utils/CompanyReport.interface";
+import { CompanyReportI } from "./utils/companyReport.interface";
+import { companyReportColumns } from "./utils/companyReportColumns";
 
 interface Props {
     clients: CompanyReportI[];
