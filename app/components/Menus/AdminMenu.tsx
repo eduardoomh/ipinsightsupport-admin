@@ -64,6 +64,16 @@ const items: MenuItem[] = [
         key: 'admin-reports',
         icon: <ContainerOutlined />,
         label: <Link to="/admin/reports">Reports</Link>,
+        children: [
+            {
+                key: 'admin-reports-users',
+                label: <Link to="/admin/reports/users">Users</Link>,
+            },
+            {
+                key: 'admin-reports-companies',
+                label: <Link to="/admin/reports/companies">Companies</Link>
+            },
+        ],
     }
 ];
 
@@ -78,6 +88,8 @@ const pathToKey: Record<string, string> = {
     "/admin/advanced/contacts": "advanced-contacts",
     "/admin/advanced/logs": "advanced-logs",
     "/admin/reports": "admin-reports",
+    "/admin/reports/users": "admin-reports-users",
+    "/admin/reports/companies": "admin-reports-companies",
 };
 
 type Props = {
@@ -91,7 +103,7 @@ const AdminMenu: React.FC<Props> = ({ collapsed }) => {
     return (
         <Menu
             selectedKeys={[selectedKey]}
-            defaultOpenKeys={['advanced']}
+            defaultOpenKeys={['advanced', 'admin-reports']}
             mode="inline"
             inlineCollapsed={collapsed}
             items={items}

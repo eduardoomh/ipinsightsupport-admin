@@ -252,11 +252,11 @@ export default function HeaderActions({
                     <Select
                         value={selectedFilter || undefined}
                         onChange={(val) => setSelectedFilter(val as "recent" | "date")}
-                        placeholder="Selecciona un filtro"
+                        placeholder="Select a filter"
                         style={{ width: "100%" }}
                     >
-                        <Select.Option value="recent">Más recientes</Select.Option>
-                        <Select.Option value="date">Rango de fechas</Select.Option>
+                        <Select.Option value="recent">Most recent</Select.Option>
+                        <Select.Option value="date">Date range</Select.Option>
                     </Select>
 
                     {selectedFilter === "date" && (
@@ -274,7 +274,7 @@ export default function HeaderActions({
                         <Select
                             allowClear
                             showSearch
-                            placeholder="Selecciona una compañía"
+                            placeholder="Select a company"
                             optionFilterProp="children"
                             value={companyId || undefined}
                             onChange={(val) => setCompanyId?.(val || null)}
@@ -293,7 +293,7 @@ export default function HeaderActions({
                         <Select
                             allowClear
                             showSearch
-                            placeholder="Selecciona un usuario"
+                            placeholder="Select a user"
                             optionFilterProp="children"
                             value={userId || undefined}
                             onChange={(val) => setUserId?.(val || null)}
@@ -311,7 +311,7 @@ export default function HeaderActions({
                     {setIsCredit && (
                         <Select
                             allowClear
-                            placeholder="Tipo de balance"
+                            placeholder="Select a balance type"
                             value={
                                 isCredit === true ? "true" : isCredit === false ? "false" : undefined
                             }
@@ -322,8 +322,8 @@ export default function HeaderActions({
                             }
                             style={{ width: "100%" }}
                         >
-                            <Select.Option value="true">Crédito</Select.Option>
-                            <Select.Option value="false">Débito</Select.Option>
+                            <Select.Option value="true">Credit</Select.Option>
+                            <Select.Option value="false">Debit</Select.Option>
                         </Select>
                     )}
 
@@ -331,7 +331,7 @@ export default function HeaderActions({
                     {setCompanyStatus && (
                         <Select
                             allowClear
-                            placeholder="Estado de la compañía"
+                            placeholder="Select a company status"
                             value={companyStatus || undefined}
                             onChange={(val) => setCompanyStatus(val as ClientStatus)}
                             style={{ width: "100%" }}
