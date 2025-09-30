@@ -30,7 +30,6 @@ export const loader: LoaderFunction = async ({ request }) => {
     }
     if (companyId) apiUrl.searchParams.set("company_id", companyId);
     if (userId) apiUrl.searchParams.set("user_id", userId);
-
     return withPaginationDefer({
         request,
         apiPath: apiUrl.toString(),

@@ -20,7 +20,6 @@ export const loader: LoaderFunction = async ({ request }) => {
   const direction = url.searchParams.get("direction") as "next" | "prev";
   const from = url.searchParams.get("from"); // fecha inicio opcional
   const to = url.searchParams.get("to");     // fecha fin opcional
-
   const take = takeParam ? parseInt(takeParam, 10) : 6;
 
   // Campos base que queremos seleccionar

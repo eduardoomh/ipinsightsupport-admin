@@ -4,18 +4,18 @@ import RowItemV2 from "./components/RowItemV2";
 //import PercentageBar from "./components/PercentageBar";
 import { getRateTypeLabel } from '../../utils/general/getRateTypeLabel';
 import { styles } from "./utils/styles";
-import { PDFUserMetadataI } from "./interfaces/Report.interface";
+import { PDFCompanyrMetadataI } from "./interfaces/Report.interface";
 import { extractFormattedContentFromHTMLv2 } from "./utils/utilities";
 
 interface Props {
     report: any;
     content: any;
-    metadata: PDFUserMetadataI;
+    metadata: PDFCompanyrMetadataI;
 }
 export default function PDFView({ report, content, metadata }: Props) {
     registerMontserratFonts();
 
-    const { user, startDate, endDate } = metadata;
+    const { company, startDate, endDate } = metadata;
 
     //const percentageWork = [
     //    { label: 'Senior Architect', percentage: 0 },
@@ -35,16 +35,16 @@ export default function PDFView({ report, content, metadata }: Props) {
 
                 <View style={styles.headerContainer}>
                     <Text style={styles.alert_msg_3}>
-                        This user report summarizes the activities of <Text style={styles.bold_text}>{user}</Text> for the period from <Text style={styles.bold_text}>{startDate}</Text> to <Text style={styles.bold_text}>{endDate}</Text>.
-                        During this time, the employee completed the following work entries:
+                        This company report summarizes the work performed for <Text style={styles.bold_text}>{company}</Text> during the period from <Text style={styles.bold_text}>{startDate}</Text> to <Text style={styles.bold_text}>{endDate}</Text>.
+                        Within this timeframe, the following activities and work entries were recorded:
                     </Text>
                 </View>
 
                 {/* Work Entries */}
-                {report.workEntries.map((entry) => (
+                {report.workEntries.map((entry: any) => (
                     <View key={entry.id} style={styles.workEntryContainer}>
                         <RowItemV2 label="Date" value={new Date(entry.billed_on).toLocaleDateString()} />
-                        <RowItemV2 label="Company" value={entry.client.company} />
+                        <RowItemV2 label="Employee" value={entry.user.name} />
                         <RowItemV2 label={"Role/Type"} value={getRateTypeLabel(entry.rate_type)} />
                         <RowItemV2 label="Hours worked" value={`${entry.hours_spent} hours`} />
                         <RowItemV2 label="Hours billed" value={`${entry.hours_billed} hours`} />
@@ -71,8 +71,8 @@ export default function PDFView({ report, content, metadata }: Props) {
                         <RowItemV2 label="Total" value={`$${report.workEntries.reduce((total, entry) => total + entry.total_price, 0)} USD`} />
                     </View>
                     <Text style={styles.alert_msg_2}>
-                    Report generated in <Text style={styles.bold_text}>{new Date().toLocaleDateString()}</Text>
-                </Text>
+                        Report generated in <Text style={styles.bold_text}>{new Date().toLocaleDateString()}</Text>
+                    </Text>
                 </View>
             </Page>
         </Document>
