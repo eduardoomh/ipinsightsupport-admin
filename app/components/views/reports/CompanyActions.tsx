@@ -4,8 +4,8 @@ import { Button, Dropdown, Menu, message } from "antd";
 import { MailOutlined, DownloadOutlined } from "@ant-design/icons";
 import { handleDownloadPDF, generateCompanyPDFDoc } from "~/components/pdf/handleDownloadCompanyPDF";
 import { ReportCompanyI } from "~/components/pdf/interfaces/Report.interface";
-import { CompanyReportI } from "./utils/CompanyReport.interface";
 import { pdf } from "@react-pdf/renderer"; // 👈 necesario para generar PDF en memoria
+import { CompanyReportI } from "./utils/companyReport.interface";
 
 interface Props {
   record: CompanyReportI;

@@ -1,6 +1,6 @@
 import { TableColumnsType } from "antd";
-import { CompanyReportI } from "./CompanyReport.interface";
 import CompanyActions from "../CompanyActions";
+import { CompanyReportI } from "./companyReport.interface";
 
 export const companyReportColumns = (
   getDateRange: () => { from: string; to: string }
