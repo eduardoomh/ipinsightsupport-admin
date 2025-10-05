@@ -7,9 +7,11 @@ import WorkEntriesChart from "./utils/WorkEntriesChart";
 interface Props{
     adminStats: any;
     loading: boolean;
+    selectedMonth: number;
+    selectedYear: number;
 }
 
-const AdminDashboard: React.FC<Props> = ({ adminStats, loading }) => {
+const AdminDashboard: React.FC<Props> = ({ adminStats, loading, selectedMonth, selectedYear }) => {
   const [workEntriesData, setWorkEntriesData] = useState<{ date: string; hours: number }[]>([]);
   const [statsLoading, setStatsLoading] = useState(false);
 
@@ -18,7 +20,8 @@ const AdminDashboard: React.FC<Props> = ({ adminStats, loading }) => {
     const fetchStats = async () => {
       setStatsLoading(true);
       try {
-        const res = await fetch("/api/work-entries/stats?admin=true");
+        console.log(selectedMonth, selectedYear);
+        const res = await fetch(`/api/work-entries/stats?admin=true&month=${selectedMonth}&year=${selectedYear}`);
         const json = await res.json();
         const data: any[] = json.workEntries || [];
 
@@ -42,7 +45,7 @@ const AdminDashboard: React.FC<Props> = ({ adminStats, loading }) => {
     };
 
     fetchStats();
-  }, []);
+  }, [selectedMonth, selectedYear]);
 
   return (
     <div className="py-6 space-y-6">

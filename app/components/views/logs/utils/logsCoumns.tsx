@@ -35,17 +35,9 @@ export const logColumns = (
         {viewAction && (
           <Button
             icon={<EyeOutlined style={{ fontSize: "16px" }} />}
-            onClick={() => navigate(`/admin/logs/${record.id}`)}
+            onClick={() => navigate(`/admin/advanced/logs/${record.id}/info`)}
           />
         )}
-        <Popconfirm
-          title="Are you sure you want to delete this log?"
-          onConfirm={() => handleDelete(record.id)}
-          okText="Yes"
-          cancelText="No"
-        >
-          <Button danger icon={<DeleteOutlined />} />
-        </Popconfirm>
       </div>
     ),
   },

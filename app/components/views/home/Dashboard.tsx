@@ -26,6 +26,8 @@ interface DashboardProps {
   hoursArchitecture: number;
   hoursSeniorArchitecture: number;
   todayEvents: { id: string; title: string; time: string }[];
+  selectedMonth: number;
+  selectedYear: number;
   loading?: boolean;
 }
 
@@ -37,6 +39,8 @@ const Dashboard: React.FC<DashboardProps> = ({
   hoursArchitecture,
   hoursSeniorArchitecture,
   todayEvents,
+  selectedMonth,
+  selectedYear,
   loading = false,
 }) => {
   const navigate = useNavigate();
@@ -53,7 +57,7 @@ const Dashboard: React.FC<DashboardProps> = ({
     const fetchStats = async () => {
       setStatsLoading(true);
       try {
-        const res = await fetch("/api/work-entries/stats");
+        const res = await fetch(`/api/work-entries/stats?month=${selectedMonth}&year=${selectedYear}`);
         const json = await res.json();
         const data: WorkEntry[] = json.workEntries || [];
 
@@ -77,7 +81,7 @@ const Dashboard: React.FC<DashboardProps> = ({
     };
 
     fetchStats();
-  }, []);
+  }, [selectedMonth, selectedYear]);
 
   // 📌 Fetch last work entry
   useEffect(() => {

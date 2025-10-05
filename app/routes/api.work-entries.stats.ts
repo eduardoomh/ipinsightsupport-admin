@@ -1,6 +1,7 @@
 import { LoaderFunction } from "@remix-run/node";
 import { prisma } from "~/config/prisma.server";
 import { getUserId } from "~/config/session.server";
+
 export const loader: LoaderFunction = async ({ request }) => {
   // 1️⃣ Obtener el userId de la sesión
   const userId = await getUserId(request);
@@ -14,11 +15,16 @@ export const loader: LoaderFunction = async ({ request }) => {
   // 2️⃣ Revisar query params
   const url = new URL(request.url);
   const isAdmin = url.searchParams.get("admin") === "true";
+  const monthParam = url.searchParams.get("month");
+  const yearParam = url.searchParams.get("year");
 
-  // 3️⃣ Determinar el mes actual
   const now = new Date();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  const month = monthParam ? parseInt(monthParam, 10) - 1 : now.getMonth(); // JS month: 0-11
+  const year = yearParam ? parseInt(yearParam, 10) : now.getFullYear();
+
+  // 3️⃣ Determinar rango de fechas según mes/año
+  const startOfMonth = new Date(year, month, 1);
+  const startOfNextMonth = new Date(year, month + 1, 1);
 
   // 4️⃣ Construir filtro dinámico
   const whereFilter: any = {

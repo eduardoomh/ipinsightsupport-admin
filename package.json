@@ -35,6 +35,7 @@
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",
     "react-dom": "^18.2.0",
+    "react-inspector": "^9.0.0",
     "react-quill": "^2.0.0",
     "react-responsive": "^10.0.1",
     "react-select": "^5.10.2",
