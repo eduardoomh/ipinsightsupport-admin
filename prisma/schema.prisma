@@ -37,6 +37,7 @@ model User {
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
   UserStats UserStats[] @relation("UserStats")
+  UserLogs  Log[]       @relation("UserLogs")
 
   @@map("users")
 }
@@ -65,6 +66,8 @@ model Client {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  ClientLogs Log[] @relation("ClientLogs")
 
   @@map("clients")
 }
@@ -214,12 +217,12 @@ model ClientStatusHistory {
 }
 
 model UserStats {
-  id                           String @id @default(uuid())
-  user_id                      String
-  user                         User   @relation("UserStats", fields: [user_id], references: [id])
+  id      String @id @default(uuid())
+  user_id String
+  user    User   @relation("UserStats", fields: [user_id], references: [id])
 
-  month                        Int?
-  year                         Int?
+  month Int?
+  year  Int?
 
   total_work_entries           Int?   @default(0)
   companies_as_account_manager Int?   @default(0)
@@ -232,19 +235,34 @@ model UserStats {
 }
 
 model AdminStats {
-  id                           String @id @default(uuid())
+  id String @id @default(uuid())
 
-  month                        Int?
-  year                         Int?
+  month Int?
+  year  Int?
 
-  total_work_entries           Int?   @default(0)
-  total_retainers              Int?   @default(0)
-  total_clients                Int?   @default(0)
-  retainers_amount             Float? @default(0.0)
-  hours_total                  Float? @default(0.0)
-  hours_engineering            Float? @default(0.0)
-  hours_architecture           Float? @default(0.0)
-  hours_senior_architecture    Float? @default(0.0)
+  total_work_entries        Int?   @default(0)
+  total_retainers           Int?   @default(0)
+  total_clients             Int?   @default(0)
+  retainers_amount          Float? @default(0.0)
+  hours_total               Float? @default(0.0)
+  hours_engineering         Float? @default(0.0)
+  hours_architecture        Float? @default(0.0)
+  hours_senior_architecture Float? @default(0.0)
+}
+
+model Log {
+  id        String    @id @default(cuid())
+  source    LogSource @default(WEBHOOK)
+  level     LogLevel  @default(INFO)
+  message   String
+  details   Json?
+  user_id   String?
+  user      User?     @relation("UserLogs", fields: [user_id], references: [id], onDelete: SetNull)
+  client_id String?
+  client    Client?   @relation("ClientLogs", fields: [client_id], references: [id], onDelete: SetNull)
+  createdAt DateTime  @default(now())
+
+  @@map("logs")
 }
 
 enum ClientStatus {
@@ -266,4 +284,23 @@ enum Timezone {
   AFRICA
   LATAM
   AUSTRALIA_NZ
+}
+
+enum LogLevel {
+  INFO
+  WARNING
+  ERROR
+}
+
+enum LogSource {
+  WEBHOOK
+  SYSTEM
+  USER_ACTION
+  CRON_JOB
+  AUTH
+  CLIENT_UPDATE
+  RETAINER
+  WORK_ENTRY
+  SCHEDULE
+  API
 }
