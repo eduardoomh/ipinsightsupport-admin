@@ -10,7 +10,7 @@ import { useReportFilters } from "~/hooks/useReportFilters";
 import SkeletonEntries from "~/components/skeletons/SkeletonEntries";
 import CompanyReportTable from "~/components/views/reports/CompanyReportTable";
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader: LoaderFunction = async ({ request }) => { 
     const url = new URL(request.url);
 
     const from = url.searchParams.get("from");

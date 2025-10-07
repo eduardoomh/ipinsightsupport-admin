@@ -43,14 +43,18 @@ export const workEntriesColumns = (
       ),
     },
     {
-      title: "Submitted",
-      dataIndex: "created_at",
-      render: (value: string) => dayjs(value).format("YYYY-MM-DD HH:mm"),
-    },
-    {
       title: "Hourly rate",
       dataIndex: "hourly_rate",
       render: (value: string) => `$${value}`,
+    },
+    {
+      title: "Total",
+      dataIndex: "total",
+      render: (_: any, record: DataType) => (
+        <>
+          ${record.hourly_rate * record.hours_billed} USD
+        </>
+      ),
     },
     {
       title: "Actions",

@@ -1,7 +1,7 @@
-import { DeleteOutlined, EyeOutlined } from '@ant-design/icons';
-import { TableColumnsType, Button, Popconfirm } from 'antd';
+import { EyeOutlined } from '@ant-design/icons';
+import { TableColumnsType, Button, Tag } from 'antd';
 import dayjs from 'dayjs';
-import { LogI } from './logTable.interface';
+import { LogI, LogLevel } from './logTable.interface';
 
 export const logColumns = (
   navigate: (path: string) => void,
@@ -15,6 +15,9 @@ export const logColumns = (
   {
     title: "Level",
     dataIndex: "level",
+    render: (value: LogLevel) => (
+      <Tag color={value === 'ERROR' ? 'red' : value === 'WARNING' ? 'orange' : 'blue'}>{value}</Tag>
+    )
   },
   {
     title: "Message",
