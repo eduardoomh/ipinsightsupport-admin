@@ -40,24 +40,27 @@ export const loader: LoaderFunction = async ({ request }) => {
   // Traemos los usuarios paginados
   const users = await prisma.user.findMany(queryOptions);
 
-  // Filtrado de work_entries por rango de fechas en horario de Florida
-  let whereWorkEntries: any = {};
+  // 2️⃣ Fechas por defecto: mes actual en America/New_York
+  const now = DateTime.now().setZone("America/New_York");
+  let fromDate = now.startOf("month").startOf("day").toUTC().toJSDate();
+  let toDate = now.endOf("month").endOf("day").toUTC().toJSDate();
+
+  // 3️⃣ Sobrescribir si vienen fechas del query
   if (from && to) {
-    const fromDate = DateTime.fromISO(from, { zone: "America/New_York" })
-    .startOf("day")      // 00:00:00 en Florida
-    .toUTC()             // Convertimos a UTC
-    .toJSDate();
+    fromDate = DateTime.fromISO(from, { zone: "America/New_York" })
+      .startOf("day")
+      .toUTC()
+      .toJSDate();
 
-const toDate = DateTime.fromISO(to, { zone: "America/New_York" })
-    .endOf("day")        // 23:59:59.999 en Florida
-    .toUTC()             // Convertimos a UTC
-    .toJSDate();
-
-    whereWorkEntries.billed_on = {
-        gte: fromDate,
-        lte: toDate,
-      };
+    toDate = DateTime.fromISO(to, { zone: "America/New_York" })
+      .endOf("day")
+      .toUTC()
+      .toJSDate();
   }
+
+  const whereWorkEntries = {
+    billed_on: { gte: fromDate, lte: toDate }
+  };
 
   // Calculamos sumas por usuario y filtramos los que tienen totales > 0
   const usersWithTotals = (

@@ -45,12 +45,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   // 4️⃣ Filtros separados por tabla
   const whereWorkEntries = {
-    billed_on: { gte: fromDate, lte: toDate },
-    created_at: { gte: fromDate, lte: toDate },
-  };
-
-  const whereClients = {
-    createdAt: { gte: fromDate, lte: toDate },
+    billed_on: { gte: fromDate, lte: toDate }
   };
 
   // 5️⃣ Paginación
@@ -65,7 +60,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   // 6️⃣ Traer clientes paginados
   const clients = await prisma.client.findMany({
-    where: whereClients,
     ...queryOptions,
   });
 
