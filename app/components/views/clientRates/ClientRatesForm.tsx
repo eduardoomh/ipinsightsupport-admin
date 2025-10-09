@@ -34,7 +34,7 @@ const ClientRatesForm = ({ clientRates, handleSubmit, submitting, edit, client }
         client && client?.billing_type === "MONTHLY_PLAN" && (
           <Alert
             message="This company has monthly plan, the rates are not used"
-            type="info"
+            type="warning"
             showIcon
             style={{ marginBottom: 16 }}
           />
