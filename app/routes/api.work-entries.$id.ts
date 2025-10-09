@@ -98,8 +98,12 @@ export const action: ActionFunction = async ({ request, params }) => {
     // 2️⃣ Calcular diferencia de horas y ajustar remainingFunds
     const hourDiff = hours_billed - currentEntry.hours_billed; // positivo si aumentan horas, negativo si disminuyen
     const fundAdjustment = hourDiff * currentEntry.hourly_rate;
-    const newRemainingFunds = Number(client.remainingFunds) - fundAdjustment;
+    let newRemainingFunds = Number(client.remainingFunds) - fundAdjustment;
 
+    if (client?.billing_type === "MONTHLY_PLAN") {
+      newRemainingFunds = Number(client.remainingFunds);
+    }
+    
     // Determinar mes/año del work entry
     const billedDate = billed_on ? new Date(billed_on) : currentEntry.billed_on;
     const month = billedDate ? billedDate.getMonth() + 1 : new Date().getMonth() + 1;
@@ -116,6 +120,7 @@ export const action: ActionFunction = async ({ request, params }) => {
           billed_on: billed_on ? new Date(billed_on) : null,
           hours_billed,
           hours_spent,
+          billing_type: client?.billing_type || "HOURLY",
           summary,
         },
         include: {

@@ -148,8 +148,13 @@ export const action: ActionFunction = async ({ request }) => {
     }
 
     // 6) Calcular saldo y horas estimadas
-    const fundsAfter = Number(client.remainingFunds) - totalCost;
-    const positiveFunds = Math.max(fundsAfter, 0);
+    let fundsAfter = Number(client.remainingFunds) - totalCost;
+    let positiveFunds = Math.max(fundsAfter, 0);
+
+    if (client?.billing_type === "MONTHLY_PLAN") {
+      fundsAfter = Number(client.remainingFunds);
+      positiveFunds = Math.max(fundsAfter, 0);
+    }
 
     const estimatedEngineeringHours =
       positiveFunds > 0 ? round2(safeDiv(positiveFunds, engRate)) : 0.0;
@@ -176,6 +181,7 @@ export const action: ActionFunction = async ({ request }) => {
           rate_type: rateType,
           client_id: entry.client_id,
           user_id: entry.user_id,
+          billing_type: client?.billing_type || "HOURLY",
         },
       });
 

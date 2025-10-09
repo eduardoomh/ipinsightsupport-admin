@@ -1,4 +1,4 @@
-import { Button, Form, Input, Select } from "antd";
+import { Button, Form, Input, Radio, Select } from "antd";
 import { useEffect } from "react";
 import { getTimezoneLabel } from "~/utils/general/getTimezoneLabel";
 
@@ -67,6 +67,7 @@ const CompanyForm = ({
       initialValues={{
         ...client,
         account_manager_id: initialAccountManagerId,
+        billing_type: client?.billing_type || "HOURLY",
       }}
       onFinish={handleSubmit}
       id="client-form"
@@ -115,19 +116,32 @@ const CompanyForm = ({
       </Form.Item>
 
       {admin && (
-        <Form.Item
-          name="account_manager_id"
-          label="Account Manager"
-          rules={[{ required: false }]}
-        >
-          <Select placeholder="Select an account manager" allowClear>
-            {users.map((user) => (
-              <Option key={user.id} value={user.id}>
-                {user.name}
-              </Option>
-            ))}
-          </Select>
-        </Form.Item>
+        <>
+          <Form.Item
+            name="account_manager_id"
+            label="Account Manager"
+            rules={[{ required: false }]}
+          >
+            <Select placeholder="Select an account manager" allowClear>
+              {users.map((user) => (
+                <Option key={user.id} value={user.id}>
+                  {user.name}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item
+            name="billing_type"
+            label="Billing Type"
+            tooltip="Choose how this client's work will be billed"
+            rules={[{ required: true, message: "Please select a billing type" }]}
+          >
+            <Radio.Group>
+              <Radio value="HOURLY">Per Hour</Radio>
+              <Radio value="MONTHLY_PLAN">Monthly Hours Plan</Radio>
+            </Radio.Group>
+          </Form.Item>
+        </>
       )}
 
       <Button

@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import { UsersI } from "~/interfaces/users.interface";
 import TextEditor from "~/components/basics/TextEditor";
 import { WorkEntry } from "~/interfaces/workEntries.interface";
+import { ClientI } from "~/interfaces/clients.interface";
 
 interface Props {
   workEntry?: any;
@@ -13,9 +14,10 @@ interface Props {
   users: UsersI[];
   user?: UsersI;
   entry?: WorkEntry;
+  company?: ClientI;
 }
 
-const WorkEntryForm = ({ workEntry, handleSubmit, submitting, edit = false, users, user }: Props) => {
+const WorkEntryForm = ({ workEntry, handleSubmit, submitting, edit = false, users, user, company }: Props) => {
   const [form] = Form.useForm();
   const [separateHours, setSeparateHours] = useState(false);
 
@@ -34,11 +36,11 @@ const WorkEntryForm = ({ workEntry, handleSubmit, submitting, edit = false, user
     }
   }, [workEntry, form]);
 
-const handleValuesChange = (changedValues: any) => {
-  if (!workEntry && !separateHours && changedValues.hours_billed !== undefined) {
-    form.setFieldsValue({ hours_spent: changedValues.hours_billed });
-  }
-};
+  const handleValuesChange = (changedValues: any) => {
+    if (!workEntry && !separateHours && changedValues.hours_billed !== undefined) {
+      form.setFieldsValue({ hours_spent: changedValues.hours_billed });
+    }
+  };
 
   useEffect(() => {
     if (!separateHours && !workEntry) {
@@ -58,6 +60,7 @@ const handleValuesChange = (changedValues: any) => {
       billed_on: billedISO,
       hours_billed: Number(values.hours_billed),
       hours_spent: Number(finalHoursSpent),
+      billing_type: values.billing_type,
     });
   };
 
@@ -71,11 +74,32 @@ const handleValuesChange = (changedValues: any) => {
         hours_spent: workEntry?.hours_spent ?? workEntry?.hours_billed ?? undefined,
         summary: workEntry?.summary ?? "",
         billed_on: workEntry?.billed_on ? dayjs(workEntry.billed_on) : null,
+        billing_type: workEntry?.billing_type ?? "HOURLY",
       }}
       onValuesChange={handleValuesChange}
       onFinish={onFinish}
       id="work-entry-form"
     >
+      {
+        workEntry?.billing_type === "MONTHLY_PLAN" && (
+          <Alert
+            message="This Work entry is billed by monthly plan, the Time Billed is required but it will not be used for billing."
+            type="warning"
+            showIcon
+            style={{ marginBottom: 8 }}
+          />
+        )
+      }
+      {
+        (company?.billing_type === "MONTHLY_PLAN") && (
+          <Alert
+            message="This company is billed by monthly plan, the Time Billed is required but it will not be used for billing."
+            type="warning"
+            showIcon
+            style={{ marginBottom: 8 }}
+          />
+        )
+      }
       {
         !workEntry && (
           <Form.Item

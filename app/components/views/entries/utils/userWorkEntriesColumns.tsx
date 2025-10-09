@@ -33,22 +33,31 @@ export const userWorkEntriesColumns = (
       key: "hours",
       render: (_: any, record: DataType) => (
         <div className="leading-snug">
-          <div>{record.hours_billed} hrs billed</div>
-          <div className="text-gray-500 text-sm">{record.hours_spent} hrs spent</div>
+          {
+            record?.billing_type === "MONTHLY_PLAN" ?
+              <>
+                <div className="text-gray-500 text-sm">{record.hours_spent} hrs spent</div>
+              </> : (
+                <>
+                  <div>{record.hours_billed} hrs billed</div>
+                  <div className="text-gray-500 text-sm">{record.hours_spent} hrs spent</div>
+                </>
+              )
+          }
         </div>
       ),
     },
     {
       title: "Hourly rate",
       dataIndex: "hourly_rate",
-      render: (value: string) => `$${value}`,
+      render: (value: string, record: DataType) => record?.billing_type === "MONTHLY_PLAN" ? "Monthly Plan" : `$${value}`,
     },
     {
       title: "Total",
       dataIndex: "total",
       render: (_: any, record: DataType) => (
         <>
-          ${record.hourly_rate * record.hours_billed} USD
+        {record?.billing_type === "MONTHLY_PLAN" ? "Monthly Plan" :  `${record.hourly_rate * record.hours_billed} USD`}
         </>
       ),
     },

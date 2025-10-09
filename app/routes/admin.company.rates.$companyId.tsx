@@ -17,7 +17,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     throw new Response("Company ID is required", { status: 400 });
   }
 
-  const clientRes = await fetch(`${process.env.APP_URL}/api/clients/${companyId}?fields=id,company,currentStatus`);
+  const clientRes = await fetch(`${process.env.APP_URL}/api/clients/${companyId}?fields=id,company,currentStatus,billing_type`);
   if (!clientRes.ok) {
     throw new Response("Company not found", { status: 404 });
   }
@@ -98,6 +98,7 @@ export default function NewUserDrawerRoute() {
                     handleSubmit={handleSubmit}
                     submitting={submitting}
                     clientRates={clientRates[0]}
+                    client={client}
                     edit={edit} />
             </ContentLayout>
         </DashboardLayout>

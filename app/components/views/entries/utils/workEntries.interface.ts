@@ -13,5 +13,6 @@ export interface DataType {
   hours_spent: number;
   summary: string;
   hourly_rate: number;
+  billing_type: string;
   created_at: string;
 }

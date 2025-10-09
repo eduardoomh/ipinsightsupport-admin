@@ -1,14 +1,16 @@
 import { useEffect } from "react";
-import { Button, Form, InputNumber } from "antd";
+import { Alert, Button, Form, InputNumber } from "antd";
+import { ClientI } from "~/interfaces/clients.interface";
 
 interface Props {
   clientRates?: any;
   handleSubmit: any;
   submitting: boolean;
   edit: boolean;
+  client: ClientI;
 }
 
-const ClientRatesForm = ({ clientRates, handleSubmit, submitting, edit }: Props) => {
+const ClientRatesForm = ({ clientRates, handleSubmit, submitting, edit, client }: Props) => {
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -28,6 +30,16 @@ const ClientRatesForm = ({ clientRates, handleSubmit, submitting, edit }: Props)
       onFinish={handleSubmit}
       id="client-rates-form"
     >
+      {
+        client && client?.billing_type === "MONTHLY_PLAN" && (
+          <Alert
+            message="This company has monthly plan, the rates are not used"
+            type="info"
+            showIcon
+            style={{ marginBottom: 16 }}
+          />
+        )
+      }
       <Form.Item
         name="engineeringRate"
         label="Engineering"

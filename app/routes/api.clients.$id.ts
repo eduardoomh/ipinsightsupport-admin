@@ -23,6 +23,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     id: true,
     company: true,
     timezone: true,
+    billing_type: true,
     currentStatus: true,
     contacts: true,
     createdAt: true,
@@ -135,7 +136,7 @@ export const action: ActionFunction = async ({ params, request }) => {
     if (method === "PUT") {
       const formData = await request.formData();
       const clientJson = formData.get("client") as string;
-
+console.log(formData, "el form daat")
       if (!clientJson) {
         return json({ error: "No client data provided" }, { status: 400 });
       }
@@ -159,11 +160,13 @@ export const action: ActionFunction = async ({ params, request }) => {
           timezone: updatedFields.timezone as any,
           account_manager_id: updatedFields.account_manager_id,
           currentStatus: updatedFields.currentStatus,
+          billing_type: updatedFields.billing_type || "HOURLY",
         },
         select: {
           id: true,
           company: true,
           timezone: true,
+          billing_type: true,
           account_manager: true,
           account_manager_id: true,
           currentStatus: true,

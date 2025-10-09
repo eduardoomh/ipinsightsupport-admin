@@ -22,7 +22,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     request,
     sessionCheck: () => getSessionFromCookie(request),
     resources: [
-      { key: "client", apiPath: `${process.env.APP_URL}/api/clients/${companyId}?fields=id,company,timezone,currentStatus,account_manager_id` },
+      { key: "client", apiPath: `${process.env.APP_URL}/api/clients/${companyId}?fields=id,company,timezone,currentStatus,account_manager_id,billing_type` },
       { key: "usersAccountManagerData", apiPath: `${process.env.APP_URL}/api/users?filter=is_account_manager&take=100&fields=id,name` },
     ],
   });

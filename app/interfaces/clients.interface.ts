@@ -19,6 +19,7 @@ export interface ClientI {
     estimated_senior_architecture_hours?: number;
     rates: RatesI;
     currentStatus: string;
+    billing_type: string;
     lastNote?: ClientStatusHistoryI;
     createdAt: string;
     updatedAt: string;

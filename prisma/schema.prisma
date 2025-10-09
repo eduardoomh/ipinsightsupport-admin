@@ -53,6 +53,7 @@ model Client {
   estimated_engineering_hours         Float?       @default(0.0)
   estimated_architecture_hours        Float?       @default(0.0)
   estimated_senior_architecture_hours Float?       @default(0.0)
+  billing_type                        billingType? @default(HOURLY)
 
   contacts              Contact[]             @relation("ClientContacts")
   work_entries          WorkEntry[]           @relation("ClientWorkEntry")
@@ -79,14 +80,15 @@ enum RateType {
 }
 
 model WorkEntry {
-  id           String   @id @default(cuid())
+  id           String       @id @default(cuid())
   billed_on    DateTime
-  created_at   DateTime @default(now())
+  created_at   DateTime     @default(now())
   hours_billed Float
   hours_spent  Float
   hourly_rate  Float
-  summary      String   @db.Text // Campo largo para texto enriquecido
+  summary      String       @db.Text // Campo largo para texto enriquecido
   rate_type    RateType
+  billing_type billingType? @default(HOURLY)
 
   // Relaciones
   client_id String
@@ -303,4 +305,9 @@ enum LogSource {
   WORK_ENTRY
   SCHEDULE
   API
+}
+
+enum billingType {
+  HOURLY
+  MONTHLY_PLAN
 }

@@ -46,7 +46,8 @@ const RatesSection: React.FC<Props> = ({ client }) => {
 
     return (
         <ContentLayout title="Rates" type="basic_section" size="small">
-            {rateItems.map(item => (
+            {
+            client?.billing_type === "MONTHLY_PLAN" ? "The company has a monthly plan, the rates are not used" : rateItems.map(item => (
                 <DashboardItem
                     key={item.role}
                     label={item.role}

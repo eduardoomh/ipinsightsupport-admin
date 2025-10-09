@@ -25,6 +25,7 @@ export const loader: LoaderFunction = async ({ params }) => {
         estimated_architecture_hours: true,
         estimated_senior_architecture_hours: true,
         createdAt: true,
+        billing_type: true,
         account_manager: {
           select: {
             id: true,

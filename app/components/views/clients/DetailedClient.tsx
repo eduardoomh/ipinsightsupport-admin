@@ -1,4 +1,4 @@
-import { Col, Row, Typography, Avatar } from "antd";
+import { Col, Row, Typography, Avatar, Alert } from "antd";
 import dayjs from "dayjs";
 import React from "react";
 import ContentLayout from "~/components/layout/components/ContentLayout";
@@ -33,10 +33,24 @@ const DetailedClient: React.FC<Props> = ({ client }) => {
   return (
     <>
       <ContentLayout title="Profile" type="basic_section" size="small">
+      {
+        client && client?.billing_type === "MONTHLY_PLAN" && (
+          <Alert
+            message="This company has monthly plan"
+            type="info"
+            showIcon
+            style={{ marginBottom: 16 }}
+          />
+        )
+      }
         <Row>
           <Col span={12}>
             <DashboardItem label="Region" value={getTimezoneLabel(client.timezone as any)} showBorder={true} />
-            <DashboardItem label="Remaining funds" value={`$${client.remainingFunds}`} showBorder={true} />
+            <DashboardItem 
+              label={"Remaining funds"} 
+              value={ client?.billing_type === "MONTHLY_PLAN" ? "Monthly plan" : `$${client.remainingFunds}`} 
+              showBorder={true} 
+            />
             <DashboardItem
               label="Account manager"
               value={
