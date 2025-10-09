@@ -136,7 +136,7 @@ export const action: ActionFunction = async ({ params, request }) => {
     if (method === "PUT") {
       const formData = await request.formData();
       const clientJson = formData.get("client") as string;
-console.log(formData, "el form daat")
+
       if (!clientJson) {
         return json({ error: "No client data provided" }, { status: 400 });
       }
