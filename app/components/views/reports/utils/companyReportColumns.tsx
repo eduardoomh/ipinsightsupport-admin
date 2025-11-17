@@ -1,6 +1,7 @@
 import { TableColumnsType } from "antd";
 import CompanyActions from "../CompanyActions";
 import { CompanyReportI } from "./companyReport.interface";
+import CompanyLink from "~/components/basics/CompanyLink";
 
 export const companyReportColumns = (
   getDateRange: () => { from: string; to: string }
@@ -9,6 +10,9 @@ export const companyReportColumns = (
     title: "Company",
     dataIndex: "company",
     key: "company",
+    render: (_: any, record: CompanyReportI) => (
+      <CompanyLink company={record.company} id={record.id} />
+    )
   },
   {
     title: "Hours Billed",

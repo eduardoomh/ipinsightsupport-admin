@@ -54,7 +54,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     { header: "Current Status", key: "currentStatus", width: 20 },
     { header: "Remaining Funds", key: "remainingFunds", width: 15 },
     { header: "Most Recent Work Entry", key: "most_recent_work_entry", width: 15 },
-    { header: "Most Recent Retainer Activated", key: "most_recent_retainer_activated", width: 15 },
+    { header: "Most Recent Balance Activated", key: "most_recent_retainer_activated", width: 15 },
     { header: "Estimated Engineering Hours", key: "estimated_engineering_hours", width: 15 },
     { header: "Estimated Architecture Hours", key: "estimated_architecture_hours", width: 15 },
     { header: "Estimated Senior Architecture Hours", key: "estimated_senior_architecture_hours", width: 15 },

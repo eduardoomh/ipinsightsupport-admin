@@ -2,6 +2,8 @@
 import { DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
 import { TableColumnsType, Button, Popconfirm } from 'antd';
 import dayjs from "dayjs";
+import ContactAvatar from '~/components/basics/ContactAvatar';
+import DateUsFormat from '~/components/tables/DateUsFormat';
 
 export const contactColumns = (
     navigate: (path: string) => void,
@@ -11,7 +13,10 @@ export const contactColumns = (
 ): TableColumnsType<DataType> => [
         {
             title: "Name",
-            dataIndex: "name"
+            dataIndex: "name",
+            render: (_: any, record: DataType) => (
+              <ContactAvatar fullName={record.name} />
+            )
         },
         {
             title: "Email",
@@ -24,7 +29,7 @@ export const contactColumns = (
         {
             title: "Created At",
             dataIndex: "createdAt",
-            render: (value: string) => dayjs(value).format("YYYY-MM-DD"),
+            render: (value: string) => <DateUsFormat date={value} />
         },
         {
             title: "Actions",

@@ -3,6 +3,7 @@ import ContentLayout from "~/components/layout/components/ContentLayout";
 import { Skeleton, Avatar, Alert } from "antd";
 import { getClientStatusLabel } from "~/utils/general/getClientStatusLabel";
 import { ClientStatusHistoryI } from "~/interfaces/clientStatusHistory";
+import Note from "~/components/basics/Note";
 
 interface Props {
     clientId: string;
@@ -38,36 +39,9 @@ const ClientStatusHistorySection: React.FC<Props> = ({ clientId }) => {
                     <Skeleton active paragraph={{ rows: 1 }} title={false} />
                 </>
             ) : history.length > 0 ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                    {history.map(item => (
-                        <Alert
-                            key={item.id}
-                            type="info"
-                            style={{ backgroundColor: "#f5f5f5", borderColor: "#d9d9d9" }}
-                            message={
-                                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                                    <div style={{ fontWeight: 500, fontSize: 16 }}>
-                                        {item.status ? getClientStatusLabel(item.status) : item.title || 'Actualización'}
-                                    </div>
-                                    <div
-                                        style={{ fontSize: 14, color: "#333" }}
-                                        dangerouslySetInnerHTML={{ __html: item.note }}
-                                    />
-                                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
-                                        <Avatar
-                                            size="small"
-                                            src={item.changedBy?.avatar || undefined}
-                                            style={{ backgroundColor: "#1890ff", color: "#fff" }}
-                                        >
-                                            {item.changedBy?.name ? item.changedBy.name[0] : "U"}
-                                        </Avatar>
-                                        <span style={{ fontSize: 14, color: "#555" }}>
-                                            {item.changedBy?.name || "Unknown"} — {new Date(item.changedAt).toLocaleString()}
-                                        </span>
-                                    </div>
-                                </div>
-                            }
-                        />
+                <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                    {history.map((item) => (
+                        <Note key={item.id} note={item} size="default" />
                     ))}
                 </div>
             ) : (

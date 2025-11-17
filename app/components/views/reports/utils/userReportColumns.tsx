@@ -3,6 +3,7 @@ import { FileAddOutlined } from "@ant-design/icons";
 import { UserReportI } from "./userReport.interface";
 import { handleDownloadPDF } from "~/components/pdf/handleDownloadUserPDF";
 import { ReportI } from "~/components/pdf/interfaces/Report.interface";
+import TeamMemberAvatar from "~/components/basics/TeamMemberAvatar";
 
 export const userReportColumns = (
   getDateRange: () => { from: string; to: string }
@@ -11,6 +12,9 @@ export const userReportColumns = (
     title: "User",
     dataIndex: "name",
     key: "name",
+    render: (_: any, record: UserReportI) => (
+      <TeamMemberAvatar fullName={record.name} />
+    )
   },
   {
     title: "Hours Billed",

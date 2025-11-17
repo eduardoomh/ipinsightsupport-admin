@@ -1,8 +1,9 @@
 // columns/usersColumns.ts
 import { DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
 import { TableColumnsType, Button, Popconfirm } from 'antd';
-import dayjs from "dayjs";
 import { DataType } from './clientsTable.interface';
+import DateUsFormat from '~/components/tables/DateUsFormat';
+import CompanyLink from '~/components/basics/CompanyLink';
 
 export const clientColumns = (
     navigate: (path: string) => void,
@@ -10,12 +11,15 @@ export const clientColumns = (
 ): TableColumnsType<DataType> => [
         {
             title: "Company",
-            dataIndex: "company"
+            dataIndex: "company",
+            render: (_: any, record: DataType) => (
+                <CompanyLink id={record.id} company={record.company} />
+            )
         },
         {
             title: "Created At",
             dataIndex: "createdAt",
-            render: (value: string) => dayjs(value).format("YYYY-MM-DD"),
+            render: (value: string) => <DateUsFormat date={value} />,
         },
         {
             title: "Actions",

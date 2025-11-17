@@ -1,5 +1,4 @@
-import { Col, Row, Typography, Avatar, Alert } from "antd";
-import dayjs from "dayjs";
+import { Col, Row, Avatar, Alert } from "antd";
 import React from "react";
 import ContentLayout from "~/components/layout/components/ContentLayout";
 import DashboardItem from "../detailedClients/DashboardItem";
@@ -9,22 +8,7 @@ import TeamMembersSection from "./components/TeamMemberSection";
 import ContactsSection from "./components/ContactSection";
 import ClientStatusHistorySection from "./components/ClientStatusHistorySection";
 import { getTimezoneLabel } from "~/utils/general/getTimezoneLabel";
-
-const { Text } = Typography;
-
-const formatDateWithAgo = (dateStr: string) => {
-  if (!dateStr) return "—";
-  const date = dayjs(dateStr);
-  const diffYears = dayjs().diff(date, "year");
-  return (
-    <>
-      {date.format("MMM DD, YYYY")}
-      <br />
-      <Text type="secondary">{diffYears > 0 ? `${diffYears} year${diffYears > 1 ? "s" : ""} ago` : ""}</Text>
-    </>
-  );
-};
-
+import DateUsFormat from "~/components/tables/DateUsFormat";
 interface Props {
   client: ClientI;
 }
@@ -74,9 +58,9 @@ const DetailedClient: React.FC<Props> = ({ client }) => {
             />
           </Col>
           <Col span={12}>
-            <DashboardItem label="Most Recent Work Entry" value={formatDateWithAgo(client.most_recent_work_entry)} showBorder={true} />
-            <DashboardItem label="Most Recent Retainer Activated" value={formatDateWithAgo(client.most_recent_retainer_activated)} showBorder={true} />
-            <DashboardItem label="Created" value={formatDateWithAgo(client.createdAt)} />
+            <DashboardItem label="Most Recent Work Entry" value={<DateUsFormat date={client.most_recent_work_entry} />} showBorder={true} />
+            <DashboardItem label="Most Recent Balance Activated" value={<DateUsFormat date={client.most_recent_retainer_activated} />} showBorder={true} />
+            <DashboardItem label="Created" value={<DateUsFormat date={client.createdAt} />} />
           </Col>
         </Row>
       </ContentLayout>

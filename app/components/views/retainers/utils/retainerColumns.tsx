@@ -2,20 +2,16 @@
 import { TableColumnsType, Tag } from 'antd';
 import dayjs from "dayjs";
 import { RetainerType } from './retainers.interface';
+import CompanyLink from '~/components/basics/CompanyLink';
+import DateUsFormat from '~/components/tables/DateUsFormat';
+import CreditDebitTag from '~/components/basics/CreditDebitCard';
 
-export const retainerColumns = (
-    navigate: (path: string) => void,
-    handleDelete: (id: string) => void
-): TableColumnsType<RetainerType> => [
+export const retainerColumns = (): TableColumnsType<RetainerType> => [
         {
             title: "Client",
             dataIndex: ["client", "company"],
             render: (value: string, record: RetainerType) => (
-                <a
-                    style={{ textDecoration: "underline", color: "black" }}
-                    onClick={() => navigate(`/admin/company/dashboard/${record.client.id}`)}>
-                    {value}
-                </a>
+                <CompanyLink company={value} id={record.client.id} />
             ),
         },
         {
@@ -26,25 +22,23 @@ export const retainerColumns = (
         {
             title: "Activated On",
             dataIndex: "date_activated",
-            render: (value: string) => dayjs(value).format("YYYY-MM-DD"),
+            render: (value: string) =>  <DateUsFormat date={value} />
         },
         {
             title: "Expires On",
             dataIndex: "date_activated",
-            render: (value: string) => dayjs(value).add(1, "year").format("YYYY-MM-DD"),
+            render: (value: string) =>  <DateUsFormat date={dayjs(value).add(1, "year").toISOString()} />,
         },
         {
             title: "Type",
             dataIndex: "is_credit",
             render: (isCredit: boolean) => (
-                <Tag color={isCredit ? "green" : "blue"}>
-                    {isCredit ? "Credit" : "Debit"}
-                </Tag>
+                <CreditDebitTag isCredit={isCredit} />
             ),
         },
         {
             title: "Created At",
             dataIndex: "createdAt",
-            render: (value: string) => dayjs(value).format("YYYY-MM-DD"),
+            render: (value: string) =>  <DateUsFormat date={value} />,
         }
     ];

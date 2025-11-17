@@ -1,35 +1,32 @@
 // columns/usersColumns.ts
 import { Button, TableColumnsType } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
-import dayjs from 'dayjs';
 import { DataType } from './workEntries.interface';
+import DateUsFormat from '~/components/tables/DateUsFormat';
+import CompanyLink from '~/components/basics/CompanyLink';
+import TeamMemberAvatar from '~/components/basics/TeamMemberAvatar';
 
 export const workEntriesColumns = (
   navigate: (path: string) => void,
   baseUrl: string
 ): TableColumnsType<DataType> => [
     {
+      title: "Client",
+      key: "client",
+      render: (_: any, record: DataType) => (
+        <CompanyLink company={record.client.company} id={record.client.id} />
+      ),
+    },
+    {
       title: "Billed Date",
       dataIndex: "billed_on",
-      render: (value: string) => dayjs(value).format("YYYY-MM-DD"),
+      render: (value: string) => <DateUsFormat date={value} />,
     },
     {
       title: "User",
       dataIndex: ["user", "name"],
-    },
-    {
-      title: "Client",
-      key: "client",
       render: (_: any, record: DataType) => (
-        <span
-          style={{
-            cursor: "pointer",
-            textDecoration: "underline",
-          }}
-          onClick={() => navigate(`/admin/company/dashboard/${record.client.id}`)}
-        >
-          {record.client.company}
-        </span>
+        <TeamMemberAvatar fullName={record.user.name} />
       ),
     },
     {

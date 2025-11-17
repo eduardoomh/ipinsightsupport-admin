@@ -1,17 +1,15 @@
 import { ShopOutlined } from "@ant-design/icons";
-import { Tag } from "antd";
 import { FC, PropsWithChildren } from "react";
-import { useNavigation } from "@remix-run/react";
 import DetailedClientMenu from "~/components/Menus/DetailedClientMenu";
-import { getClientStatusLabel } from "~/utils/general/getClientStatusLabel";
 import CompanyMenu from "~/components/Menus/CompanyMenu";
 import CompanyClientMenu from "~/components/Menus/CompanyClientMenu";
+import StatusTag from "~/components/basics/StatusTag";
 
 interface Props {
     title: string;
     clientId: string;
     companyStatus: string;
-    type?: "ADMIN" | "USER" | "CLIENT"
+    type?: "ADMIN" | "USER" | "CLIENT";
 }
 
 const DetailedClientLayout: FC<PropsWithChildren<Props>> = ({
@@ -19,71 +17,86 @@ const DetailedClientLayout: FC<PropsWithChildren<Props>> = ({
     children,
     clientId,
     companyStatus,
-    type = "ADMIN"
+    type = "ADMIN",
 }) => {
-
     return (
         <>
             <div
                 style={{
                     width: "calc(100% - 2rem)",
-                    border: "1px solid #D3D3D3",
+                    border: "1px solid #E0E0E0",
+                    borderRadius: 12,
+                    overflow: "hidden",
                     marginBottom: "2rem",
                     marginRight: "2rem",
+                    background: "#fff",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
                 }}
             >
+                {/* HEADER */}
                 <div
                     style={{
                         display: "flex",
                         alignItems: "center",
-                        gap: "1rem",
-                        padding: "20px 28px",
-                        backgroundColor: "#f2f2f2",
+                        padding: "22px 28px",
+                        background: "linear-gradient(90deg, #F7FAFC 0%, #EDF2F7 100%)",
+                        borderBottom: "1px solid #E5E7EB",
                     }}
                 >
+                    {/* Ícono */}
                     <span
                         style={{
                             display: "flex",
                             justifyContent: "center",
                             alignItems: "center",
-                            width: "48px",
-                            height: "48px",
-                            borderRadius: "50px",
+                            width: "52px",
+                            height: "52px",
+                            borderRadius: 12,
                             backgroundColor: "#198890",
+                            boxShadow: "0 3px 6px rgba(0,0,0,0.15)",
+                            flexShrink: 0,
                         }}
                     >
-                        <ShopOutlined style={{ color: "#fff", fontSize: "2rem" }} />
+                        <ShopOutlined style={{ color: "#fff", fontSize: "28px" }} />
                     </span>
-                    <h1
-                        className="text-2xl font-bold"
-                        style={{ color: "#096584" }}
-                    >
-                        {title}{" "}
-                        <Tag
-                            color="geekblue"
-                            style={{ padding: "2px 8px", marginLeft: "4px" }}
+
+                    {/* Título + status */}
+                    <div style={{ marginLeft: "16px" }}>
+                        <h1
+                            style={{
+                                fontSize: "1.75rem",
+                                fontWeight: 700,
+                                margin: 0,
+                                color: "#084C61",
+                            }}
                         >
-                            {getClientStatusLabel(companyStatus as any)}
-                        </Tag>
-                    </h1>
+                            {title}
+                        </h1>
+
+                        <div style={{ marginTop: 4 }}>
+                            <StatusTag status={companyStatus as any} />
+                        </div>
+                    </div>
                 </div>
+
+                {/* MENU */}
                 <div
                     style={{
                         paddingBottom: "1rem",
-                        borderRadius: "0 0 12px 12px",
                         backgroundColor: "#fff",
                     }}
                 >
-                    {type === 'ADMIN' ? (
+                    {type === "ADMIN" ? (
                         <DetailedClientMenu collapsed={false} clientId={clientId} />
-                    ) : type === 'USER' ? (
+                    ) : type === "USER" ? (
                         <CompanyMenu collapsed={false} clientId={clientId} />
                     ) : (
                         <CompanyClientMenu collapsed={false} clientId={clientId} />
-                    )
-                    }
+                    )}
                 </div>
             </div>
+
+            {/* CONTENT */}
             <div style={{ marginRight: "2rem" }}>{children}</div>
         </>
     );

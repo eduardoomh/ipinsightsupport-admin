@@ -2,6 +2,8 @@ import { DeleteOutlined, EditOutlined, EyeOutlined, CheckCircleTwoTone, CloseCir
 import { TableColumnsType, Button, Popconfirm } from 'antd';
 import dayjs from "dayjs";
 import { DataType } from './usersTable.interface';
+import TeamMemberAvatar from '~/components/basics/TeamMemberAvatar';
+import DateUsFormat from '~/components/tables/DateUsFormat';
 
 export const usersColumns = (
     navigate: (path: string) => void,
@@ -10,6 +12,9 @@ export const usersColumns = (
         {
             title: "Name",
             dataIndex: "name",
+            render: (_: any, record: DataType) => (
+                <TeamMemberAvatar fullName={record.name} />
+            )
         },
         {
             title: "Email",
@@ -40,7 +45,7 @@ export const usersColumns = (
         {
             title: "Created At",
             dataIndex: "createdAt",
-            render: (value: string) => dayjs(value).format("YYYY-MM-DD"),
+            render: (value: string) => <DateUsFormat date={value} />,
         },
         {
             title: "Actions",
