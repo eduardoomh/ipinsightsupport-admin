@@ -1,7 +1,6 @@
 // app/context/AppModeContext.tsx
 import { createContext, useContext, useState, ReactNode } from "react";
-
-type AppMode = "user" | "admin";
+import { AppMode } from "~/interfaces/app.interface";
 
 const AppModeContext = createContext<{
   mode: AppMode;
@@ -9,7 +8,7 @@ const AppModeContext = createContext<{
 } | null>(null);
 
 export function AppModeProvider({ children }: { children: ReactNode }) {
-  const [mode, setMode] = useState<AppMode>("user");
+  const [mode, setMode] = useState<AppMode>(AppMode.User);
 
   return (
     <AppModeContext.Provider value={{ mode, setMode }}>

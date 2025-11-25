@@ -3,6 +3,7 @@ import TagMode from "./HeaderComponents/TagMode";
 import CollapsedButton from "./HeaderComponents/CollapsedButton";
 import UserPopover from "./HeaderComponents/UserPopover";
 import SearchModal from "~/components/search/SearchModal";
+import { UserRole } from "~/interfaces/users.interface";
 
 interface Props {
     title: string;
@@ -12,7 +13,7 @@ interface Props {
         id: string;
         name: string;
         email: string;
-        role: "ADMIN" | "USER" | "CLIENT";
+        role: UserRole
     };
 }
 
@@ -28,19 +29,22 @@ const HeaderLayout: FC<Props> = ({ user, collapsed, toggleCollapsed }) => {
         >
             <div className="flex justify-start items-center">
                 <CollapsedButton collapsed={collapsed} toggleCollapsed={toggleCollapsed} />
-                <img src="/sentinelux-logo.png" width={220} />
-                {
-                    user.role === "ADMIN" && (
-                        <TagMode />
-                    )
-                }
-
+                <img
+                    src="/sentinelux-short-logo.png"
+                    width={45}
+                    className="block md:hidden ml-2"
+                />
+                <img
+                    src="/sentinelux-logo.png"
+                    width={220}
+                    className="hidden md:block"
+                />
+                <div className="hidden md:block">
+                    <TagMode role={user.role} />
+                </div>
             </div>
-            {
-                user.role !== "CLIENT" && (
-                    <SearchModal />
-                )
-            }
+
+            <SearchModal role={user.role} />
             <UserPopover user={user} />
         </div>
     );

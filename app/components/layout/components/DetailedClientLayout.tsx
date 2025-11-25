@@ -4,12 +4,13 @@ import DetailedClientMenu from "~/components/Menus/DetailedClientMenu";
 import CompanyMenu from "~/components/Menus/CompanyMenu";
 import CompanyClientMenu from "~/components/Menus/CompanyClientMenu";
 import StatusTag from "~/components/basics/StatusTag";
+import { UserRole } from "~/interfaces/users.interface";
 
 interface Props {
     title: string;
     clientId: string;
     companyStatus: string;
-    type?: "ADMIN" | "USER" | "CLIENT";
+    type?: UserRole;
 }
 
 const DetailedClientLayout: FC<PropsWithChildren<Props>> = ({
@@ -17,7 +18,7 @@ const DetailedClientLayout: FC<PropsWithChildren<Props>> = ({
     children,
     clientId,
     companyStatus,
-    type = "ADMIN",
+    type = UserRole.ADMIN,
 }) => {
     return (
         <>
@@ -43,7 +44,6 @@ const DetailedClientLayout: FC<PropsWithChildren<Props>> = ({
                         borderBottom: "1px solid #E5E7EB",
                     }}
                 >
-                    {/* Ícono */}
                     <span
                         style={{
                             display: "flex",
@@ -60,7 +60,6 @@ const DetailedClientLayout: FC<PropsWithChildren<Props>> = ({
                         <ShopOutlined style={{ color: "#fff", fontSize: "28px" }} />
                     </span>
 
-                    {/* Título + status */}
                     <div style={{ marginLeft: "16px" }}>
                         <h1
                             style={{
@@ -79,7 +78,6 @@ const DetailedClientLayout: FC<PropsWithChildren<Props>> = ({
                     </div>
                 </div>
 
-                {/* MENU */}
                 <div
                     style={{
                         paddingBottom: "1rem",
@@ -96,7 +94,6 @@ const DetailedClientLayout: FC<PropsWithChildren<Props>> = ({
                 </div>
             </div>
 
-            {/* CONTENT */}
             <div style={{ marginRight: "2rem" }}>{children}</div>
         </>
     );

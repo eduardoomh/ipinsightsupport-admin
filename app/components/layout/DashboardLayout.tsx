@@ -4,6 +4,7 @@ import HeaderLayout from "./components/HeaderLayout";
 import { UserContext } from "~/context/UserContext";
 import { useMediaQuery } from "react-responsive";
 import ContentLayout from "./components/ContentLayout";
+import { UserRole } from "~/interfaces/users.interface";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -12,7 +13,7 @@ interface DashboardLayoutProps {
   type?: 'basic_section' | 'client_section'
   id?: string;
   companyStatus?: string;
-  menuType?: "ADMIN" | "USER" | "CLIENT";
+  menuType?: UserRole;
 }
 
 const DashboardLayout: FC<PropsWithChildren<DashboardLayoutProps>> = ({
@@ -22,7 +23,7 @@ const DashboardLayout: FC<PropsWithChildren<DashboardLayoutProps>> = ({
   id,
   type = 'basic_section',
   companyStatus,
-  menuType = "ADMIN"
+  menuType = UserRole.ADMIN
 }) => {
   const user = useContext(UserContext);
   const isMobile = useMediaQuery({ query: "(max-width: 800px)" });

@@ -1,12 +1,14 @@
-import { useState, useRef } from "react";
+import { FC, useState, useRef } from "react";
 import { ExportOutlined } from "@ant-design/icons";
 import { Tag } from "antd";
 import { useAppMode } from "~/context/AppModeContext";
 import { useNavigate } from "@remix-run/react";
+import { UserRole } from "~/interfaces/users.interface";
+import { AppMode } from "~/interfaces/app.interface";
 
 const ANIM_MS = 400;
 
-const TagMode = () => {
+const TagMode: FC<{ role: UserRole, fullWidth?: boolean }> = ({ role, fullWidth }) => {
   const { mode, setMode } = useAppMode();
   const navigate = useNavigate();
   const [pulse, setPulse] = useState(false);
@@ -15,10 +17,10 @@ const TagMode = () => {
 
   const changeMode = () => {
     const currentMode = mode;
-    setMode(currentMode === "user" ? "admin" : "user");
+    setMode(currentMode === AppMode.User ? AppMode.Admin : AppMode.User);
 
     setTimeout(() => {
-      navigate(currentMode === "user" ? "/admin/home" : "/");
+      navigate(currentMode === AppMode.User ? "/admin/home" : "/");
     }, 1);
   };
 
@@ -35,16 +37,21 @@ const TagMode = () => {
     changeMode();
   };
 
+  if (role !== UserRole.ADMIN) return null;
+
   return (
-    <Tag
-      color={mode === "user" ? "blue" : "purple"}
-      className={`mt-1 cursor-pointer tag-mode ${pulse ? "pulse" : ""}`}
-      style={{ padding: "3px 8px" }}
-      onClick={handleClick}
-    >
-      <ExportOutlined /> {mode === "user" ? "Admin" : "User"} Mode
-    </Tag>
-  );
+    <div className="flex">
+      <Tag
+        color={mode === AppMode.User ? "blue" : "purple"}
+        className={`mt-1 cursor-pointer tag-mode ${pulse ? "pulse" : ""} ${fullWidth ? "flex-grow mx-2" : ""
+          }`}
+        style={{ padding: "3px 8px" }}
+        onClick={handleClick}
+      >
+        <ExportOutlined /> {mode === AppMode.User ? "Admin" : "User"} Mode
+      </Tag>
+    </div>
+  )
 };
 
 export default TagMode;

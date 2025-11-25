@@ -28,7 +28,7 @@ const DetailedClient: React.FC<Props> = ({ client }) => {
         )
       }
         <Row>
-          <Col span={12}>
+          <Col xs={24} sm={24} md={12} lg={12}>
             <DashboardItem label="Region" value={getTimezoneLabel(client.timezone as any)} showBorder={true} />
             <DashboardItem 
               label={"Remaining funds"} 
@@ -57,7 +57,7 @@ const DetailedClient: React.FC<Props> = ({ client }) => {
               }
             />
           </Col>
-          <Col span={12}>
+          <Col xs={24} sm={24} md={12} lg={12}>
             <DashboardItem label="Most Recent Work Entry" value={<DateUsFormat date={client.most_recent_work_entry} />} showBorder={true} />
             <DashboardItem label="Most Recent Balance Activated" value={<DateUsFormat date={client.most_recent_retainer_activated} />} showBorder={true} />
             <DashboardItem label="Created" value={<DateUsFormat date={client.createdAt} />} />
@@ -67,12 +67,12 @@ const DetailedClient: React.FC<Props> = ({ client }) => {
 
       <br />
       <Row gutter={[16, 16]}>
-        <Col span={12}>
+        <Col xs={24} sm={24} md={12} lg={12}>
           <RatesSection client={client} />
           <br/>
           <ContactsSection client={client} />
         </Col>
-        <Col span={12}>
+        <Col xs={24} sm={24} md={12} lg={12}>
           <TeamMembersSection client={client} />
           <br/>
           <ClientStatusHistorySection clientId={client.id} />

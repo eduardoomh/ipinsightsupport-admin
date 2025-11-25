@@ -15,7 +15,6 @@ const AdminDashboard: React.FC<Props> = ({ adminStats, loading, selectedMonth, s
   const [workEntriesData, setWorkEntriesData] = useState<{ date: string; hours: number }[]>([]);
   const [statsLoading, setStatsLoading] = useState(false);
 
-  // 📈 Fetch work entries data (igual que en Dashboard)
   useEffect(() => {
     const fetchStats = async () => {
       setStatsLoading(true);
@@ -49,7 +48,6 @@ const AdminDashboard: React.FC<Props> = ({ adminStats, loading, selectedMonth, s
 
   return (
     <div className="py-6 space-y-6">
-      {/* 🔢 Admin Stats */}
       <Row gutter={16}>
         {[
           ["Total Work Entries", adminStats?.total_work_entries ?? 0],
@@ -57,17 +55,13 @@ const AdminDashboard: React.FC<Props> = ({ adminStats, loading, selectedMonth, s
           ["Total Companies", adminStats?.total_clients ?? 0],
           ["Balances Total Amount", adminStats?.retainers_amount ?? 0],
         ].map(([label, value]) => (
-          <Col span={6} key={label}>
-            {/* @ts-ignore */}
-            <StatsCard label={label} value={value as number} loading={loading} />
+           <Col key={label} xs={24} sm={12} md={8}>
+            <StatsCard label={label as string} value={value as number} loading={loading} />
           </Col>
         ))}
       </Row>
 
-      {/* 📊 Chart */}
       <WorkEntriesChart data={workEntriesData} loading={statsLoading} />
-
-      {/* ⏱ Hours */}
       <Row gutter={16}>
         {[
           ["Total Hours", adminStats?.hours_total ?? 0],
@@ -75,9 +69,8 @@ const AdminDashboard: React.FC<Props> = ({ adminStats, loading, selectedMonth, s
           ["Hours Architecture", adminStats?.hours_architecture ?? 0],
           ["Hours Senior Architecture", adminStats?.hours_senior_architecture ?? 0],
         ].map(([label, value]) => (
-          <Col span={6} key={label}>
-            {/* @ts-ignore */}
-            <StatsCard label={label} value={value as number} loading={loading} />
+           <Col key={label} xs={24} sm={12} md={8}>
+            <StatsCard label={label as string} value={value as number} loading={loading} />
           </Col>
         ))}
       </Row>

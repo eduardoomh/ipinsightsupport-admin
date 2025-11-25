@@ -104,16 +104,15 @@ const Dashboard: React.FC<DashboardProps> = ({
 
   return (
     <div className="py-6 space-y-6">
-      {/* 🔢 Stats */}
-      <Row gutter={16}>
+
+      <Row gutter={[16, 16]}>
         {[
           ["Total work entries", totalWorkEntries],
           ["Companies as Account Manager", companiesAsAccountManager],
           ["Companies as Team Member", companiesAsTeamMember],
         ].map(([label, value]) => (
-          <Col span={8} key={label}>
-            { //@ts-ignore 
-            }<StatsCard label={label} value={value as number} loading={loading} />
+          <Col key={label} xs={24} sm={12} md={8}>
+            <StatsCard label={label as string} value={value as number} loading={loading} />
           </Col>
         ))}
       </Row>
@@ -121,16 +120,14 @@ const Dashboard: React.FC<DashboardProps> = ({
       {/* 📊 Chart */}
       <WorkEntriesChart data={workEntriesData} loading={statsLoading} />
 
-      {/* ⏱ Hours */}
-      <Row gutter={16}>
+      <Row gutter={[16, 16]}>
         {[
           ["Hours Engineering", hoursEngineering],
           ["Hours Architecture", hoursArchitecture],
           ["Hours Senior Architecture", hoursSeniorArchitecture],
         ].map(([label, value]) => (
-          <Col span={8} key={label}>
-            { //@ts-ignore 
-            }<StatsCard label={label} value={value as number} loading={loading} />
+          <Col key={label} xs={24} sm={12} md={8}>
+            <StatsCard label={label as string} value={value as number} loading={loading} />
           </Col>
         ))}
       </Row>

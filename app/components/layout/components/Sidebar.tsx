@@ -4,6 +4,9 @@ import { useAppMode } from "~/context/AppModeContext";
 import AdminMenu from "~/components/Menus/AdminMenu";
 import { UserContext } from "~/context/UserContext";
 import CompanyMainMenu from "~/components/Menus/CompanyMainMenu";
+import { UserRole } from "~/interfaces/users.interface";
+import { AppMode } from "~/interfaces/app.interface";
+import TagMode from "./HeaderComponents/TagMode";
 
 interface Props {
   collapsed: boolean;
@@ -27,22 +30,31 @@ const Sidebar: FC<Props> = ({ collapsed }) => {
         boxShadow: "0px 1px 4px rgba(10, 95, 108, 0.3)",
       }}
     >
-      {/* Menú scrollable */}
       <div className="flex-1 overflow-y-auto mt-2">
-        {mode === "user" ? (
+        {mode === AppMode.User ? (
           <>
-            {
-              user.role === "CLIENT" && user?.company_id ? (
-                <CompanyMainMenu collapsed={collapsed} />
-              ) : (
+            {user.role === UserRole.CLIENT && user?.company_id ? (
+              <CompanyMainMenu collapsed={collapsed} />
+            ) : (
+              <>
+                {!collapsed && (
+                  <div className="mb-2 block md:hidden">
+                    <TagMode role={user.role} fullWidth />
+                  </div>
+                )}
                 <MainMenu collapsed={collapsed} />
-              )
-            }
-
+              </>
+            )}
           </>
-
         ) : (
-          <AdminMenu collapsed={collapsed} />
+          <>
+            {!collapsed && (
+              <div className="mb-2 block md:hidden">
+                <TagMode role={user.role} fullWidth />
+              </div>
+            )}
+            <AdminMenu collapsed={collapsed} />
+          </>
         )}
       </div>
     </aside>

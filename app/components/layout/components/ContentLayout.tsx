@@ -1,6 +1,7 @@
 import { FC, PropsWithChildren, ReactNode } from "react";
 import DetailedClientLayout from "./DetailedClientLayout";
 import DefaultCardLayout from "./DefaultCardLayout";
+import { UserRole } from "~/interfaces/users.interface";
 
 interface Props {
     title: string;
@@ -11,11 +12,11 @@ interface Props {
     hideHeader?: boolean;
     tailwindClass?: string;
     companyStatus?: string;
-    menuType?: "ADMIN" | "USER" | "CLIENT"
+    menuType?: UserRole;
 }
 
 const ContentLayout: FC<PropsWithChildren<Props>> = ({ 
-    title, headerActions, children, type, size = 'normal', id, hideHeader = false, tailwindClass, companyStatus, menuType = "ADMIN"
+    title, headerActions, children, type, size = 'normal', id, hideHeader = false, tailwindClass, companyStatus, menuType = UserRole.ADMIN
 }) => {
     return (
         <div className={`pr-${size === 'small' ? '1' : '6'} pt-0 flex-1 overflow-y-auto bg-transparent ${tailwindClass && tailwindClass}`}>

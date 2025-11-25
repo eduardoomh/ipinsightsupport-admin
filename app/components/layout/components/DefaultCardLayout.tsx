@@ -15,10 +15,10 @@ const DefaultCardLayout: FC<PropsWithChildren<Props>> = ({ title, headerActions,
                 border: '1px solid #D3D3D3',
                 boxShadow: "0px 1px 4px rgba(1, 10, 11, 0.32)"
             }}
-            title={hideHeader ? null : 
-                <div className={`flex items-center justify-between ${size === 'small' ? 'py-2' : 'py-8'}`}>
+            title={hideHeader ? null :
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-8 sm:py-6 md:py-8">
                     <h1
-                        className={`${size === 'small' ? 'text-1xl' : 'text-2xl'} font-bold`}
+                        className="text-2xl font-bold"
                         style={{ color: "#014A64" }}
                     >
                         {title}
@@ -27,7 +27,9 @@ const DefaultCardLayout: FC<PropsWithChildren<Props>> = ({ title, headerActions,
                 </div>
             }
         >
-            {children}
+            <div className="overflow-x-auto">
+                {children}
+            </div>
         </Card>
     )
 }
