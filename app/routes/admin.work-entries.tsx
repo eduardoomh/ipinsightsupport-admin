@@ -2,14 +2,14 @@ import { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { Await, Outlet, useLoaderData } from "@remix-run/react";
 import { Suspense } from "react";
 import DashboardLayout from "~/components/layout/DashboardLayout";
-import SkeletonEntries from "~/components/skeletons/SkeletonEntries";
-import AdminWorkEntriesTable from "~/components/views/entries/AdminWorkEntriesTable";
-import HeaderActions from "~/components/filters/HeaderActions";
+import AdminWorkEntriesTable from "~/components/WorkEntries/Tables/AdminWorkEntries/AdminWorkEntriesTable";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 import { withPaginationDefer } from "~/utils/pagination/withPaginationDefer";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
 import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPagination";
 import { useFilters } from "~/hooks/useFilters";
+import TableFilters from "~/components/TableActions/TableFilters";
+import WorkEntriesSkeleton from "~/components/skeletons/WorkEntriesSkeleton";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
@@ -67,8 +67,8 @@ export default function AdminWorkEntries() {
     useCursorPagination("workEntries");
 
   const headerActions = (
-    <HeaderActions
-      title="Filter entries"
+    <TableFilters
+      title={"Work entries"}
       path="/api/work-entries"
       fileName="work-entries"
       selectedFilter={selectedFilter}
@@ -87,8 +87,8 @@ export default function AdminWorkEntries() {
   );
 
   return (
-    <DashboardLayout title="Work entries" headerActions={headerActions}>
-      <Suspense fallback={<SkeletonEntries />}>
+    <DashboardLayout title="" headerActions={headerActions}>
+      <Suspense fallback={<WorkEntriesSkeleton />}>
         <Await resolve={dataPromise || initialData.workEntries}>
           {(data: any) => {
             const { workEntries, pageInfo } = data;

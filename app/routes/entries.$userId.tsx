@@ -5,7 +5,7 @@ import { Suspense } from "react";
 
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import SkeletonEntries from "~/components/skeletons/SkeletonEntries";
-import UserEntriesTable from "~/components/views/entries/UserEntriesTable";
+import UserEntriesTable from "~/components/WorkEntries/Tables/UserWorkEntries/UserEntriesTable";
 
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 import { withPaginationDefer } from "~/utils/pagination/withPaginationDefer";

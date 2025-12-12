@@ -13,7 +13,7 @@ import { useDeleteResource } from "~/hooks/useDeleteResource";
 import { useFilters } from "~/hooks/useFilters";
 import { Dayjs } from "dayjs";
 import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPagination";
-import HeaderActions from "~/components/filters/HeaderActions";
+import HeaderActions from "~/components/TableActions/HeaderActions";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);

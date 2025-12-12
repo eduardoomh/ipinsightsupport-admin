@@ -3,7 +3,7 @@ import { Row, Col } from "antd";
 import dayjs from "dayjs";
 import StatsCard from "./utils/StatsCard";
 import { useNavigate } from "@remix-run/react";
-import { userWorkEntriesColumns } from "../entries/utils/userWorkEntriesColumns";
+import { userWorkEntriesColumns } from "~/components/WorkEntries/Tables/UserWorkEntries/userWorkEntriesColumns";
 import WorkEntriesChart from "./utils/WorkEntriesChart";
 import LastWorkEntryTable from "./utils/LastWorkEntryTable";
 import TodayEventsTable from "./utils/TodayEventsTable";

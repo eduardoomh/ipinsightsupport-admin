@@ -11,7 +11,7 @@ import { withPaginationDefer } from "~/utils/pagination/withPaginationDefer";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
 import { useDeleteResource } from "~/hooks/useDeleteResource";
 import { useFilters } from "~/hooks/useFilters";
-import HeaderActions from "~/components/filters/HeaderActions";
+import HeaderActions from "~/components/TableActions/HeaderActions";
 import { useDashboardHeaderActions } from "~/hooks/useDashboardHeaderActions";
 import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPagination";
 

@@ -10,7 +10,7 @@ import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 import { withTwoResourcesDefer } from "~/utils/pagination/withPaginationDefer";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
 import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPagination";
-import AdminWorkEntriesTable from "~/components/views/entries/AdminWorkEntriesTable";
+import AdminWorkEntriesTable from "~/components/WorkEntries/Tables/AdminWorkEntries/AdminWorkEntriesTable";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const { userId } = params;

@@ -10,7 +10,7 @@ import ClientsAdminTable from "~/components/views/clients/ClientsAdminTable";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 import { withPaginationDefer } from "~/utils/pagination/withPaginationDefer";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
-import HeaderActions from "~/components/filters/HeaderActions";
+import HeaderActions from "~/components/TableActions/HeaderActions";
 import { useFilters } from "~/hooks/useFilters";
 
 export const loader: LoaderFunction = async ({ request }) => {

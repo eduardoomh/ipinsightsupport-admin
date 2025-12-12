@@ -39,6 +39,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     { header: "Hours Billed", key: "hours_billed", width: 10 },
     { header: "Hours Spent", key: "hours_spent", width: 10 },
     { header: "Hourly Rate", key: "hourly_rate", width: 10 },
+    { header: "Total", key: "total", width: 10 },
     { header: "Description", key: "description", width: 40 },
     { header: "created At", key: "created_at", width: 40 },
   ];
@@ -72,6 +73,7 @@ export const loader: LoaderFunction = async ({ request }) => {
           hours_billed: entry.hours_billed,
           hours_spent: entry.hours_spent,
           hourly_rate: entry.hourly_rate,
+          total: entry.hours_billed * entry.hourly_rate,
           description: entry.summary,
           created_at: entry.created_at?.toISOString().split("T")[0],
         }).commit();

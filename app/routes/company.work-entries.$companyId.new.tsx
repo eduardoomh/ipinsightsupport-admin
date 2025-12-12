@@ -2,7 +2,7 @@
 import { useOutletContext, useNavigate } from "@remix-run/react";
 import { message, Drawer } from "antd";
 import { useContext, useEffect, useState } from "react";
-import WorkEntryForm from "~/components/views/entries/WorkEntriesForm";
+import WorkEntryForm from "~/components/WorkEntries/Forms/WorkEntriesForm";
 import { UserContext } from "~/context/UserContext";
 
 export default function NewUserDrawerRoute() {

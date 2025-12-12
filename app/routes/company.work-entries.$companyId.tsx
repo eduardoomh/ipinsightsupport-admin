@@ -1,5 +1,4 @@
 
-// routes/admin/advanced/retainers/$clientId.tsx
 import { LoaderFunction } from "@remix-run/node";
 import { Await, Outlet, useLoaderData } from "@remix-run/react";
 import { Suspense, useContext } from "react";
@@ -13,7 +12,8 @@ import ContentLayout from "~/components/layout/components/ContentLayout";
 import { useDashboardHeaderActions } from "~/hooks/useDashboardHeaderActions";
 import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPagination";
 import { UserContext } from "~/context/UserContext";
-import UserEntriesTable from "~/components/views/entries/UserEntriesTable";
+import UserEntriesTable from "~/components/WorkEntries/Tables/UserWorkEntries/UserEntriesTable";
+import { UserRole } from "~/interfaces/users.interface";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
     const companyId = params.companyId;
@@ -44,7 +44,7 @@ export default function ClientEntriesPage() {
             type="client_section"
             id={client.id}
             companyStatus={client.currentStatus}
-            menuType={user.company_id ? "CLIENT" : "USER"}
+            menuType={user.company_id ? UserRole.CLIENT : UserRole.USER}
         >
             <ContentLayout
                 title={`Recent work entries`}
@@ -53,11 +53,6 @@ export default function ClientEntriesPage() {
                 hideHeader={false}
                 headerActions={
                     user.company_id ? null : headerActions
-                    /*
-                    client.team_members.length > 0 && client.team_members.some(
-                        item => item.user.id === user.id) === true ? 
-                    headerActions : null}
-                    */
                 }
             >
                 <Suspense fallback={<SkeletonEntries />}>

@@ -13,7 +13,7 @@ import { useCursorPagination } from "~/hooks/useCursorPagination";
 import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPagination";
 import { useFilters } from "~/hooks/useFilters";
 import { useDeleteResource } from "~/hooks/useDeleteResource";
-import HeaderActions from "~/components/filters/HeaderActions";
+import HeaderActions from "~/components/TableActions/HeaderActions";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);

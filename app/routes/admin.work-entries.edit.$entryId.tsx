@@ -2,7 +2,7 @@ import { useNavigate, useOutletContext, useParams } from "@remix-run/react";
 import { Drawer, message } from "antd";
 import { useEffect, useState } from "react";
 import FormSkeleton from "~/components/basics/FormSkeleton";
-import WorkEntryForm from "~/components/views/entries/WorkEntriesForm";
+import WorkEntryForm from "~/components/WorkEntries/Forms/WorkEntriesForm";
 import { WorkEntry } from "~/interfaces/workEntries.interface";
 
 type OutletContext = {

@@ -20,7 +20,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const encoder = new TextEncoder();
   const csvStream = stringify({ header: true, columns: [
-    "client", "user", "email", "billed_on", "rate_type", "hours_billed", "hours_spent", "hourly_rate", "description", "created_at"
+    "client", "user", "email", "billed_on", "rate_type", "hours_billed", "hours_spent", "hourly_rate", "total", "description", "created_at"
   ] });
 
   const stream = new ReadableStream({
@@ -53,6 +53,7 @@ export const loader: LoaderFunction = async ({ request }) => {
             hours_billed: entry.hours_billed,
             hours_spent: entry.hours_spent,
             hourly_rate: entry.hourly_rate,
+            total: entry.hours_billed * entry.hourly_rate,
             description: entry.summary,
             created_at: entry.created_at?.toISOString().split("T")[0],
           });

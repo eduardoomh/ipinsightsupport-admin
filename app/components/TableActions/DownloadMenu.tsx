@@ -9,8 +9,8 @@ interface Props {
   dateRange: [Date | null, Date | null] | null;
   isCredit?: boolean | null;
   companyStatus?: string | null;
-  clientId?: string | null; // <-- nuevo
-  userId?: string | null;   // <-- nuevo
+  clientId?: string | null;
+  userId?: string | null;
 }
 
 export default function DownloadButton({
@@ -20,8 +20,8 @@ export default function DownloadButton({
   fileName,
   isCredit,
   companyStatus,
-  clientId, // <-- nuevo
-  userId,   // <-- nuevo
+  clientId,
+  userId,
 }: Props) {
 
   const buildUrl = (format: "csv" | "xlsx") => {
@@ -30,7 +30,6 @@ export default function DownloadButton({
   
     const params = new URLSearchParams();
 
-    // Filtro por fechas o recientes
     if (selectedFilter === "date" && dateRange?.[0] && dateRange?.[1]) {
       params.set("filter", "date");
       params.set("from", dateRange[0].toISOString().split("T")[0]);
@@ -39,22 +38,17 @@ export default function DownloadButton({
       params.set("filter", "recent");
     }
 
-    // Filtro crédito/débito
     if (isCredit !== undefined && isCredit !== null) {
       params.set("is_credit", isCredit ? "true" : "false");
     }
 
-    // Filtro estado de la compañía
     if (companyStatus) {
       params.set("currentStatus", companyStatus);
     }
-
-    // Filtro por compañía
     if (clientId) {
       params.set("client_id", clientId);
     }
 
-    // Filtro por usuario
     if (userId) {
       params.set("user_id", userId);
     }
@@ -97,7 +91,7 @@ export default function DownloadButton({
 
   return (
     <Dropdown overlay={menu} trigger={["click"]}>
-      <Button icon={<DownloadOutlined />}>Descargar</Button>
+      <Button icon={<DownloadOutlined />}>Download</Button>
     </Dropdown>
   );
 }

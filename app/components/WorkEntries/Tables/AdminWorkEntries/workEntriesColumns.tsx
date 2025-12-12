@@ -1,31 +1,32 @@
 // columns/usersColumns.ts
 import { Button, TableColumnsType } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
-import dayjs from 'dayjs';
-import { DataType } from './workEntries.interface';
+import { DataType } from '~/components/WorkEntries/Interfaces/workEntries.interface';
+import DateUsFormat from '~/components/tables/DateUsFormat';
+import CompanyLink from '~/components/basics/CompanyLink';
+import TeamMemberAvatar from '~/components/basics/TeamMemberAvatar';
 
-export const userWorkEntriesColumns = (
+export const workEntriesColumns = (
   navigate: (path: string) => void,
-  baseUrl: string | null
+  baseUrl: string
 ): TableColumnsType<DataType> => [
-    {
-      title: "Billed Date",
-      dataIndex: "billed_on",
-      render: (value: string) => dayjs(value).format("YYYY-MM-DD"),
-    },
     {
       title: "Client",
       key: "client",
       render: (_: any, record: DataType) => (
-        <span
-          style={{
-            cursor: "pointer",
-            textDecoration: "underline",
-          }}
-          onClick={() => navigate(`/company/dashboard/${record.client.id}`)}
-        >
-          {record.client.company}
-        </span>
+        <CompanyLink company={record.client.company} id={record.client.id} />
+      ),
+    },
+    {
+      title: "Billed Date",
+      dataIndex: "billed_on",
+      render: (value: string) => <DateUsFormat date={value} />,
+    },
+    {
+      title: "User",
+      dataIndex: ["user", "name"],
+      render: (_: any, record: DataType) => (
+        <TeamMemberAvatar fullName={record.user.name} />
       ),
     },
     {
@@ -57,7 +58,7 @@ export const userWorkEntriesColumns = (
       dataIndex: "total",
       render: (_: any, record: DataType) => (
         <>
-        {record?.billing_type === "MONTHLY_PLAN" ? "Monthly Plan" :  `${record.hourly_rate * record.hours_billed} USD`}
+          {record?.billing_type === "MONTHLY_PLAN" ? "Monthly Plan" : `$${record.hourly_rate * record.hours_billed}`}
         </>
       ),
     },
