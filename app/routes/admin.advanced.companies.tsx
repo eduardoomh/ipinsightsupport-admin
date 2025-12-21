@@ -14,6 +14,7 @@ import { useFilters } from "~/hooks/useFilters";
 import { Dayjs } from "dayjs";
 import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPagination";
 import HeaderActions from "~/components/TableActions/HeaderActions";
+import TableFilters from "~/components/TableActions/TableFilters";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
@@ -61,8 +62,8 @@ export default function ClientsPage() {
 
   // HeaderActions con create button
   const headerActions = (
-    <HeaderActions
-      title="Filter companies"
+    <TableFilters
+      title="Manage companies"
       path="/api/clients"
       fileName="clients"
       selectedFilter={selectedFilter}
@@ -79,7 +80,7 @@ export default function ClientsPage() {
   );
 
   return (
-    <DashboardLayout title="Manage companies" headerActions={headerActions}>
+    <DashboardLayout title="" headerActions={headerActions}>
       <Suspense fallback={<SkeletonEntries />}>
         <Await resolve={clientsData}>
           {(data: any) => {

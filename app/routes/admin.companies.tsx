@@ -10,8 +10,8 @@ import ClientsAdminTable from "~/components/views/clients/ClientsAdminTable";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 import { withPaginationDefer } from "~/utils/pagination/withPaginationDefer";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
-import HeaderActions from "~/components/TableActions/HeaderActions";
 import { useFilters } from "~/hooks/useFilters";
+import TableFilters from "~/components/TableActions/TableFilters";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
@@ -67,8 +67,8 @@ export default function AdminClients() {
 
   // HeaderActions solo con filtros soportados: fechas y currentStatus
   const headerActions = (
-    <HeaderActions
-      title="Filter companies"
+    <TableFilters
+      title="Companies"
       path="/api/clients"
       fileName="clients"
       selectedFilter={selectedFilter}
@@ -83,7 +83,7 @@ export default function AdminClients() {
   );
 
   return (
-    <DashboardLayout title="Companies" headerActions={headerActions}>
+    <DashboardLayout title="" headerActions={headerActions}>
       <Suspense fallback={<SkeletonEntries />}>
         <Await resolve={clientsData || initialData.clientsData}>
           {(data: any) => {

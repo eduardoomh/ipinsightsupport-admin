@@ -1,6 +1,5 @@
-// hooks/useFilters.ts
-import { useFetcher, useSearchParams } from "@remix-run/react";
-import { useState, useEffect } from "react";
+import { useSearchParams } from "@remix-run/react";
+import { useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
 
 export enum ClientStatus {
@@ -13,10 +12,9 @@ export enum ClientStatus {
 }
 
 export function useFilters() {
-  const fetcher = useFetcher();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // 🔥 Filtro principal
+  // Estados locales para los inputs del modal/filtro
   const [selectedFilter, setSelectedFilter] = useState<"recent" | "date" | null>(
     (searchParams.get("filter") as "recent" | "date") || null
   );
@@ -27,17 +25,14 @@ export function useFilters() {
       : null
   );
 
-  // 🔥 Filtro de compañía
   const [companyId, setCompanyId] = useState<string | null>(
     searchParams.get("client_id") || null
   );
 
-  // 🔥 Filtro de usuario
   const [userId, setUserId] = useState<string | null>(
     searchParams.get("user_id") || null
   );
 
-  // 🔥 Filtro de débito/crédito
   const [isCredit, setIsCredit] = useState<boolean | null>(() => {
     const val = searchParams.get("is_credit");
     if (val === "true") return true;
@@ -45,17 +40,14 @@ export function useFilters() {
     return null;
   });
 
-  // 🔥 Filtro de estado de compañía
   const [companyStatus, setCompanyStatus] = useState<ClientStatus | null>(
     (searchParams.get("currentStatus") as ClientStatus) || null
   );
 
-  const [dataPromise, setDataPromise] = useState<any>(null);
-
   const handleApplyFilter = () => {
     const params = new URLSearchParams();
 
-    // filtro principal
+    // Filtros de fecha
     if (selectedFilter === "recent") {
       params.set("filter", "recent");
     } else if (selectedFilter === "date" && dateRange) {
@@ -64,28 +56,16 @@ export function useFilters() {
       params.set("to", dateRange[1].format("YYYY-MM-DD"));
     }
 
-    // compañía
-    if (companyId) {
-      params.set("client_id", companyId);
-    }
+    // Otros filtros
+    if (companyId) params.set("client_id", companyId);
+    if (userId) params.set("user_id", userId);
+    if (isCredit !== null) params.set("is_credit", String(isCredit));
+    if (companyStatus) params.set("currentStatus", companyStatus);
 
-    // usuario
-    if (userId) {
-      params.set("user_id", userId);
-    }
+    params.delete("cursor");
+    params.delete("direction");
 
-    // débito/crédito
-    if (isCredit !== null) {
-      params.set("is_credit", String(isCredit));
-    }
-
-    // status
-    if (companyStatus) {
-      params.set("currentStatus", companyStatus);
-    }
-
-    fetcher.submit(params, { method: "get" });
-    setSearchParams(params);
+    setSearchParams(params, { preventScrollReset: true });
   };
 
   const handleResetFilter = () => {
@@ -95,18 +75,8 @@ export function useFilters() {
     setUserId(null);
     setIsCredit(null);
     setCompanyStatus(null);
-
-    const params = new URLSearchParams();
-    fetcher.submit(params, { method: "get" });
-    setSearchParams(params);
+    setSearchParams({}, { preventScrollReset: true });
   };
-
-  useEffect(() => {
-    if (fetcher.data) {
-      // @ts-ignore
-      setDataPromise(fetcher.data.workEntries);
-    }
-  }, [fetcher.data]);
 
   return {
     selectedFilter,
@@ -121,9 +91,7 @@ export function useFilters() {
     setIsCredit,
     companyStatus,
     setCompanyStatus,
-    dataPromise,
     handleApplyFilter,
-    handleResetFilter,
-    fetcher,
+    handleResetFilter
   };
 }

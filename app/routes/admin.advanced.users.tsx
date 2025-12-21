@@ -14,6 +14,7 @@ import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPaginati
 import { useFilters } from "~/hooks/useFilters";
 import { useDeleteResource } from "~/hooks/useDeleteResource";
 import HeaderActions from "~/components/TableActions/HeaderActions";
+import TableFilters from "~/components/TableActions/TableFilters";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
@@ -66,8 +67,8 @@ export default function UsersPage() {
   };
 
   const headerActions = (
-    <HeaderActions
-      title="Filter users"
+    <TableFilters
+      title="Manage users"
       path="/api/users"
       fileName="users"
       selectedFilter={selectedFilter as "recent" | "date" | null}
@@ -81,7 +82,7 @@ export default function UsersPage() {
   );
 
   return (
-    <DashboardLayout title="Manage users" headerActions={headerActions}>
+    <DashboardLayout title="" headerActions={headerActions}>
       <Suspense fallback={<SkeletonEntries />}>
         <Await resolve={usersData}>
           {(data: any) => {

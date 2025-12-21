@@ -1,21 +1,22 @@
-// utils/hooks/useCursorPagination.ts
 import { useLoaderData, useSearchParams } from "@remix-run/react";
 
 export function useCursorPagination<T>(key: string) {
-  const data = useLoaderData() as Record<string, unknown> & { take: number };
-  const [_, setSearchParams] = useSearchParams();
+  const data = useLoaderData() as Record<string, any>;
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const handlePageChange = (cursor: string, direction: "next" | "prev") => {
-    setSearchParams({
-      cursor,
-      direction,
-      take: data.take.toString(),
-    });
+    const newParams = new URLSearchParams(searchParams);
+
+    newParams.set("cursor", cursor);
+    newParams.set("direction", direction);
+    newParams.set("take", (data.take || 6).toString());
+
+    setSearchParams(newParams, { preventScrollReset: true });
   };
 
   return {
     data: data[key] as T,
-    take: data.take,
+    take: data.take || 6,
     handlePageChange,
   };
 }

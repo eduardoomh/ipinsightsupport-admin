@@ -14,6 +14,7 @@ import { useFilters } from "~/hooks/useFilters";
 import HeaderActions from "~/components/TableActions/HeaderActions";
 import { useDashboardHeaderActions } from "~/hooks/useDashboardHeaderActions";
 import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPagination";
+import TableFilters from "~/components/TableActions/TableFilters";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
@@ -64,8 +65,8 @@ export default function ContactsPage() {
 
   // --- Combinamos filtros + createButton en HeaderActions ---
   const headerActions = (
-    <HeaderActions
-      title="Filter contacts"
+    <TableFilters
+      title="Manage contacts"
       path="/api/contacts"
       fileName="contacts"
       selectedFilter={selectedFilter}
@@ -82,7 +83,7 @@ export default function ContactsPage() {
   );
 
   return (
-    <DashboardLayout title="Manage contacts" headerActions={headerActions}>
+    <DashboardLayout title="" headerActions={headerActions}>
       <Suspense fallback={<SkeletonEntries />}>
         <Await resolve={contactsData}>
           {(data: any) => {

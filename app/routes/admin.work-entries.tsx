@@ -13,25 +13,18 @@ import WorkEntriesSkeleton from "~/components/skeletons/WorkEntriesSkeleton";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
-  const filter = url.searchParams.get("filter");
-  const from = url.searchParams.get("from");
-  const to = url.searchParams.get("to");
+
+  const params = [
+    "client_id", "user_id", "filter", "from", "to", 
+    "cursor", "direction", "take"
+  ];
 
   const apiUrl = new URL(`${process.env.APP_URL}/api/work-entries`);
 
-  if (filter === "date" && from && to) {
-    apiUrl.searchParams.set("filter", "date");
-    apiUrl.searchParams.set("from", from);
-    apiUrl.searchParams.set("to", to);
-  } else if (filter === "recent") {
-    apiUrl.searchParams.set("filter", "recent");
-  }
-
-  const clientId = url.searchParams.get("client_id");
-  const userId = url.searchParams.get("user_id");
-
-  if (clientId) apiUrl.searchParams.set("client_id", clientId);
-  if (userId) apiUrl.searchParams.set("user_id", userId);
+  params.forEach(param => {
+    const value = url.searchParams.get(param);
+    if (value) apiUrl.searchParams.set(param, value);
+  });
 
   return withPaginationDefer({
     request,
@@ -58,12 +51,11 @@ export default function AdminWorkEntries() {
     setCompanyId,
     userId,
     setUserId,
-    dataPromise,
     handleApplyFilter,
     handleResetFilter,
   } = useFilters();
 
-  const { data: workEntriesData, take, handlePageChange } =
+  const { take, handlePageChange } =
     useCursorPagination("workEntries");
 
   const headerActions = (
@@ -89,7 +81,7 @@ export default function AdminWorkEntries() {
   return (
     <DashboardLayout title="" headerActions={headerActions}>
       <Suspense fallback={<WorkEntriesSkeleton />}>
-        <Await resolve={dataPromise || initialData.workEntries}>
+        <Await resolve={initialData.workEntries}>
           {(data: any) => {
             const { workEntries, pageInfo } = data;
             return (
