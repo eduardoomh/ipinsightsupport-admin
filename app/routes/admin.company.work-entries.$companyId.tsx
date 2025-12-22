@@ -1,32 +1,39 @@
-// routes/admin/advanced/retainers/$clientId.tsx
 import { LoaderFunction, MetaFunction } from "@remix-run/node";
-import { Await, Outlet, useLoaderData } from "@remix-run/react";
-import { Suspense } from "react";
+import { useLoaderData } from "@remix-run/react";
 
-import SkeletonEntries from "~/components/skeletons/SkeletonEntries";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 import { withTwoResourcesDefer } from "~/utils/pagination/withPaginationDefer";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
-import DashboardLayout from "~/components/layout/DashboardLayout";
-import ContentLayout from "~/components/layout/components/ContentLayout";
 import AdminWorkEntriesTable from "~/components/WorkEntries/Tables/AdminWorkEntries/AdminWorkEntriesTable";
 import { useDashboardHeaderActions } from "~/hooks/useDashboardHeaderActions";
 import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPagination";
+import { buildApiUrl } from "~/utils/api/buildApiUrl";
+import { CompanyTableView } from "~/components/TableActions/CompanyTableView";
+import WorkEntriesSkeleton from "~/features/WorkEntries/Fallbacks/WorkEntriesSkeleton";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-  const companyId = params.companyId;
-  if (!companyId) {
-    throw new Response("companyId is required", { status: 400 });
-  }
+    const { companyId } = params;
+    if (!companyId) throw new Response("companyId is required", { status: 400 });
 
-  return withTwoResourcesDefer({
-    request,
-    sessionCheck: () => getSessionFromCookie(request),
-    resources: [
-      { key: "client", apiPath: `${process.env.APP_URL}/api/clients/${companyId}` },
-      { key: "workEntriesByClientData", apiPath: `${process.env.APP_URL}/api/work-entries?client_id=${companyId}` }
-    ],
-  });
+    const entriesPath = buildApiUrl(request, "/api/work-entries", ["client_id"]);
+    
+    const entriesUrl = new URL(entriesPath);
+    entriesUrl.searchParams.set("client_id", companyId);
+
+    return withTwoResourcesDefer({
+        request,
+        sessionCheck: () => getSessionFromCookie(request),
+        resources: [
+            { 
+                key: "client", 
+                apiPath: `${process.env.APP_URL}/api/clients/${companyId}?fields=id,company,currentStatus` 
+            },
+            { 
+                key: "workEntries", 
+                apiPath: entriesUrl.toString() 
+            }
+        ],
+    });
 };
 
 export const meta: MetaFunction = () => [
@@ -35,35 +42,30 @@ export const meta: MetaFunction = () => [
 ];
 
 export default function ClientEntriesPage() {
-  const { client, take } = useLoaderData<typeof loader>();
-  const { data: workEntriesData, handlePageChange } = useCursorPagination("workEntriesByClientData");
-  const headerActions = useDashboardHeaderActions(`/admin/company/work-entries/${client.id}/new`, "Create Work entry");
-  const refreshResults = useRefreshAndResetPagination(`/admin/company/work-entries/${client.id}`);
+    const { client, workEntries } = useLoaderData<typeof loader>();
+    const { take, handlePageChange } = useCursorPagination("workEntries");
+    
+    const refreshResults = useRefreshAndResetPagination(`/admin/company/work-entries/${client.id}`);
+    const headerActions = useDashboardHeaderActions(`/admin/company/work-entries/${client.id}/new`, "Create Work entry");
 
-  return (
-    <DashboardLayout title={client.company} type="client_section" id={client.id} companyStatus={client.currentStatus}>
-      <ContentLayout title={`Recent work entries`} type="basic_section" size="small" hideHeader={false} headerActions={headerActions}>
-        <Suspense fallback={<SkeletonEntries />}>
-          <Await resolve={workEntriesData}>
-            {(data: any) => {
-              const { workEntries, pageInfo } = data;
-
-              return (
-                <>
-                  <AdminWorkEntriesTable
-                    entries={workEntries}
-                    pageInfo={pageInfo}
+    return (
+        <CompanyTableView
+            title={`${client.company} | Work entries`}
+            company={client}
+            resolve={workEntries}
+            skeleton={<WorkEntriesSkeleton />}
+            refreshResults={refreshResults}
+            headerActions={headerActions}
+        >
+            {(data) => (
+                <AdminWorkEntriesTable
+                    entries={data.workEntries}
+                    pageInfo={data.pageInfo}
                     onPageChange={handlePageChange}
                     pageSize={take}
                     baseUrl={`/admin/company/work-entries/${client.id}`}
-                  />
-                  <Outlet context={{ refreshResults, client }} />
-                </>
-              );
-            }}
-          </Await>
-        </Suspense>
-      </ContentLayout>
-    </DashboardLayout>
-  );
+                />
+            )}
+        </CompanyTableView>
+    );
 }

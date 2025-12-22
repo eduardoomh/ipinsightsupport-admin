@@ -1,14 +1,25 @@
 import { useSearchParams } from "@remix-run/react";
 import { useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
+import { ClientStatus } from "~/components/TableActions/HeaderActions";
 
-export enum ClientStatus {
-  ADHOC = "ADHOC",
-  IN_PROGRESS = "IN_PROGRESS",
-  ARCHIVE = "ARCHIVE",
-  WAITING_ON_AM = "WAITING_ON_AM",
-  WAITING_ON_CLIENT = "WAITING_ON_CLIENT",
-  TRANSFER = "TRANSFER",
+export interface FilterValues {
+  selectedFilter: "recent" | "date" | null;
+  dateRange: [Dayjs, Dayjs] | null;
+  companyId: string | null;
+  userId: string | null;
+  isCredit: boolean | null;
+  companyStatus: ClientStatus | null;
+}
+export interface FilterActions {
+  setSelectedFilter: (val: "recent" | "date" | null) => void;
+  setDateRange: (val: [Dayjs, Dayjs] | null) => void;
+  setCompanyId: (val: string | null) => void;
+  setUserId: (val: string | null) => void;
+  setIsCredit: (val: boolean | null) => void;
+  setCompanyStatus: (val: ClientStatus | null) => void;
+  handleApplyFilter: () => void;
+  handleResetFilter: () => void;
 }
 
 export function useFilters() {
@@ -78,20 +89,28 @@ export function useFilters() {
     setSearchParams({}, { preventScrollReset: true });
   };
 
-  return {
+  const filterValues = {
     selectedFilter,
-    setSelectedFilter,
     dateRange,
-    setDateRange,
     companyId,
-    setCompanyId,
     userId,
-    setUserId,
     isCredit,
+    companyStatus
+  };
+
+  const filterActions = {
+    setSelectedFilter,
+    setDateRange,
+    setCompanyId,
+    setUserId,
     setIsCredit,
-    companyStatus,
     setCompanyStatus,
     handleApplyFilter,
     handleResetFilter
+  };
+
+  return {
+    filterValues,
+    filterActions
   };
 }

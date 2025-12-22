@@ -81,10 +81,10 @@ export const loader: LoaderFunction = async ({ request }) => {
     created_by: { select: { id: true, name: true, email: true } },
   };
 
-  const retainers = await prisma.retainer.findMany(queryOptions);
-  const { items, pageInfo } = buildPageInfo(retainers, take, isBackward, cursor);
+  const balances = await prisma.retainer.findMany(queryOptions);
+  const { items, pageInfo } = buildPageInfo(balances, take, isBackward, cursor);
 
-  return new Response(JSON.stringify({ retainers: items, pageInfo }), {
+  return new Response(JSON.stringify({ balances: items, pageInfo }), {
     status: 200,
     headers: { "Content-Type": "application/json" },
   });
