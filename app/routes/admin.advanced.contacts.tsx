@@ -1,42 +1,22 @@
 // routes/admin/advanced/contacts/index.tsx
 import { LoaderFunction, MetaFunction } from "@remix-run/node";
-import { Await, Outlet } from "@remix-run/react";
-import { Suspense } from "react";
-
-import DashboardLayout from "~/components/layout/DashboardLayout";
-import SkeletonEntries from "~/components/skeletons/SkeletonEntries";
-import ContactsTable from "~/components/views/contacts/ContactsTable";
+import ContactsTable from "~/features/Contacts/Tables/ContactsTable";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 import { withPaginationDefer } from "~/utils/pagination/withPaginationDefer";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
-import { useDeleteResource } from "~/hooks/useDeleteResource";
 import { useFilters } from "~/hooks/useFilters";
-import HeaderActions from "~/components/TableActions/HeaderActions";
-import { useDashboardHeaderActions } from "~/hooks/useDashboardHeaderActions";
-import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPagination";
 import TableFilters from "~/components/TableActions/TableFilters";
+import { TableView } from "~/components/TableActions/TableView";
+import { useLoaderData } from "@remix-run/react";
+import ContactsSkeleton from "~/features/Contacts/Fallbacks/ContactsSkeleton";
+import { buildApiUrl } from "~/utils/api/buildApiUrl";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const url = new URL(request.url);
-  const filter = url.searchParams.get("filter");
-  const from = url.searchParams.get("from");
-  const to = url.searchParams.get("to");
-
-  const apiUrl = new URL(`${process.env.APP_URL}/api/contacts`);
-
-  if (filter === "date" && from && to) {
-    apiUrl.searchParams.set("filter", "date");
-    apiUrl.searchParams.set("from", from);
-    apiUrl.searchParams.set("to", to);
-  } else if (filter === "recent") {
-    apiUrl.searchParams.set("filter", "recent");
-  }
-
   return withPaginationDefer({
     request,
-    apiPath: apiUrl.toString(),
+    apiPath: buildApiUrl(request, "/api/contacts", ["filter", "from", "to"]),
     sessionCheck: () => getSessionFromCookie(request),
-    key: "contactsData",
+    key: "contacts",
   });
 };
 
@@ -46,64 +26,38 @@ export const meta: MetaFunction = () => [
 ];
 
 export default function ContactsPage() {
-  const { data: contactsData, take, handlePageChange } = useCursorPagination("contactsData");
-  const refreshResults = useRefreshAndResetPagination("/admin/advanced/contacts");
-  const deleteContact = useDeleteResource("/api/contacts", refreshResults);
+  const { contacts } = useLoaderData<typeof loader>();
+  const { take, handlePageChange } = useCursorPagination("contacts");
 
-  // --- Filtros tipo admin ---
-  const {
-    selectedFilter,
-    setSelectedFilter,
-    dateRange,
-    setDateRange,
-    handleApplyFilter,
-    handleResetFilter,
-  } = useFilters();
+  const { filterValues, filterActions } = useFilters();
 
-  // --- Botón de crear contacto ---
-  const createButton = useDashboardHeaderActions("/admin/advanced/contacts/new", "Create");
-
-  // --- Combinamos filtros + createButton en HeaderActions ---
   const headerActions = (
     <TableFilters
-      title="Manage contacts"
+      title={"Manage Contacts"}
       path="/api/contacts"
       fileName="contacts"
-      selectedFilter={selectedFilter}
-      setSelectedFilter={setSelectedFilter}
-      dateRange={dateRange}
-      setDateRange={setDateRange}
-      handleApplyFilter={handleApplyFilter}
-      handleResetFilter={handleResetFilter}
-      createButton={{
-        label: "Create",
-        path: "/admin/advanced/contacts/new"
-      }}
+      filterValues={filterValues}
+      filterActions={filterActions}
     />
   );
 
   return (
-    <DashboardLayout title="" headerActions={headerActions}>
-      <Suspense fallback={<SkeletonEntries />}>
-        <Await resolve={contactsData}>
-          {(data: any) => {
-            const { contacts, pageInfo } = data;
-
-            return (
-              <>
-                <ContactsTable
-                  contacts={contacts}
-                  onDelete={deleteContact}
-                  pageInfo={pageInfo}
-                  onPageChange={handlePageChange}
-                  pageSize={take}
-                />
-                <Outlet context={{ refreshResults }} />
-              </>
-            );
-          }}
-        </Await>
-      </Suspense>
-    </DashboardLayout>
+    <>
+      <TableView
+        resolve={contacts}
+        skeleton={<ContactsSkeleton />}
+        headerActions={headerActions}
+        baseUrl="/admin/advanced/contacts"
+      >
+        {(contacts, pageInfo) => (
+          <ContactsTable
+            contacts={contacts as any}
+            pageInfo={pageInfo}
+            onPageChange={handlePageChange}
+            pageSize={take}
+          />
+        )}
+      </TableView>
+    </>
   );
 }

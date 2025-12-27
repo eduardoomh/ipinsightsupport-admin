@@ -3,7 +3,7 @@ import TagMode from "./HeaderComponents/TagMode";
 import CollapsedButton from "./HeaderComponents/CollapsedButton";
 import UserPopover from "./HeaderComponents/UserPopover";
 import SearchModal from "~/components/search/SearchModal";
-import { UserRole } from "~/interfaces/users.interface";
+import { UserRole } from "~/features/Users/Interfaces/users.interface";
 
 interface Props {
     title: string;

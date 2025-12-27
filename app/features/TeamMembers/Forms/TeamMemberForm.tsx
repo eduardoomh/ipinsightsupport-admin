@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Table, Checkbox, Select, Button } from "antd";
-import type { CheckboxChangeEvent } from "antd/es/checkbox";
 
 const { Option } = Select;
 

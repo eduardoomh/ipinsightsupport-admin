@@ -9,7 +9,7 @@ export default function InfoClientModal() {
   const { client, loading } = useCompanyDetails(clientId);
 
   const handleClose = () => navigate("/admin/advanced/companies");
-  const handleContactClick = (id: string) => navigate(`/admin/advanced/contacts/${id}`);
+  const handleContactClick = (id: string) => navigate(`/admin/advanced/contacts/${id}/info`);
 
   return (
     <Modal

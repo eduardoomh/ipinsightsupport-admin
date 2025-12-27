@@ -1,58 +1,52 @@
-import { message, Table } from "antd";
-import { FC, useEffect } from "react";
+import {
+    message,
+    Table
+} from "antd";
+import { FC } from "react";
+import { UsersI } from "~/features/Users/Interfaces/users.interface";
 import { useNavigate } from "@remix-run/react";
-import { ContactI } from "~/interfaces/contact.interface";
-import { PageInfo } from "~/interfaces/pagination.interface";
-import { contactColumns } from "./utils/contactColumns";
-import usePagination from "~/hooks/usePagination";
 import PaginationControls from "~/components/tables/PaginationControls";
+import { usersColumns } from "~/features/Users/Tables/userColumns";
+import usePagination from "~/hooks/usePagination";
+import { DataType } from "~/features/Users/Interfaces/usersTable.interface";
+import { PageInfo } from "~/interfaces/pagination.interface";
 import { useTableLoading } from "~/hooks/useTableLoading";
 
-interface DataType {
-    id: string;
-    name: string;
-    email: string;
-    phone: string;
-    createdAt: string;
-    updatedAt: string;
-}
-
 interface Props {
-    contacts: ContactI[];
+    users: UsersI[];
     onDelete?: (id: string) => void;
     pageInfo: PageInfo;
     onPageChange: (cursor: string, direction: "next" | "prev") => void;
     pageSize: number;
-    viewAction?: boolean;
-    editActionPath?: string;
 }
 
-const ContactsTable: FC<Props> = ({ contacts, onDelete, pageInfo, onPageChange, pageSize, viewAction = true, editActionPath }) => {
+const UsersTable: FC<Props> = ({ users, onDelete, pageInfo, onPageChange, pageSize }) => {
     const navigate = useNavigate();
 
     const handleDelete = (id: string) => {
         if (onDelete) {
             onDelete(id);
-            message.success("Contact deleted successfully");
+            message.success("User deleted successfully");
         }
     };
-    const { loading, handlePageChange } = useTableLoading(contacts, onPageChange);
+    const { loading, handlePageChange } = useTableLoading(users, onPageChange);
     const { currentPage, start, updatePage } = usePagination(pageSize, pageInfo, handlePageChange);
-    const end = start + contacts.length - 1;
+    const end = start + users.length - 1;
 
-    const columns = contactColumns(navigate, handleDelete, viewAction, editActionPath);
+    const columns = usersColumns(navigate, handleDelete);
 
     return (
         <>
             <Table<DataType>
                 className="custom-table"
                 columns={columns}
-                dataSource={contacts}
+                dataSource={users}
                 size="middle"
                 rowKey="id"
                 pagination={false}
                 loading={loading}
             />
+
             <PaginationControls
                 currentPage={currentPage}
                 pageInfo={pageInfo}
@@ -64,4 +58,4 @@ const ContactsTable: FC<Props> = ({ contacts, onDelete, pageInfo, onPageChange, 
     );
 };
 
-export default ContactsTable;
+export default UsersTable;

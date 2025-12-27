@@ -1,42 +1,22 @@
 // routes/admin/advanced/users/index.tsx
 import { LoaderFunction, MetaFunction } from "@remix-run/node";
-import { Await, Outlet } from "@remix-run/react";
-import { Suspense } from "react";
-import { Dayjs } from "dayjs";
-
-import DashboardLayout from "~/components/layout/DashboardLayout";
-import SkeletonEntries from "~/components/skeletons/SkeletonEntries";
-import UsersTable from "~/components/views/users/UsersTable";
+import UsersTable from "~/features/Users/Tables/UsersTable";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 import { withPaginationDefer } from "~/utils/pagination/withPaginationDefer";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
-import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPagination";
 import { useFilters } from "~/hooks/useFilters";
-import { useDeleteResource } from "~/hooks/useDeleteResource";
-import HeaderActions from "~/components/TableActions/HeaderActions";
 import TableFilters from "~/components/TableActions/TableFilters";
+import { buildApiUrl } from "~/utils/api/buildApiUrl";
+import { TableView } from "~/components/TableActions/TableView";
+import UsersSkeleton from "~/features/Users/Fallbacks/UsersSkeleton";
+import { useLoaderData } from "@remix-run/react";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const url = new URL(request.url);
-  const filter = url.searchParams.get("filter");
-  const from = url.searchParams.get("from");
-  const to = url.searchParams.get("to");
-
-  const apiUrl = new URL(`${process.env.APP_URL}/api/users`);
-
-  if (filter === "date" && from && to) {
-    apiUrl.searchParams.set("filter", "date");
-    apiUrl.searchParams.set("from", from);
-    apiUrl.searchParams.set("to", to);
-  } else if (filter === "recent") {
-    apiUrl.searchParams.set("filter", "recent");
-  }
-
   return withPaginationDefer({
     request,
-    apiPath: apiUrl.toString(),
+    apiPath: buildApiUrl(request, "/api/users", ["filter", "from", "to"]),
     sessionCheck: () => getSessionFromCookie(request),
-    key: "usersData",
+    key: "users",
   });
 };
 
@@ -46,63 +26,38 @@ export const meta: MetaFunction = () => [
 ];
 
 export default function UsersPage() {
-  const { data: usersData, take, handlePageChange } = useCursorPagination("usersData");
-  const refreshResults = useRefreshAndResetPagination("/admin/advanced/users");
-  const deleteUser = useDeleteResource("/api/users", refreshResults);
+  const { users } = useLoaderData<typeof loader>();
+  const { take, handlePageChange } = useCursorPagination("users");
 
-  // Hooks para filtros
-  const {
-    selectedFilter,
-    setSelectedFilter,
-    dateRange,
-    setDateRange,
-    handleApplyFilter,
-    handleResetFilter,
-  } = useFilters();
-
-  // Botón de creación
-  const createButton = {
-    label: "Create User",
-    path: "/admin/advanced/users/new",
-  };
+  const { filterValues, filterActions } = useFilters();
 
   const headerActions = (
     <TableFilters
-      title="Manage users"
+      title={"Users"}
       path="/api/users"
       fileName="users"
-      selectedFilter={selectedFilter as "recent" | "date" | null}
-      setSelectedFilter={setSelectedFilter}
-      dateRange={dateRange as [Dayjs, Dayjs] | null}
-      setDateRange={setDateRange}
-      handleApplyFilter={handleApplyFilter}
-      handleResetFilter={handleResetFilter}
-      createButton={createButton}
+      filterValues={filterValues}
+      filterActions={filterActions}
     />
   );
 
   return (
-    <DashboardLayout title="" headerActions={headerActions}>
-      <Suspense fallback={<SkeletonEntries />}>
-        <Await resolve={usersData}>
-          {(data: any) => {
-            const { users, pageInfo } = data;
-
-            return (
-              <>
-                <UsersTable
-                  users={users}
-                  onDelete={deleteUser}
-                  pageInfo={pageInfo}
-                  onPageChange={handlePageChange}
-                  pageSize={take}
-                />
-                <Outlet context={{ refreshResults }} />
-              </>
-            );
-          }}
-        </Await>
-      </Suspense>
-    </DashboardLayout>
+    <>
+      <TableView
+        resolve={users}
+        skeleton={<UsersSkeleton />}
+        headerActions={headerActions}
+        baseUrl="/admin/advanced/users"
+      >
+        {(retainers, pageInfo) => (
+          <UsersTable
+            users={retainers as any}
+            pageInfo={pageInfo}
+            onPageChange={handlePageChange}
+            pageSize={take}
+          />
+        )}
+      </TableView>
+    </>
   );
 }

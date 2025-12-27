@@ -3,7 +3,7 @@ import { Suspense, ReactNode, useContext } from "react";
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import ContentLayout from "~/components/layout/components/ContentLayout";
 import { UserContext } from "~/context/UserContext";
-import { UserRole } from "~/interfaces/users.interface";
+import { UserRole } from "~/features/Users/Interfaces/users.interface";
 
 interface CompanyTableViewProps {
     company: any;

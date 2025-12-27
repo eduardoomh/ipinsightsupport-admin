@@ -1,7 +1,7 @@
 // AvatarCard.tsx
 import { Avatar, Card } from "antd";
 import { UserOutlined } from "@ant-design/icons";
-import type { UsersI } from "~/interfaces/users.interface";
+import type { UsersI } from "~/features/Users/Interfaces/users.interface";
 
 interface AvatarCardProps {
   user: UsersI;

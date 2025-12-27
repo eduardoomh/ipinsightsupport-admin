@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback, useContext } from "react";
 import { useNavigate } from "@remix-run/react";
 import { UserContext } from "~/context/UserContext";
-import { UserRole } from "~/interfaces/users.interface";
+import { UserRole } from "~/features/Users/Interfaces/users.interface";
 import { SearchResult, SearchType } from "~/interfaces/search.interface";
 import { SearchInputDesktop } from "../layout/components/Search/SearchInputDesktop";
 import { SearchButtonMobile } from "../layout/components/Search/SearchButtonMobile";

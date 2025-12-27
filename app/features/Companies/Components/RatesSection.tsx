@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ClientI } from "~/interfaces/clients.interface";
+import { ClientI } from "~/features/Companies/Interfaces/clients.interface";
 import ContentLayout from "~/components/layout/components/ContentLayout";
 import SkeletonList from "~/features/Companies/Fallbacks/SkeletonList";
 import { getDefaultRates } from "~/utils/general/getDefaultRates";

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ContentLayout from "~/components/layout/components/ContentLayout";
 import { Skeleton } from "antd";
-import { ClientStatusHistoryI } from "~/interfaces/clientStatusHistory";
+import { ClientStatusHistoryI } from "~/features/StatusHistory/Interfaces/clientStatusHistory.interface";
 import Note from "~/components/basics/Note";
 
 interface Props {

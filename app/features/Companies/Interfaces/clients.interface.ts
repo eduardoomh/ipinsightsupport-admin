@@ -1,8 +1,8 @@
-import { ClientStatusHistoryI } from "~/interfaces/clientStatusHistory";
-import { ContactI } from "~/interfaces/contact.interface";
-import { RatesI } from "~/interfaces/rates.interface";
-import { TeamMembersI } from "~/interfaces/teamMembers.interface";
-import { UsersI } from "~/interfaces/users.interface";
+import { ClientStatusHistoryI } from "~/features/StatusHistory/Interfaces/clientStatusHistory.interface";
+import { ContactI } from "~/features/Contacts/Interfaces/contact.interface";
+import { RatesI } from "~/features/Companies/Interfaces/rates.interface";
+import { TeamMembersI } from "~/features/TeamMembers/Interfaces/teamMembers.interface";
+import { UsersI } from "~/features/Users/Interfaces/users.interface";
 
 export interface ClientI {
     id: string;

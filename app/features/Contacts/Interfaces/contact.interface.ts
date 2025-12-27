@@ -1,4 +1,4 @@
-import { ClientI } from "./clients.interface";
+import { ClientI } from "~/features/Companies/Interfaces/clients.interface";
 
 export interface ContactI {
     id: string;

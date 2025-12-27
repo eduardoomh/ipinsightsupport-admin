@@ -1,7 +1,7 @@
 // AvatarCard.tsx
 import { Avatar, Card } from "antd";
 import { IdcardOutlined } from "@ant-design/icons";
-import { ContactI } from "~/interfaces/contact.interface";
+import { ContactI } from "~/features/Contacts/Interfaces/contact.interface";
 
 interface AvatarCardProps {
   contact: ContactI;

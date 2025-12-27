@@ -3,9 +3,9 @@ import { message, Skeleton } from "antd";
 import { useContext, useEffect, useState } from "react";
 import { AvatarCard } from "~/components/basics/AvatarCard";
 import DashboardLayout from "~/components/layout/DashboardLayout";
-import { UserProfileInfo } from "~/components/views/users/UserProfileInfo";
+import { UserProfileInfo } from "~/features/Users/Views/UserProfileInfo";
 import { UserContext } from "~/context/UserContext";
-import { UsersI } from "~/interfaces/users.interface";
+import { UsersI } from "~/features/Users/Interfaces/users.interface";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 
 interface UserStatsI {

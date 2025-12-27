@@ -1,8 +1,8 @@
 import { useNavigate, useOutletContext, useParams } from "@remix-run/react";
 import { Drawer, message } from "antd";
 import { useEffect, useState } from "react";
-import ContactForm from "~/components/views/contacts/ContactForm";
-import { ContactI } from "~/interfaces/contact.interface";
+import ContactForm from "~/features/Contacts/Forms/ContactForm";
+import { ContactI } from "~/features/Contacts/Interfaces/contact.interface";
 
 type OutletContext = {
     refreshResults: () => void;

@@ -1,7 +1,7 @@
 import { useOutletContext, useNavigate } from "@remix-run/react";
 import { message, Drawer } from "antd";
 import { useEffect, useState } from "react";
-import ContactForm from "~/components/views/contacts/ContactForm";
+import ContactForm from "~/features/Contacts/Forms/ContactForm";
 
 export default function NewContactDrawerRoute() {
   const navigate = useNavigate();

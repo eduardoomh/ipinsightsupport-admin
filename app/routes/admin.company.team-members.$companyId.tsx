@@ -4,8 +4,8 @@ import { message } from "antd";
 import { useState } from "react";
 import ContentLayout from "~/components/layout/components/ContentLayout";
 import DashboardLayout from "~/components/layout/DashboardLayout";
-import TeamMemberForm from "~/components/views/teamMembers/TeamMemberForm";
-import { ClientI } from "~/interfaces/clients.interface";
+import TeamMemberForm from "~/features/TeamMembers/Forms/TeamMemberForm";
+import { ClientI } from "~/features/Companies/Interfaces/clients.interface";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 
 export const loader: LoaderFunction = async ({ request, params }) => {

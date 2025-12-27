@@ -4,7 +4,7 @@ import DetailedClientMenu from "~/components/Menus/DetailedClientMenu";
 import CompanyMenu from "~/components/Menus/CompanyMenu";
 import CompanyClientMenu from "~/components/Menus/CompanyClientMenu";
 import StatusTag from "~/components/basics/StatusTag";
-import { UserRole } from "~/interfaces/users.interface";
+import { UserRole } from "~/features/Users/Interfaces/users.interface";
 
 interface Props {
     title: string;

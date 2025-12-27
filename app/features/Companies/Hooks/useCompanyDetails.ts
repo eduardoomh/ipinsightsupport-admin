@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { message } from "antd";
-import type { ClientI } from "~/interfaces/clients.interface";
+import type { ClientI } from "~/features/Companies/Interfaces/clients.interface";
 
 export function useCompanyDetails(clientId: string | undefined) {
   const [client, setClient] = useState<ClientI | null>(null);

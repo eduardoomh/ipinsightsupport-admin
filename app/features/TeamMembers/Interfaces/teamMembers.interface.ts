@@ -1,5 +1,5 @@
-import { ClientI } from "./clients.interface";
-import { UsersI } from "./users.interface";
+import { ClientI } from "~/features/Companies/Interfaces/clients.interface";
+import { UsersI } from "~/features/Users/Interfaces/users.interface";
 
 export interface TeamMembersI {
     id: string;

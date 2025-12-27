@@ -1,6 +1,6 @@
 import { Avatar } from "antd";
 import { FC } from "react";
-import { ClientStatusHistoryI } from "~/interfaces/clientStatusHistory";
+import { ClientStatusHistoryI } from "~/features/StatusHistory/Interfaces/clientStatusHistory.interface";
 import { getClientStatusLabel } from "~/utils/general/getClientStatusLabel";
 
 interface Props {

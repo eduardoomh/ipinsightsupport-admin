@@ -1,13 +1,13 @@
 import { Table } from "antd";
 import { FC, useContext } from "react";
 import dayjs from "dayjs";
-import { ClientI } from "~/interfaces/clients.interface";
+import { ClientI } from "~/features/Companies/Interfaces/clients.interface";
 import { useNavigate } from "@remix-run/react";
 import { PageInfo } from "~/interfaces/pagination.interface";
 import PaginationControls from "~/components/tables/PaginationControls";
 import usePagination from "~/hooks/usePagination";
 import { useTableLoading } from "~/hooks/useTableLoading";
-import { UsersI } from "~/interfaces/users.interface";
+import { UsersI } from "~/features/Users/Interfaces/users.interface";
 import { ClientStatus } from '../../../../utils/general/getClientStatusLabel';
 import { UserContext } from "~/context/UserContext";
 import { getTimezoneLabel } from "~/utils/general/getTimezoneLabel";

@@ -5,7 +5,7 @@ import { useContext, useState } from "react";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import ContentLayout from "~/components/layout/components/ContentLayout";
-import { ClientI } from "~/interfaces/clients.interface";
+import { ClientI } from "~/features/Companies/Interfaces/clients.interface";
 import { message } from "antd";
 import { UserContext } from "~/context/UserContext";
 import BalanceForm from "~/features/Balances/Forms/BalanceForm";

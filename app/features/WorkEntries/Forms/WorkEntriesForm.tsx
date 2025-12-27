@@ -1,9 +1,9 @@
 import { Button, Form, DatePicker, Checkbox, Slider, Alert, Select } from "antd";
 import { useState, useEffect } from "react";
 import dayjs from "dayjs";
-import { UsersI } from "~/interfaces/users.interface";
+import { UsersI } from "~/features/Users/Interfaces/users.interface";
 import TextEditor from "~/components/basics/TextEditor";
-import { ClientI } from "~/interfaces/clients.interface";
+import { ClientI } from "~/features/Companies/Interfaces/clients.interface";
 import { WorkEntry } from '~/features/WorkEntries/Interfaces/workEntries.interface';
 
 interface Props {

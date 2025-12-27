@@ -3,7 +3,7 @@ import { Descriptions, Button, message, Alert } from "antd";
 import { MailOutlined } from "@ant-design/icons";
 import { useFetcher } from "@remix-run/react";
 import { useEffect } from "react";
-import type { ContactI } from "~/interfaces/contact.interface";
+import type { ContactI } from "~/features/Contacts/Interfaces/contact.interface";
 
 interface ContactProfileInfoProps {
   contact: ContactI;

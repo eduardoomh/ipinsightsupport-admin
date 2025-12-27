@@ -4,7 +4,7 @@ import { Await, Outlet, useLoaderData } from "@remix-run/react";
 import { Suspense } from "react";
 
 import SkeletonEntries from "~/components/skeletons/SkeletonEntries";
-import ContactsTable from "~/components/views/contacts/ContactsTable";
+import ContactsTable from "~/features/Contacts/Tables/ContactsTable";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 import { withTwoResourcesDefer } from "~/utils/pagination/withPaginationDefer";
 import { useCursorPagination } from "~/hooks/useCursorPagination";

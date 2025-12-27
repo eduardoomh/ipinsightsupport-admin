@@ -2,11 +2,10 @@ import { LoaderFunction, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { useContext } from "react";
 import DashboardLayout from "~/components/layout/DashboardLayout";
-import DetailedClient from "~/components/views/clients/DetailedClient";
 import { UserContext } from "~/context/UserContext";
 import DetailedCompany from "~/features/Companies/Views/DetailedCompany";
-import { ClientI } from "~/interfaces/clients.interface";
-import { UserRole } from "~/interfaces/users.interface";
+import { ClientI } from "~/features/Companies/Interfaces/clients.interface";
+import { UserRole } from "~/features/Users/Interfaces/users.interface";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 
 export const loader: LoaderFunction = async ({ request, params }) => {

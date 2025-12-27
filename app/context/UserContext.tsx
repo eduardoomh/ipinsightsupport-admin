@@ -1,6 +1,6 @@
 // app/context/UserContext.tsx
 import { createContext, useContext } from "react";
-import { UserI } from "~/interfaces/users.interface";
+import { UserI } from "~/features/Users/Interfaces/users.interface";
 
 export const UserContext = createContext<UserI | null>(null);
 

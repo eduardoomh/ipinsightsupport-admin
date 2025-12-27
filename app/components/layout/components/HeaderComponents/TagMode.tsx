@@ -3,7 +3,7 @@ import { ExportOutlined } from "@ant-design/icons";
 import { Tag } from "antd";
 import { useAppMode } from "~/context/AppModeContext";
 import { useNavigate } from "@remix-run/react";
-import { UserRole } from "~/interfaces/users.interface";
+import { UserRole } from "~/features/Users/Interfaces/users.interface";
 import { AppMode } from "~/interfaces/app.interface";
 
 const ANIM_MS = 400;

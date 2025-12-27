@@ -1,7 +1,7 @@
 import { FC, PropsWithChildren, ReactNode } from "react";
 import DetailedClientLayout from "./DetailedClientLayout";
 import DefaultCardLayout from "./DefaultCardLayout";
-import { UserRole } from "~/interfaces/users.interface";
+import { UserRole } from "~/features/Users/Interfaces/users.interface";
 
 interface Props {
     title: string;

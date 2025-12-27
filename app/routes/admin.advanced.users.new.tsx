@@ -1,39 +1,19 @@
 // routes/admin/advanced/users/new.tsx
 import { useOutletContext, useNavigate } from "@remix-run/react";
-import { message, Drawer } from "antd";
-import { useState } from "react";
-import UsersForm from "~/components/views/users/UsersForm";
+import { Drawer } from "antd";
+import UsersForm from "~/features/Users/Forms/UsersForm";
+import { useCreateUser } from "~/features/Users/Hooks/useCreateUser";
 
 export default function NewUserDrawerRoute() {
   const navigate = useNavigate();
   const { refreshResults } = useOutletContext<{ refreshResults: () => void }>();
-  const [submitting, setSubmitting] = useState(false);
 
   const handleClose = () => navigate("/admin/advanced/users");
 
-  const handleSubmit = async (values: any) => {
-    setSubmitting(true);
-    try {
-      const formData = new FormData();
-      formData.append("user", JSON.stringify(values));
-
-      const res = await fetch(`/api/users`, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (res.ok) {
-        message.success("User created successfully. An email has been sent to the user to set their password.");
-        refreshResults();
-      } else {
-        message.error("Error creating user");
-      }
-    } catch (err) {
-      message.error("Error creating user");
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  const { submitting, createUser } = useCreateUser(() => {
+    refreshResults();
+    handleClose();
+  });
 
   return (
     <Drawer
@@ -46,7 +26,7 @@ export default function NewUserDrawerRoute() {
     >
       <UsersForm
         user={null}
-        handleSubmit={handleSubmit}
+        handleSubmit={createUser}
         submitting={submitting}
         edit={false}
       />

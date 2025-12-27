@@ -4,7 +4,7 @@ import { useAppMode } from "~/context/AppModeContext";
 import AdminMenu from "~/components/Menus/AdminMenu";
 import { UserContext } from "~/context/UserContext";
 import CompanyMainMenu from "~/components/Menus/CompanyMainMenu";
-import { UserRole } from "~/interfaces/users.interface";
+import { UserRole } from "~/features/Users/Interfaces/users.interface";
 import { AppMode } from "~/interfaces/app.interface";
 import TagMode from "./HeaderComponents/TagMode";
 

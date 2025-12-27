@@ -1,6 +1,6 @@
 import { message, Table } from "antd";
 import { FC } from "react";
-import { ClientI } from "~/interfaces/clients.interface";
+import { ClientI } from "~/features/Companies/Interfaces/clients.interface";
 import { useNavigate } from "@remix-run/react";
 import PaginationControls from "~/components/tables/PaginationControls";
 import usePagination from "~/hooks/usePagination";

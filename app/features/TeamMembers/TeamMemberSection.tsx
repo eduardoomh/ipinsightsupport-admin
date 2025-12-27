@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { ClientI } from "~/interfaces/clients.interface";
+import { ClientI } from "~/features/Companies/Interfaces/clients.interface";
 import ContentLayout from "~/components/layout/components/ContentLayout";
 import { getRateTypeLabel, RateType } from "~/utils/general/getRateTypeLabel";
-import TeamMember from "~/features/Companies/Components/TeamMember";
+import TeamMember from "~/features/TeamMembers/Components/TeamMember";
 import SkeletonList from "~/features/Companies/Fallbacks/SkeletonList";
 
 interface Props {

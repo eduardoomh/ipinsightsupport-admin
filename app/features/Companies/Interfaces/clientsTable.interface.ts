@@ -1,6 +1,6 @@
-import { ClientI } from "~/interfaces/clients.interface";
-import { UsersI } from "~/interfaces/users.interface";
-import { ClientStatusHistoryI } from "~/interfaces/clientStatusHistory";
+import { ClientI } from "~/features/Companies/Interfaces/clients.interface";
+import { UsersI } from "~/features/Users/Interfaces/users.interface";
+import { ClientStatusHistoryI } from "~/features/StatusHistory/Interfaces/clientStatusHistory.interface";
 import { CompanyStatus } from "~/features/Companies/Constants/CompanyStatuses";
 
 export interface DataType {

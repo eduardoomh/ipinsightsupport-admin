@@ -3,7 +3,7 @@ import { MailOutlined } from "@ant-design/icons";
 import { Descriptions, Tag, Alert, Button, message } from "antd";
 import { useEffect } from "react";
 import { useFetcher } from "@remix-run/react";
-import type { UsersI } from "~/interfaces/users.interface";
+import type { UsersI } from "~/features/Users/Interfaces/users.interface";
 
 interface UserStatsProps {
   user: UsersI;

@@ -4,7 +4,7 @@ import HeaderLayout from "./components/HeaderLayout";
 import { UserContext } from "~/context/UserContext";
 import { useMediaQuery } from "react-responsive";
 import ContentLayout from "./components/ContentLayout";
-import { UserRole } from "~/interfaces/users.interface";
+import { UserRole } from "~/features/Users/Interfaces/users.interface";
 
 interface DashboardLayoutProps {
   children: ReactNode;

@@ -1,7 +1,7 @@
 import { Table } from "antd";
 import { FC } from "react";
 import dayjs from "dayjs";
-import { ClientI } from "~/interfaces/clients.interface";
+import { ClientI } from "~/features/Companies/Interfaces/clients.interface";
 import { PageInfo } from "~/interfaces/pagination.interface";
 import PaginationControls from "~/components/tables/PaginationControls";
 import usePagination from "~/hooks/usePagination";

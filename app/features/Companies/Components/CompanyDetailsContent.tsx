@@ -2,7 +2,7 @@ import { Divider, Skeleton, Avatar } from "antd";
 import { IdcardOutlined } from "@ant-design/icons";
 import { CompanyCard } from "~/components/basics/CompanyCard";
 import { CompanyProfileInfo } from "~/features/Companies/Views/CompanyProfileInfo";
-import type { ClientI } from "~/interfaces/clients.interface";
+import type { ClientI } from "~/features/Companies/Interfaces/clients.interface";
 
 interface Props {
   client: ClientI | null;

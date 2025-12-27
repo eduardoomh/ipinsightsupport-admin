@@ -2,7 +2,7 @@ import { Avatar, Popover, Typography, Modal } from "antd"
 import { FC, useState } from "react"
 import UserMenu from "~/components/Menus/UserMenu"
 import ArrowIcon from '~/assets/icons/shape.svg';
-import { UserRole } from "~/interfaces/users.interface";
+import { UserRole } from "~/features/Users/Interfaces/users.interface";
 
 interface Props {
     user: {

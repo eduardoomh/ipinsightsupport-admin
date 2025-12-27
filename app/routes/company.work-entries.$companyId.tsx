@@ -10,7 +10,7 @@ import { useCursorPagination } from "~/hooks/useCursorPagination";
 import { useDashboardHeaderActions } from "~/hooks/useDashboardHeaderActions";
 import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPagination";
 import { UserContext } from "~/context/UserContext";
-import { UserRole } from "~/interfaces/users.interface";
+import { UserRole } from "~/features/Users/Interfaces/users.interface";
 import { buildApiUrl } from "~/utils/api/buildApiUrl";
 import { CompanyTableView } from "~/components/TableActions/CompanyTableView";
 import UserEntriesTable from "~/features/WorkEntries/Tables/UserWorkEntries/UserEntriesTable";

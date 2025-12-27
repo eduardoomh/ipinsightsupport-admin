@@ -5,7 +5,7 @@ import { useState } from "react";
 import ContentLayout from "~/components/layout/components/ContentLayout";
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import ClientRatesForm from "~/features/Companies/Forms/CompanyRates/ClientRatesForm";
-import { ClientI } from "~/interfaces/clients.interface";
+import { ClientI } from "~/features/Companies/Interfaces/clients.interface";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
