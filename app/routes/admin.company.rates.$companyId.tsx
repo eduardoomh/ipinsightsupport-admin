@@ -4,7 +4,7 @@ import { message } from "antd";
 import { useState } from "react";
 import ContentLayout from "~/components/layout/components/ContentLayout";
 import DashboardLayout from "~/components/layout/DashboardLayout";
-import ClientRatesForm from "~/components/views/clientRates/ClientRatesForm";
+import ClientRatesForm from "~/features/Companies/Forms/CompanyRates/ClientRatesForm";
 import { ClientI } from "~/interfaces/clients.interface";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 

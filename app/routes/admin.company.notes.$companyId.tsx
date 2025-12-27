@@ -10,7 +10,7 @@ import { useCursorPagination } from "~/hooks/useCursorPagination";
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import ContentLayout from "~/components/layout/components/ContentLayout";
 import { message } from "antd";
-import ClientStatusHistoryForm from "~/components/views/clientStatus/ClientStatusHistoryForm";
+import ClientStatusHistoryForm from "~/features/Companies/Forms/StatusHistory/ClientStatusHistoryForm";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
     const companyId = params.companyId;
