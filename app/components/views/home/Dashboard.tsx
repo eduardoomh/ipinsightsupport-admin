@@ -3,10 +3,10 @@ import { Row, Col } from "antd";
 import dayjs from "dayjs";
 import StatsCard from "./utils/StatsCard";
 import { useNavigate } from "@remix-run/react";
-import { userWorkEntriesColumns } from "~/components/WorkEntries/Tables/UserWorkEntries/userWorkEntriesColumns";
 import WorkEntriesChart from "./utils/WorkEntriesChart";
 import LastWorkEntryTable from "./utils/LastWorkEntryTable";
 import TodayEventsTable from "./utils/TodayEventsTable";
+import { userWorkEntriesColumns } from "~/features/WorkEntries/Tables/UserWorkEntries/userWorkEntriesColumns";
 
 export interface WorkEntry {
   id: string;

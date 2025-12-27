@@ -1,13 +1,12 @@
 import { Table } from "antd";
-import { WorkEntry } from "~/interfaces/workEntries.interface";
 import { FC, useState } from "react";
 import { useNavigate } from "@remix-run/react";
 import { PageInfo } from "~/interfaces/pagination.interface";
-import { DataType } from "~/components/WorkEntries/Interfaces/workEntries.interface"
+import { DataType, WorkEntry } from '~/features/WorkEntries/Interfaces/workEntries.interface';
 import usePagination from "~/hooks/usePagination";
 import PaginationControls from "~/components/tables/PaginationControls";
 import { useTableLoading } from "~/hooks/useTableLoading";
-import { workEntriesColumns } from "~/components/WorkEntries/Tables/AdminWorkEntries/workEntriesColumns";
+import { workEntriesColumns } from "~/features/WorkEntries/Tables/AdminWorkEntries/workEntriesColumns";
 
 interface Props {
   entries: WorkEntry[];

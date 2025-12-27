@@ -12,6 +12,7 @@ import { useFilters } from "~/hooks/useFilters";
 import TableFilters from "~/components/TableActions/TableFilters";
 import { buildApiUrl } from "~/utils/api/buildApiUrl";
 import { TableView } from "~/components/TableActions/TableView";
+import CompaniesAdminTable from "~/features/Companies/Tables/AdminCompanies/CompaniesAdminTable";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const apiPath = buildApiUrl(request, "/api/clients", ["currentStatus", "filter", "from", "to"]);
@@ -58,7 +59,7 @@ export default function AdminClients() {
       baseUrl="/admin/advanced/clients"
     >
       {(clients, pageInfo) => (
-        <ClientsAdminTable
+        <CompaniesAdminTable
           clients={clients as any}
           pageInfo={pageInfo}
           onPageChange={handlePageChange}

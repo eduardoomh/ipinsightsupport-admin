@@ -1,4 +1,4 @@
-export default function WorkEntriesSkeleton() {
+export default function CompanySkeleton() {
     return (
         <div className="overflow-x-auto relative">
             <table className="min-w-full border border-gray-300 rounded-md shadow-sm text-sm">

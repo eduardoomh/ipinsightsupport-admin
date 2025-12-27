@@ -11,6 +11,7 @@ import DashboardLayout from "~/components/layout/DashboardLayout";
 import ContentLayout from "~/components/layout/components/ContentLayout";
 import CompanyForm from "~/components/views/clients/CompanyForm";
 import { message } from "antd";
+import EditCompanyForm from "~/features/Companies/Forms/EditCompanyForm";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const companyId = params.companyId;
@@ -77,7 +78,7 @@ export default function ClientContactsPage() {
 
               return (
                 <>
-                  <CompanyForm
+                  <EditCompanyForm
                     client={client}
                     handleSubmit={handleSubmit}
                     submitting={submitting}

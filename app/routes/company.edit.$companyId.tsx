@@ -9,8 +9,9 @@ import { withTwoResourcesDefer } from "~/utils/pagination/withPaginationDefer";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import ContentLayout from "~/components/layout/components/ContentLayout";
-import CompanyForm from "~/components/views/clients/CompanyForm";
 import { message } from "antd";
+import { UserRole } from "~/interfaces/users.interface";
+import EditCompanyForm from "~/features/Companies/Forms/EditCompanyForm";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
     const companyId = params.companyId;
@@ -63,7 +64,7 @@ export default function ClientContactsPage() {
             type="client_section"
             id={client.id}
             companyStatus={client.currentStatus}
-            menuType="USER"
+            menuType={UserRole.USER}
         >
             <ContentLayout
                 title="Edit Company details"
@@ -78,7 +79,7 @@ export default function ClientContactsPage() {
 
                             return (
                                 <>
-                                    <CompanyForm
+                                    <EditCompanyForm
                                         client={client}
                                         handleSubmit={handleSubmit}
                                         submitting={submitting}

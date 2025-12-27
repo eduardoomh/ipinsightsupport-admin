@@ -1,7 +1,7 @@
 // columns/usersColumns.ts
 import { Button, TableColumnsType } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
-import { DataType } from '~/components/WorkEntries/Interfaces/workEntries.interface';
+import { DataType } from '~/features/WorkEntries/Interfaces/workEntries.interface';
 import DateUsFormat from '~/components/tables/DateUsFormat';
 import CompanyLink from '~/components/basics/CompanyLink';
 import TeamMemberAvatar from '~/components/basics/TeamMemberAvatar';

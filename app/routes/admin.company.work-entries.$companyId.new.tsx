@@ -1,9 +1,8 @@
 // routes/admin/advanced/users/new.tsx
 import { useOutletContext, useNavigate } from "@remix-run/react";
 import { message, Drawer } from "antd";
-import { useContext, useEffect, useState } from "react";
-import WorkEntryForm from "~/components/WorkEntries/Forms/WorkEntriesForm";
-import { UserContext } from "~/context/UserContext";
+import { useEffect, useState } from "react";
+import WorkEntryForm from "~/features/WorkEntries/Forms/WorkEntriesForm";
 
 export default function NewUserDrawerRoute() {
     const navigate = useNavigate();
@@ -11,7 +10,6 @@ export default function NewUserDrawerRoute() {
     //const { client } = useLoaderData<typeof loader>();
     const [submitting, setSubmitting] = useState(false);
     const [users, setUsers] = useState([]);
-    const user = useContext(UserContext)
 
       useEffect(() => {
         const fetchUsers = async () => {

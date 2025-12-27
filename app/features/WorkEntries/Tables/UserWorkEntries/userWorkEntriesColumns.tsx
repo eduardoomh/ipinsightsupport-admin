@@ -2,7 +2,7 @@
 import { Button, TableColumnsType } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import { DataType } from '~/components/WorkEntries/Interfaces/workEntries.interface';
+import { DataType } from '../../Interfaces/workEntries.interface';
 
 export const userWorkEntriesColumns = (
   navigate: (path: string) => void,

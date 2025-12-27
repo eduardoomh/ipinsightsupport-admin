@@ -16,6 +16,7 @@ import { withPaginationDefer } from "~/utils/pagination/withPaginationDefer";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
 import ClientsUserTable from "~/components/views/clients/ClientsUserTable";
 import { getClientStatusLabel } from "~/utils/general/getClientStatusLabel";
+import CompaniesByUserTable from "~/features/Companies/Tables/CompaniesByUser/CompaniesByUserTable";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const url = new URL(request.url);
@@ -107,7 +108,7 @@ export default function AdminClients() {
             const { clients, pageInfo } = data;
 
             return (
-              <ClientsUserTable
+              <CompaniesByUserTable
                 clients={clients}
                 pageInfo={pageInfo}
                 onPageChange={handlePageChange}

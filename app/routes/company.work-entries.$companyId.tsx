@@ -10,10 +10,10 @@ import { useCursorPagination } from "~/hooks/useCursorPagination";
 import { useDashboardHeaderActions } from "~/hooks/useDashboardHeaderActions";
 import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPagination";
 import { UserContext } from "~/context/UserContext";
-import UserEntriesTable from "~/components/WorkEntries/Tables/UserWorkEntries/UserEntriesTable";
 import { UserRole } from "~/interfaces/users.interface";
 import { buildApiUrl } from "~/utils/api/buildApiUrl";
 import { CompanyTableView } from "~/components/TableActions/CompanyTableView";
+import UserEntriesTable from "~/features/WorkEntries/Tables/UserWorkEntries/UserEntriesTable";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
     const companyId = params.companyId;

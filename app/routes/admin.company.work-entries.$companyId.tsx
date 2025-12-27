@@ -4,12 +4,12 @@ import { useLoaderData } from "@remix-run/react";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 import { withTwoResourcesDefer } from "~/utils/pagination/withPaginationDefer";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
-import AdminWorkEntriesTable from "~/components/WorkEntries/Tables/AdminWorkEntries/AdminWorkEntriesTable";
 import { useDashboardHeaderActions } from "~/hooks/useDashboardHeaderActions";
 import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPagination";
 import { buildApiUrl } from "~/utils/api/buildApiUrl";
 import { CompanyTableView } from "~/components/TableActions/CompanyTableView";
 import WorkEntriesSkeleton from "~/features/WorkEntries/Fallbacks/WorkEntriesSkeleton";
+import AdminWorkEntriesTable from "~/features/WorkEntries/Tables/AdminWorkEntries/AdminWorkEntriesTable";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
     const { companyId } = params;

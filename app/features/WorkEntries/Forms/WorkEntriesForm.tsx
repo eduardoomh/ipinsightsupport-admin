@@ -3,8 +3,8 @@ import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import { UsersI } from "~/interfaces/users.interface";
 import TextEditor from "~/components/basics/TextEditor";
-import { WorkEntry } from "~/interfaces/workEntries.interface";
 import { ClientI } from "~/interfaces/clients.interface";
+import { WorkEntry } from '~/features/WorkEntries/Interfaces/workEntries.interface';
 
 interface Props {
   workEntry?: any;

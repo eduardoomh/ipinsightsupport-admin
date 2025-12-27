@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { WorkEntry } from '~/interfaces/workEntries.interface';
+import { WorkEntry } from '~/features/WorkEntries/Interfaces/workEntries.interface';
 
 interface LastWorkEntryTableProps {
   data: WorkEntry | null;
