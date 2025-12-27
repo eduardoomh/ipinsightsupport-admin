@@ -11,7 +11,7 @@ import DashboardLayout from "~/components/layout/DashboardLayout";
 import ContentLayout from "~/components/layout/components/ContentLayout";
 import { message } from "antd";
 import { UserRole } from "~/interfaces/users.interface";
-import EditCompanyForm from "~/features/Companies/Forms/EditCompanyForm";
+import EditCompanyForm from "~/features/Companies/Forms/Company/EditCompanyForm";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
     const companyId = params.companyId;

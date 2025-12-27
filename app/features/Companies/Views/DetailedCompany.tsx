@@ -4,11 +4,12 @@ import ContentLayout from "~/components/layout/components/ContentLayout";
 import { ClientI } from "~/interfaces/clients.interface";
 import { getTimezoneLabel } from "~/utils/general/getTimezoneLabel";
 import DateUsFormat from "~/components/tables/DateUsFormat";
-import DashboardItem from "~/components/views/detailedClients/DashboardItem";
-import RatesSection from "~/components/views/clients/components/RatesSection";
-import ContactsSection from "~/components/views/clients/components/ContactSection";
-import TeamMembersSection from "~/components/views/clients/components/TeamMemberSection";
-import ClientStatusHistorySection from "~/components/views/clients/components/ClientStatusHistorySection";
+import DashboardItem from "~/features/Companies/Components/DashboardItem";
+import RatesSection from "~/features/Companies/Components/RatesSection";
+import ContactsSection from "~/features/Companies/Components/ContactSection";
+import TeamMembersSection from "~/features/Companies/Components/TeamMemberSection";
+import ClientStatusHistorySection from "~/features/Companies/Components/ClientStatusHistorySection";
+
 interface Props {
   client: ClientI;
 }

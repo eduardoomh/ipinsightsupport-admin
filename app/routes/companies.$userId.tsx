@@ -14,7 +14,6 @@ import SkeletonEntries from "~/components/skeletons/SkeletonEntries";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 import { withPaginationDefer } from "~/utils/pagination/withPaginationDefer";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
-import ClientsUserTable from "~/components/views/clients/ClientsUserTable";
 import { getClientStatusLabel } from "~/utils/general/getClientStatusLabel";
 import CompaniesByUserTable from "~/features/Companies/Tables/CompaniesByUser/CompaniesByUserTable";
 

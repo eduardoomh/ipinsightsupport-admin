@@ -24,13 +24,11 @@ const HoursTag: FC<Props> = ({ label, hours, Icon }) => {
                     gap: 6,
                 }}
             >
-                {/* Iconos */}
                 <div style={{ display: "flex", alignItems: "center" }}>
                     <Icon style={{ fontSize: 14, marginRight: 2 }} />
                     <ClockCircleOutlined style={{ fontSize: 14 }} />
                 </div>
 
-                {/* Valor */}
                 <div style={{ fontSize: 14, fontWeight: 600 }}>
                     {Number(hours).toFixed(2)}
                 </div>

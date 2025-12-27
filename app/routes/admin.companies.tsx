@@ -3,8 +3,6 @@ import { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import SkeletonEntries from "~/components/skeletons/SkeletonEntries";
-import ClientsAdminTable from "~/components/views/clients/ClientsAdminTable";
-
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 import { withPaginationDefer } from "~/utils/pagination/withPaginationDefer";
 import { useCursorPagination } from "~/hooks/useCursorPagination";

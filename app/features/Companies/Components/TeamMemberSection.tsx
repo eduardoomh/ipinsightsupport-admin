@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { ClientI } from "~/interfaces/clients.interface";
 import ContentLayout from "~/components/layout/components/ContentLayout";
 import { getRateTypeLabel, RateType } from "~/utils/general/getRateTypeLabel";
-import TeamMember from "../../detailedClients/utils/TeamMember";
-import SkeletonList from "./SkeletonList";
+import TeamMember from "~/features/Companies/Components/TeamMember";
+import SkeletonList from "~/features/Companies/Fallbacks/SkeletonList";
 
 interface Props {
   client: ClientI;

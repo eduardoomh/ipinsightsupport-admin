@@ -1,7 +1,7 @@
 import { LoaderFunction, MetaFunction, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import DashboardLayout from "~/components/layout/DashboardLayout";
-import DetailedClient from "~/components/views/clients/DetailedClient";
+import DetailedCompany from "~/features/Companies/Views/DetailedCompany";
 import { ClientI } from "~/interfaces/clients.interface";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 
@@ -34,7 +34,7 @@ export default function ClientLayout() {
 
   return (
     <DashboardLayout title={client.company} type="client_section" id={client.id} companyStatus={client.currentStatus}>
-      <DetailedClient client={client} />
+      <DetailedCompany client={client} />
     </DashboardLayout>
   );
 }

@@ -6,9 +6,9 @@ import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import ContentLayout from "~/components/layout/components/ContentLayout";
 import { ClientI } from "~/interfaces/clients.interface";
-import RetainerForm from "~/components/views/retainers/RetainersForm";
 import { message } from "antd";
 import { UserContext } from "~/context/UserContext";
+import BalanceForm from "~/features/Balances/Forms/BalanceForm";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const session = await getSessionFromCookie(request);
@@ -73,7 +73,7 @@ export default function NewRetainersPage() {
   return (
     <DashboardLayout title={client.company} type="client_section" id={client.id}>
       <ContentLayout title={`New retainer`} type="basic_section" size="small" hideHeader={false}>
-        <RetainerForm 
+        <BalanceForm 
           handleSubmit={handleSubmit} 
           submitting={submitting}
         />

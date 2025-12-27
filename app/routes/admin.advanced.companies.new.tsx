@@ -1,7 +1,7 @@
 // routes/admin/advanced/users/new.tsx
 import { useOutletContext, useNavigate } from "@remix-run/react";
 import { Drawer } from "antd";
-import AdvancedCompanyForm from "~/features/Companies/Forms/AdvancedCompanyForm";
+import AdvancedCompanyForm from "~/features/Companies/Forms/AdvancedCompany/AdvancedCompanyForm";
 import { useCreateCompanyWithContact } from "~/features/Companies/Hooks/useCreateCompanyWithContact";
 
 export default function NewUserDrawerRoute() {

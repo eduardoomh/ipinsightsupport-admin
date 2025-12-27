@@ -2,8 +2,8 @@
 import { useOutletContext, useNavigate } from "@remix-run/react";
 import { message, Drawer } from "antd";
 import { useContext, useState } from "react";
-import RetainerForm from "~/components/views/retainers/RetainersForm";
 import { UserContext } from "~/context/UserContext";
+import BalanceForm from "~/features/Balances/Forms/BalanceForm";
 
 export default function NewUserDrawerRoute() {
     const navigate = useNavigate();
@@ -66,7 +66,7 @@ export default function NewUserDrawerRoute() {
             destroyOnClose
             placement="right"
         >
-            <RetainerForm
+            <BalanceForm
                 handleSubmit={handleSubmit}
                 submitting={submitting}
             />

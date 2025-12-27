@@ -10,8 +10,8 @@ import { colors, getColorForName } from '~/utils/general/getColorForName';
 import DateUsFormat from '~/components/tables/DateUsFormat';
 import CompanyLink from '~/components/basics/CompanyLink';
 import TeamMemberAvatar from '~/components/basics/TeamMemberAvatar';
-import HoursTag from '~/components/views/clients/components/HoursTag';
 import { AdminDataType } from '~/features/Companies/Interfaces/clientsTable.interface';
+import HoursTag from '~/features/Companies/Components/HoursTag';
 
 export const companiesAdminColumns = (): TableColumnsType<AdminDataType> => [
         {

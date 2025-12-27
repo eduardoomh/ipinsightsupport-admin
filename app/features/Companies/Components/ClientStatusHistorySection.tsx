@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ContentLayout from "~/components/layout/components/ContentLayout";
-import { Skeleton, Avatar, Alert } from "antd";
-import { getClientStatusLabel } from "~/utils/general/getClientStatusLabel";
+import { Skeleton } from "antd";
 import { ClientStatusHistoryI } from "~/interfaces/clientStatusHistory";
 import Note from "~/components/basics/Note";
 

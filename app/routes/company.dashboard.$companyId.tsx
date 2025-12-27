@@ -4,7 +4,9 @@ import { useContext } from "react";
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import DetailedClient from "~/components/views/clients/DetailedClient";
 import { UserContext } from "~/context/UserContext";
+import DetailedCompany from "~/features/Companies/Views/DetailedCompany";
 import { ClientI } from "~/interfaces/clients.interface";
+import { UserRole } from "~/interfaces/users.interface";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
@@ -36,9 +38,9 @@ export default function ClientLayout() {
             type="client_section"
             id={client.id}
             companyStatus={client.currentStatus}
-            menuType={user.company_id ? "CLIENT" : "USER"}
+            menuType={user.company_id ? UserRole.CLIENT : UserRole.USER}
         >
-            <DetailedClient client={client} />
+            <DetailedCompany client={client} />
         </DashboardLayout>
     );
 }

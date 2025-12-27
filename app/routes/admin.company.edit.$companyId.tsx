@@ -9,9 +9,8 @@ import { withTwoResourcesDefer } from "~/utils/pagination/withPaginationDefer";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import ContentLayout from "~/components/layout/components/ContentLayout";
-import CompanyForm from "~/components/views/clients/CompanyForm";
 import { message } from "antd";
-import EditCompanyForm from "~/features/Companies/Forms/EditCompanyForm";
+import EditCompanyForm from "~/features/Companies/Forms/Company/EditCompanyForm";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const companyId = params.companyId;

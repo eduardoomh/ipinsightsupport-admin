@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { ClientI } from "~/interfaces/clients.interface";
 import ContentLayout from "~/components/layout/components/ContentLayout";
-import DashboardItem from "../../detailedClients/DashboardItem";
-import SkeletonList from "./SkeletonList";
+import SkeletonList from "~/features/Companies/Fallbacks/SkeletonList";
 import { getDefaultRates } from "~/utils/general/getDefaultRates";
+import DashboardItem from "~/features/Companies/Components/DashboardItem";
 
 interface Props {
     client: ClientI;

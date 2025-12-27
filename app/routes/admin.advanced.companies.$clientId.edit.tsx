@@ -1,7 +1,7 @@
 import { useNavigate, useOutletContext, useParams } from "@remix-run/react";
 import { Drawer } from "antd";
 import FormSkeleton from "~/components/basics/FormSkeleton";
-import AdvancedCompanyForm from "~/features/Companies/Forms/AdvancedCompanyForm";
+import AdvancedCompanyForm from "~/features/Companies/Forms/AdvancedCompany/AdvancedCompanyForm";
 import { useEditCompany } from "~/features/Companies/Hooks/useEditCompany";
 
 type OutletContext = { refreshResults: () => void };
