@@ -20,7 +20,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const encoder = new TextEncoder();
   const csvStream = stringify({ header: true, columns: [
-    "client", "user", "email", "billed_on", "rate_type", "hours_billed", "hours_spent", "hourly_rate", "total", "description", "created_at"
+    "company", "user", "email", "billed_on", "rate_type", "hours_billed", "hours_spent", "hourly_rate", "total", "description", "created_at"
   ] });
 
   const stream = new ReadableStream({
@@ -45,7 +45,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
         for (const entry of batch) {
           csvStream.write({
-            client: entry.client.company,
+            company: entry.client.company,
             user: entry.user.name,
             email: entry.user.email,
             billed_on: entry.billed_on?.toISOString().split("T")[0],

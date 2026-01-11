@@ -5,8 +5,8 @@ import { PageInfo } from '~/interfaces/pagination.interface';
 import usePagination from '~/hooks/usePagination';
 import PaginationControls from '~/components/tables/PaginationControls';
 import { useTableLoading } from '~/hooks/useTableLoading';
-import { LogI } from './utils/logTable.interface';
-import { logColumns } from './utils/logsCoumns';
+import { logColumns } from './logsColumns';
+import { LogI } from '~/features/Logs/Interfaces/log.interface';
 
 interface Props {
   logs: LogI[];

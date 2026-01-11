@@ -1,7 +1,6 @@
 import { DeleteOutlined, EditOutlined, EyeOutlined, CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons';
 import { TableColumnsType, Button, Popconfirm } from 'antd';
-import dayjs from "dayjs";
-import { DataType } from './usersTable.interface';
+import { DataType } from '../Interfaces/usersTable.interface';
 import TeamMemberAvatar from '~/components/basics/TeamMemberAvatar';
 import DateUsFormat from '~/components/tables/DateUsFormat';
 

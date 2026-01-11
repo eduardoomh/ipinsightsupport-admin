@@ -8,7 +8,7 @@ import { BalanceType } from '~/features/Balances/Interfaces/balances.interface';
 
 export const balanceColumns = (): TableColumnsType<BalanceType> => [
         {
-            title: "Client",
+            title: "Company",
             dataIndex: ["client", "company"],
             render: (value: string, record: BalanceType) => (
                 <CompanyLink company={value} id={record.client.id} />

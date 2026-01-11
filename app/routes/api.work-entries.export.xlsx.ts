@@ -31,7 +31,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const sheet = workbook.addWorksheet("Work Entries");
   sheet.columns = [
-    { header: "Client", key: "client", width: 20 },
+    { header: "Company", key: "company", width: 20 },
     { header: "User", key: "user", width: 20 },
     { header: "Email", key: "email", width: 25 },
     { header: "Billed On", key: "billed_on", width: 15 },
@@ -65,7 +65,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
       for (const entry of batch) {
         sheet.addRow({
-          client: entry.client.company,
+          company: entry.client.company,
           user: entry.user.name,
           email: entry.user.email,
           billed_on: entry.billed_on?.toISOString().split("T")[0],

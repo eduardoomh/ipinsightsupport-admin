@@ -3,7 +3,7 @@ import { Await, Outlet } from "@remix-run/react";
 import { Suspense } from "react";
 import DashboardLayout from "~/components/layout/DashboardLayout";
 import SkeletonEntries from "~/components/skeletons/SkeletonEntries";
-import LogsTable from "~/components/views/logs/LogsTable";
+import LogsTable from "~/features/Logs/Tables/LogsTable";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
 import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPagination";
 import { withPaginationDefer } from "~/utils/pagination/withPaginationDefer";

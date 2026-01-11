@@ -1,5 +1,5 @@
 import { Table } from "antd";
-import { FC } from "react";
+import { FC, useState } from "react";
 import dayjs from "dayjs";
 import { ClientI } from "~/features/Companies/Interfaces/clients.interface";
 import { PageInfo } from "~/interfaces/pagination.interface";
@@ -8,6 +8,7 @@ import usePagination from "~/hooks/usePagination";
 import { useTableLoading } from "~/hooks/useTableLoading";
 import { getTimezoneLabel } from "~/utils/general/getTimezoneLabel";
 import { companiesAdminColumns } from "~/features/Companies/Tables/AdminCompanies/CompaniesAdminColumns";
+import { getClientStatusLabel } from "~/utils/general/getClientStatusLabel";
 
 interface EstimatedHours {
   estimated_engineering_hours: string | number;
@@ -34,6 +35,7 @@ interface Props {
 }
 
 const ClientsAdminTable: FC<Props> = ({ clients, pageInfo, onPageChange, pageSize }) => {
+  const [expandedRowKey, setExpandedRowKey] = useState<string | null>(null);
   const { loading, handlePageChange } = useTableLoading(clients, onPageChange);
   const { currentPage, start, updatePage } = usePagination(pageSize, pageInfo, handlePageChange);
   const end = start + clients.length - 1;
@@ -70,6 +72,21 @@ const ClientsAdminTable: FC<Props> = ({ clients, pageInfo, onPageChange, pageSiz
         rowKey="id"
         pagination={false}
         loading={loading}
+        expandedRowRender={(record: any) => {
+          const note = record.last_note;
+          return (
+            <div className="text-sm text-gray-700 p-3 bg-gray-50 rounded border border-gray-200">
+              <strong>{note?.status
+                ? getClientStatusLabel(note.status)
+                : note?.title || "Actualización"}</strong>{" "}
+              <div dangerouslySetInnerHTML={{ __html: note?.note || "No note provided" }} />
+            </div>
+          );
+        }}
+        expandedRowKeys={expandedRowKey ? [expandedRowKey] : []}
+        onExpand={(expanded, record) => {
+          setExpandedRowKey(expanded ? record.id : null);
+        }}
       />
       <PaginationControls
         currentPage={currentPage}

@@ -54,6 +54,7 @@ export const loader: LoaderFunction = async ({ request }) => {
       "estimated_senior_architecture_hours",
       "createdAt",
       "account_manager",
+      "team_members"
     ],
   });
 
@@ -71,6 +72,14 @@ export const loader: LoaderFunction = async ({ request }) => {
           where,
           include: {
             account_manager: { select: { name: true } },
+            // Añadimos esto:
+            team_members: {
+              include: {
+                user: {
+                  select: { name: true }
+                }
+              }
+            }
           },
           orderBy: { createdAt: "desc" },
           skip,
@@ -92,6 +101,13 @@ export const loader: LoaderFunction = async ({ request }) => {
             estimated_senior_architecture_hours: client.estimated_senior_architecture_hours,
             createdAt: client.createdAt?.toISOString().split("T")[0],
             account_manager: client.account_manager?.name,
+            team_members: client.team_members
+              ?.map((member) => {
+                const userName = member.user.name;
+                const rate = member.rate_type;
+                return `${userName} (${rate})`;
+              })
+              .join(", ") || "",
           });
         }
 

@@ -4,7 +4,7 @@ export default function BalancesSkeleton() {
             <table className="min-w-full border border-gray-300 rounded-md shadow-sm text-sm">
                 <thead className="bg-gray-100 text-gray-700">
                     <tr>
-                        <th className="px-4 py-3 text-left">Client</th>
+                        <th className="px-4 py-3 text-left">Company</th>
                         <th className="px-4 py-3 text-left">Amount</th>
                         <th className="px-4 py-3 text-left">Activated On</th>
                         <th className="px-4 py-3 text-left">Expires On</th>

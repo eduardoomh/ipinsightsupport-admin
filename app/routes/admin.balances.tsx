@@ -35,7 +35,7 @@ export default function AdminRetainers() {
     <TableFilters
       title={"Balances"}
       path="/api/retainers"
-      fileName="retainers"
+      fileName="balances"
       filterValues={filterValues}
       filterActions={filterActions}
       extraFilters={['credit', 'company']}

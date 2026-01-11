@@ -51,7 +51,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const sheet = workbook.addWorksheet("Retainers");
   sheet.columns = [
-    { header: "Client", key: "client", width: 20 },
+    { header: "Company", key: "company", width: 20 },
     { header: "Created By", key: "created_by", width: 20 },
     { header: "Email", key: "email", width: 25 },
     { header: "Amount", key: "amount", width: 15 },
@@ -82,11 +82,11 @@ export const loader: LoaderFunction = async ({ request }) => {
 
       for (const retainer of batch) {
         sheet.addRow({
-          client: retainer.client.company,
+          company: retainer.client.company,
           created_by: retainer.created_by.name,
           email: retainer.created_by.email,
           amount: retainer.amount,
-          is_credit: retainer.is_credit,
+          is_credit: retainer.is_credit ? "SI" : "NO",
           date_activated: retainer.date_activated?.toISOString().split("T")[0],
           date_expired: retainer.date_expired?.toISOString().split("T")[0],
           note: retainer.note,

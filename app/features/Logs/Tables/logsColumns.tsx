@@ -1,8 +1,9 @@
 import { EyeOutlined } from '@ant-design/icons';
 import { TableColumnsType, Button, Tag } from 'antd';
 import dayjs from 'dayjs';
-import { LogI, LogLevel } from './logTable.interface';
 import LogLevelTag from '~/components/basics/LogLevelTag';
+import { LogI, LogLevel } from '../Interfaces/log.interface';
+
 
 export const logColumns = (
   navigate: (path: string) => void,

@@ -11,7 +11,7 @@ export const workEntriesColumns = (
   baseUrl: string
 ): TableColumnsType<DataType> => [
     {
-      title: "Client",
+      title: "Company",
       key: "client",
       render: (_: any, record: DataType) => (
         <CompanyLink company={record.client.company} id={record.client.id} />

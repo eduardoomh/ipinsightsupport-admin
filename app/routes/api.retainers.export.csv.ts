@@ -51,7 +51,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const csvStream = stringify({
     header: true,
     columns: [
-      "client",
+      "company",
       "created_by",
       "email",
       "amount",
@@ -88,11 +88,11 @@ export const loader: LoaderFunction = async ({ request }) => {
 
         for (const retainer of batch) {
           csvStream.write({
-            client: retainer.client?.company ?? "",
+            company: retainer.client?.company ?? "",
             created_by: retainer.created_by?.name ?? "",
             email: retainer.created_by?.email ?? "",
             amount: retainer.amount ?? 0,
-            is_credit: retainer.is_credit ?? false,
+            is_credit: retainer.is_credit ? "SI" : "NO",
             date_activated: retainer.date_activated
               ? retainer.date_activated.toISOString().split("T")[0]
               : "",

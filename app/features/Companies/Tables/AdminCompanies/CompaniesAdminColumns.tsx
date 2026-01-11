@@ -37,17 +37,6 @@ export const companiesAdminColumns = (): TableColumnsType<AdminDataType> => [
 
                         <StatusTag status={record.currentStatus} />
                     </div>
-
-                    {record.last_note && (
-                        <div
-                            style={{
-                                width: "65%",
-                                marginTop: 12,
-                            }}
-                        >
-                            <Note note={record.last_note} size="small" />
-                        </div>
-                    )}
                 </div>
             ),
         },

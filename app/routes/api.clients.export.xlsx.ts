@@ -60,6 +60,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     { header: "Estimated Senior Architecture Hours", key: "estimated_senior_architecture_hours", width: 15 },
     { header: "Created At", key: "createdAt", width: 15 },
     { header: "Account Manager", key: "account_manager", width: 20 },
+    { header: "Team Members", key: "team_members", width: 40 }
   ];
 
   const batchSize = 2000;
@@ -71,6 +72,11 @@ export const loader: LoaderFunction = async ({ request }) => {
         where,
         include: {
           account_manager: { select: { name: true } },
+          team_members: {
+            include: {
+              user: { select: { name: true } }
+            }
+          }
         },
         orderBy: { createdAt: "desc" },
         skip,
@@ -80,6 +86,10 @@ export const loader: LoaderFunction = async ({ request }) => {
       if (batch.length === 0) break;
 
       for (const client of batch) {
+        const teamMembersString = client.team_members
+          ?.map(member => `${member.user.name} (${member.rate_type})`)
+          .join(", ") || "";
+
         sheet.addRow({
           company: client.company,
           timezone: client.timezone,
@@ -92,6 +102,7 @@ export const loader: LoaderFunction = async ({ request }) => {
           estimated_senior_architecture_hours: client.estimated_senior_architecture_hours,
           createdAt: client.createdAt?.toISOString().split("T")[0],
           account_manager: client.account_manager?.name,
+          team_members: teamMembersString
         }).commit();
       }
 
