@@ -5,24 +5,24 @@ import { useCreateBalance } from "~/features/Balances/Hooks/useCreateBalance";
 
 type OutletContext = { 
   refreshResults: () => void; 
-  client: { id: string, company: string } 
+  company: { id: string, company: string } 
 };
 
 export default function NewBalanceDrawerRoute() {
   const navigate = useNavigate();
-  const { refreshResults, client } = useOutletContext<OutletContext>();
+  const { refreshResults, company } = useOutletContext<OutletContext>();
 
-  const handleClose = () => navigate(`/admin/company/balances/${client.id}`);
+  const handleClose = () => navigate(`/admin/company/balances/${company.id}`);
 
   // Usamos el nuevo hook
-  const { createBalance, submitting } = useCreateBalance(client.id, () => {
+  const { createBalance, submitting } = useCreateBalance(company.id, () => {
     refreshResults();
     handleClose();
   });
 
   return (
     <Drawer
-      title={`Create New Balance for ${client.company}`}
+      title={`Create New Balance for ${company.company}`}
       open={true}
       onClose={handleClose}
       width={720}

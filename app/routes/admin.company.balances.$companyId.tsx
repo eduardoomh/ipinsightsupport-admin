@@ -1,15 +1,16 @@
 // routes/admin/advanced/retainers/$clientId.tsx
 import { LoaderFunction, MetaFunction } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useNavigate } from "@remix-run/react";
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 import { withTwoResourcesDefer } from "~/utils/pagination/withPaginationDefer";
 import { useCursorPagination } from "~/hooks/useCursorPagination";
 import { useRefreshAndResetPagination } from "~/hooks/useRefreshAndResetPagination";
-import { useDashboardHeaderActions } from "~/hooks/useDashboardHeaderActions";
 import { buildApiUrl } from "~/utils/api/buildApiUrl";
 import { CompanyTableView } from "~/components/TableActions/CompanyTableView";
 import BalancesTable from "~/features/Balances/Tables/BalancesTable";
 import BalancesSkeleton from "~/features/Balances/Fallbacks/BalancesSkeleton";
+import { Button } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const companyId = params.companyId;
@@ -47,9 +48,27 @@ export const meta: MetaFunction = () => [
 export default function ClientBalancesPage() {
   const { client, balances } = useLoaderData<typeof loader>();
   const { take, handlePageChange } = useCursorPagination("balances");
+  const navigate = useNavigate();
 
   const refreshResults = useRefreshAndResetPagination(`/admin/company/balances/${client.id}`);
-  const headerActions = useDashboardHeaderActions(`/admin/company/balances/${client.id}/new`, "Create Balance");
+
+  const createButtonConfig = {
+    label: "Create Balance",
+    path: `/admin/company/balances/${client.id}/new`
+  };
+
+  const headerActions = (
+    <>
+      <Button
+        type="primary"
+        className="bg-primary"
+        icon={<PlusOutlined />}
+        onClick={() => navigate(createButtonConfig.path)}
+      >
+        {createButtonConfig.label}
+      </Button>
+    </>
+  );
 
   return (
     <CompanyTableView

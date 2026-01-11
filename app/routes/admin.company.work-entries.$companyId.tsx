@@ -1,5 +1,5 @@
 import { LoaderFunction, MetaFunction } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useNavigate } from "@remix-run/react";
 
 import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 import { withTwoResourcesDefer } from "~/utils/pagination/withPaginationDefer";
@@ -10,6 +10,8 @@ import { buildApiUrl } from "~/utils/api/buildApiUrl";
 import { CompanyTableView } from "~/components/TableActions/CompanyTableView";
 import WorkEntriesSkeleton from "~/features/WorkEntries/Fallbacks/WorkEntriesSkeleton";
 import AdminWorkEntriesTable from "~/features/WorkEntries/Tables/AdminWorkEntries/AdminWorkEntriesTable";
+import { Button } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
     const { companyId } = params;
@@ -44,10 +46,28 @@ export const meta: MetaFunction = () => [
 export default function ClientEntriesPage() {
     const { client, workEntries } = useLoaderData<typeof loader>();
     const { take, handlePageChange } = useCursorPagination("workEntries");
+    const navigate = useNavigate();
     
     const refreshResults = useRefreshAndResetPagination(`/admin/company/work-entries/${client.id}`);
-    const headerActions = useDashboardHeaderActions(`/admin/company/work-entries/${client.id}/new`, "Create Work entry");
 
+  const createButtonConfig = {
+    label: "Create Work entry",
+    path: `/admin/company/work-entries/${client.id}/new`
+  };
+
+  const headerActions = (
+    <>
+      <Button
+        type="primary"
+        className="bg-primary"
+        icon={<PlusOutlined />}
+        onClick={() => navigate(createButtonConfig.path)}
+      >
+        {createButtonConfig.label}
+      </Button>
+    </>
+  );
+  
     return (
         <CompanyTableView
             title={`${client.company} | Work entries`}

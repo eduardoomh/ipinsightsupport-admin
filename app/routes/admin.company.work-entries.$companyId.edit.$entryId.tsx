@@ -1,9 +1,9 @@
+// routes/admin/company/work-entries/edit.$entryId.tsx (o tu ruta actual)
 import { useNavigate, useOutletContext, useParams } from "@remix-run/react";
-import { Drawer, message } from "antd";
-import { useEffect, useState } from "react";
+import { Drawer } from "antd";
 import FormSkeleton from "~/components/basics/FormSkeleton";
 import WorkEntryForm from "~/features/WorkEntries/Forms/WorkEntriesForm";
-import { WorkEntry } from "~/features/WorkEntries/Interfaces/workEntries.interface";
+import { useEditWorkEntry } from "~/features/WorkEntries/Hook/useEditWorkEntry";
 
 type OutletContext = {
     refreshResults: () => void;
@@ -13,52 +13,17 @@ export default function EditWorkEntryDrawer() {
     const { entryId, companyId } = useParams();
     const navigate = useNavigate();
     const { refreshResults } = useOutletContext<OutletContext>();
-    const [entry, setEntry] = useState<WorkEntry | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [submitting, setSubmitting] = useState(false);
-
-    const fetchEntry = async () => {
-        try {
-            const res = await fetch(`/api/work-entries/${entryId}`);
-            const data = await res.json();
-            setEntry(data);
-        } catch (err) {
-            message.error("Failed to load company data");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchEntry();
-    }, [entryId]);
 
     const handleClose = () => navigate(`/admin/company/work-entries/${companyId}`);
 
-    const handleSubmit = async (values: any) => {
-        setSubmitting(true);
-        try {
-            const formData = new FormData();
-            formData.append("entry", JSON.stringify({...values, user_id: entry.user.id, client_id: entry.client.id}));
-
-            const res = await fetch(`/api/work-entries/${entryId}`, {
-                method: "PUT",
-                body: formData,
-            });
-
-            if (res.ok) {
-                message.success("Work entry updated successfully");
-                refreshResults();
-                handleClose();
-            } else {
-                message.error("Error updating Work entry");
-            }
-        } catch (err) {
-            message.error("Error updating Work entry");
-        } finally {
-            setSubmitting(false);
+    // Usamos el hook de edición
+    const { entry, loading, submitting, updateWorkEntry } = useEditWorkEntry(
+        entryId,
+        () => {
+            refreshResults();
+            handleClose();
         }
-    };
+    );
 
     return (
         <Drawer
@@ -73,7 +38,7 @@ export default function EditWorkEntryDrawer() {
                 <FormSkeleton />
             ) : (
                 <WorkEntryForm
-                    handleSubmit={handleSubmit}
+                    handleSubmit={updateWorkEntry}
                     submitting={submitting}
                     users={[]}
                     workEntry={entry}
