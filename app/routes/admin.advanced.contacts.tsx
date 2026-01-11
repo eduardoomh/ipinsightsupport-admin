@@ -31,6 +31,11 @@ export default function ContactsPage() {
 
   const { filterValues, filterActions } = useFilters();
 
+  const createButtonConfig = {
+    label: "Create Contact",
+    path: "/admin/advanced/contacts/new"
+  };
+
   const headerActions = (
     <TableFilters
       title={"Manage Contacts"}
@@ -38,6 +43,7 @@ export default function ContactsPage() {
       fileName="contacts"
       filterValues={filterValues}
       filterActions={filterActions}
+      createButton={createButtonConfig}
     />
   );
 

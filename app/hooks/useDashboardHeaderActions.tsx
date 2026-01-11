@@ -10,7 +10,8 @@ export function useDashboardHeaderActions(path: string, label: string) {
       type="primary"
       className="bg-primary"
       icon={<PlusOutlined />}
-      onClick={() => navigate(path)}
+      onClick={() => { console.log("click", path) 
+        navigate(path)}}
     >
       {label}
     </Button>

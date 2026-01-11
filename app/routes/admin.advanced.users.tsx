@@ -31,14 +31,22 @@ export default function UsersPage() {
 
   const { filterValues, filterActions } = useFilters();
 
+  const createButtonConfig = {
+      label: "Create User",
+      path: "/admin/advanced/users/new"
+    };
+
   const headerActions = (
-    <TableFilters
-      title={"Users"}
-      path="/api/users"
-      fileName="users"
-      filterValues={filterValues}
-      filterActions={filterActions}
-    />
+    <>
+      <TableFilters
+        title={"Users"}
+        path="/api/users"
+        fileName="users"
+        filterValues={filterValues}
+        filterActions={filterActions}
+        createButton={createButtonConfig}
+      />
+    </>
   );
 
   return (

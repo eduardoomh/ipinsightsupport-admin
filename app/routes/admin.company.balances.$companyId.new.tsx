@@ -1,75 +1,38 @@
-// routes/admin/advanced/users/new.tsx
 import { useOutletContext, useNavigate } from "@remix-run/react";
-import { message, Drawer } from "antd";
-import { useContext, useState } from "react";
-import { UserContext } from "~/context/UserContext";
+import { Drawer } from "antd";
 import BalanceForm from "~/features/Balances/Forms/BalanceForm";
+import { useCreateBalance } from "~/features/Balances/Hooks/useCreateBalance";
 
-export default function NewUserDrawerRoute() {
-    const navigate = useNavigate();
-    const { refreshResults, client } = useOutletContext<{ refreshResults: () => void, client: any }>();
-    //const { client } = useLoaderData<typeof loader>();
-    const [submitting, setSubmitting] = useState(false);
-    const user = useContext(UserContext)
+type OutletContext = { 
+  refreshResults: () => void; 
+  client: { id: string, company: string } 
+};
 
-    const handleClose = () => navigate(`/admin/company/balances/${client.id}`);
+export default function NewBalanceDrawerRoute() {
+  const navigate = useNavigate();
+  const { refreshResults, client } = useOutletContext<OutletContext>();
 
-    const handleSubmit = async (values: any) => {
-        setSubmitting(true);
+  const handleClose = () => navigate(`/admin/company/balances/${client.id}`);
 
-        try {
-            const retainerFormData = new FormData();
+  // Usamos el nuevo hook
+  const { createBalance, submitting } = useCreateBalance(client.id, () => {
+    refreshResults();
+    handleClose();
+  });
 
-            const retainerPayload: any = {
-                amount: Number(values.amount),
-                date_activated: values.date_activated,
-                is_credit: values.is_credit,
-                //@ts-ignore
-                created_by_id: user.id,
-                client_id: client.id
-            };
-
-            if (values.note) {
-                retainerPayload.note = values.note;
-            }
-
-            retainerFormData.append("retainer", JSON.stringify(retainerPayload));
-
-            const clientRes = await fetch("/api/retainers", {
-                method: "POST",
-                body: retainerFormData,
-            });
-
-            if (!clientRes.ok) {
-                throw new Error("Failed to create retainer");
-            }
-
-            await clientRes.json();
-
-            message.success("Balance created successfully");
-            refreshResults();
-        } catch (err: any) {
-            console.error(err);
-            message.error(err.message || "Something went wrong");
-        } finally {
-            setSubmitting(false);
-        }
-    };
-
-    return (
-        <Drawer
-            title="Create New Balance"
-            open={true}
-            onClose={handleClose}
-            footer={null}
-            width={720}
-            destroyOnClose
-            placement="right"
-        >
-            <BalanceForm
-                handleSubmit={handleSubmit}
-                submitting={submitting}
-            />
-        </Drawer>
-    );
+  return (
+    <Drawer
+      title={`Create New Balance for ${client.company}`}
+      open={true}
+      onClose={handleClose}
+      width={720}
+      destroyOnClose
+      placement="right"
+    >
+      <BalanceForm
+        handleSubmit={createBalance}
+        submitting={submitting}
+      />
+    </Drawer>
+  );
 }

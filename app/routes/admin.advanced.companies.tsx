@@ -14,7 +14,7 @@ import CompanySkeleton from "~/features/Companies/Fallbacks/CompanySkeleton";
 export const loader: LoaderFunction = async ({ request }) => {
   return withPaginationDefer({
     request,
-    apiPath: buildApiUrl(request, "/api/clients", ["currentStatus","filter", "from", "to"]),
+    apiPath: buildApiUrl(request, "/api/clients", ["currentStatus", "filter", "from", "to"]),
     sessionCheck: () => getSessionFromCookie(request),
     key: "companies",
   });
@@ -32,6 +32,11 @@ export default function ClientsPage() {
 
   const { filterValues, filterActions } = useFilters();
 
+  const createButtonConfig = {
+    label: "Create Company",
+    path: "/admin/advanced/companies/new"
+  };
+
   const headerActions = (
     <TableFilters
       title={"Companies"}
@@ -39,6 +44,7 @@ export default function ClientsPage() {
       fileName="companies"
       filterValues={filterValues}
       filterActions={filterActions}
+      createButton={createButtonConfig}
       extraFilters={['status']}
     />
   )
