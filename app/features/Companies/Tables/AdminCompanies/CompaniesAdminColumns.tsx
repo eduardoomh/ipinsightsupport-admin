@@ -132,14 +132,14 @@ export const companiesAdminColumns = (): TableColumnsType<AdminDataType> => [
             title: "Last Work Entry",
             dataIndex: "most_recent_work_entry",
             render: (date: string) => (
-                <DateUsFormat date={date} />
-            ),
+                date !== "—" ? <DateUsFormat date={date} /> : "N/A"
+            )
         },
         {
             title: "Most Recent Balance",
             dataIndex: "most_recent_retainer_activated",
             render: (date: string) => (
-                <DateUsFormat date={date} />
-            ),
+               date !== "—" ? <DateUsFormat date={date} /> : "N/A"
+            )
         }
     ];

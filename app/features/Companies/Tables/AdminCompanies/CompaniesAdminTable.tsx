@@ -78,7 +78,7 @@ const ClientsAdminTable: FC<Props> = ({ clients, pageInfo, onPageChange, pageSiz
             <div className="text-sm text-gray-700 p-3 bg-gray-50 rounded border border-gray-200">
               <strong>{note?.status
                 ? getClientStatusLabel(note.status)
-                : note?.title || "Actualización"}</strong>{" "}
+                : note?.title || "Updates"}</strong>{" "}
               <div dangerouslySetInnerHTML={{ __html: note?.note || "No note provided" }} />
             </div>
           );

@@ -52,7 +52,7 @@ const Note: FC<Props> = ({ note, size = "default" }) => {
                 >
                     {note.status
                         ? getClientStatusLabel(note.status)
-                        : note.title || "Actualización"}
+                        : note.title || "Updates"}
                 </div>
 
                 {/* Contenido */}

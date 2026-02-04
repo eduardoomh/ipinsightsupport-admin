@@ -7,7 +7,7 @@ import WorkEntryForm from "~/features/WorkEntries/Forms/WorkEntriesForm";
 
 export default function NewUserDrawerRoute() {
     const navigate = useNavigate();
-    const { refreshResults, client } = useOutletContext<{ refreshResults: () => void, client: any }>();
+    const { refreshResults, company } = useOutletContext<{ refreshResults: () => void, company: any }>();
     //const { client } = useLoaderData<typeof loader>();
     const [submitting, setSubmitting] = useState(false);
     const [users, setUsers] = useState([]);
@@ -28,7 +28,7 @@ export default function NewUserDrawerRoute() {
       }, []);
     
 
-    const handleClose = () => navigate(`/company/work-entries/${client.id}`);
+    const handleClose = () => navigate(`/company/work-entries/${company.id}`);
 
     const handleSubmit = async (values: any) => {
         setSubmitting(true);
@@ -38,7 +38,7 @@ export default function NewUserDrawerRoute() {
 
             const workEntryPayload: any = {
                 ...values,
-                client_id: client.id
+                client_id: company.id
             };
 
             workEntryFormData.append("workEntry", JSON.stringify(workEntryPayload));
@@ -79,7 +79,7 @@ export default function NewUserDrawerRoute() {
                 submitting={submitting}
                 users={users}
                 user={user as any}
-                company={client}
+                company={company}
             />
         </Drawer>
     );
