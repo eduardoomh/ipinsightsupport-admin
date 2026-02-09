@@ -47,7 +47,7 @@ type DayData = {
 };
 
 type LoaderData = {
-  calendarData: Record<string, DayData>;
+  calendarData?: Record<string, DayData>;
 };
 
 /* =========================
@@ -71,7 +71,8 @@ export const loader: LoaderFunction = async ({ request }) => {
 ========================= */
 
 export default function CalendarPage() {
-  const { calendarData } = useLoaderData<LoaderData>();
+  const data = useLoaderData<LoaderData>();
+  const calendarData = data.calendarData ?? {};
   const [searchParams, setSearchParams] = useSearchParams();
   const navigation = useNavigation();
 
@@ -97,20 +98,16 @@ export default function CalendarPage() {
   }, [calendarData]);
 
   /* -------------------------
-     Render de día
+     Render de día (PURO)
   -------------------------- */
   const renderDateCell = (date: Dayjs) => {
-    if (isLoading) {
-      return <Skeleton active paragraph={{ rows: 2 }} />;
-    }
-
     const key = date.format("YYYY-MM-DD");
-    const data = calendarData[key];
-    if (!data) return null;
+    const day = calendarData[key];
+    if (!day) return null;
 
     return (
       <div className="flex flex-col gap-1">
-        {data.entries.map((e, i) => (
+        {day.entries.map((e, i) => (
           <Tooltip
             key={`e-${i}`}
             title={`${e.company} · ${e.hours_billed}h`}
@@ -121,7 +118,7 @@ export default function CalendarPage() {
           </Tooltip>
         ))}
 
-        {data.payments.map((p, i) => (
+        {day.payments.map((p, i) => (
           <div
             key={`p-${i}`}
             className="bg-emerald-100 border-l-2 border-emerald-500 text-[10px] px-1 py-0.5 truncate"
@@ -141,78 +138,76 @@ export default function CalendarPage() {
     <DashboardLayout title="Schedule">
       <Card className="border-none shadow-md">
         <ConfigProvider>
-          <Calendar
-            value={calendarValue}
-            cellRender={renderDateCell}
-            headerRender={({ value }) => {
-              const year = value.year();
-              const month = value.month();
+          {isLoading ? (
+            <Skeleton active paragraph={{ rows: 10 }} />
+          ) : (
+            <Calendar
+              value={calendarValue}
+              cellRender={renderDateCell}
+              headerRender={({ value }) => {
+                const year = value.year();
+                const month = value.month();
 
-              const change = (y: number, m: number) => {
-                const next = value.year(y).month(m);
-                setSearchParams({ month: next.format("YYYY-MM") });
-              };
+                const change = (y: number, m: number) => {
+                  const next = value.year(y).month(m);
+                  setSearchParams({ month: next.format("YYYY-MM") });
+                };
 
-              return (
-                <div className="p-4 border-b bg-white">
-                  <Row justify="space-between" align="middle">
-                    <Col>
-                      {isLoading ? (
-                        <Skeleton.Input active size="small" />
-                      ) : (
+                return (
+                  <div className="p-4 border-b bg-white">
+                    <Row justify="space-between" align="middle">
+                      <Col>
                         <Title level={4} style={{ margin: 0 }}>
                           {value.format("MMMM YYYY")}
                         </Title>
-                      )}
-                    </Col>
+                      </Col>
 
-                    <Col>
-                      <Row gutter={8} align="middle">
-                        <Col>
-                          <Select
-                            size="small"
-                            value={year}
-                            onChange={(y) => change(y, month)}
-                            disabled={isLoading}
-                          >
-                            {Array.from({ length: 20 }).map((_, i) => {
-                              const y = year - 10 + i;
-                              return (
-                                <Select.Option key={y} value={y}>
-                                  {y}
+                      <Col>
+                        <Row gutter={8} align="middle">
+                          <Col>
+                            <Select
+                              size="small"
+                              value={year}
+                              onChange={(y) => change(y, month)}
+                            >
+                              {Array.from({ length: 20 }).map((_, i) => {
+                                const y = year - 10 + i;
+                                return (
+                                  <Select.Option key={y} value={y}>
+                                    {y}
+                                  </Select.Option>
+                                );
+                              })}
+                            </Select>
+                          </Col>
+
+                          <Col>
+                            <Select
+                              size="small"
+                              value={month}
+                              onChange={(m) => change(year, m)}
+                            >
+                              {Array.from({ length: 12 }).map((_, i) => (
+                                <Select.Option key={i} value={i}>
+                                  {dayjs().month(i).format("MMMM")}
                                 </Select.Option>
-                              );
-                            })}
-                          </Select>
-                        </Col>
+                              ))}
+                            </Select>
+                          </Col>
 
-                        <Col>
-                          <Select
-                            size="small"
-                            value={month}
-                            onChange={(m) => change(year, m)}
-                            disabled={isLoading}
-                          >
-                            {Array.from({ length: 12 }).map((_, i) => (
-                              <Select.Option key={i} value={i}>
-                                {dayjs().month(i).format("MMMM")}
-                              </Select.Option>
-                            ))}
-                          </Select>
-                        </Col>
-
-                        <Col>
-                          <Text className="ml-3 font-bold text-emerald-700">
-                            {isLoading ? "…" : `Total: ${totalHours}h`}
-                          </Text>
-                        </Col>
-                      </Row>
-                    </Col>
-                  </Row>
-                </div>
-              );
-            }}
-          />
+                          <Col>
+                            <Text className="ml-3 font-bold text-emerald-700">
+                              Total: {totalHours}h
+                            </Text>
+                          </Col>
+                        </Row>
+                      </Col>
+                    </Row>
+                  </div>
+                );
+              }}
+            />
+          )}
         </ConfigProvider>
       </Card>
     </DashboardLayout>
