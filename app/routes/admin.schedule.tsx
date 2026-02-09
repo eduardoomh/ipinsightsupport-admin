@@ -60,7 +60,9 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const response = await fetch(
     `${process.env.APP_URL}/api/calendar/?month=${month}`,
-    { headers: request.headers }
+    {
+      headers: { Cookie: request.headers.get("Cookie") || "" }
+    }
   );
 
   return json(await response.json());
