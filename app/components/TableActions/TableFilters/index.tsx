@@ -21,11 +21,12 @@ interface HeaderActionsProps {
     filterValues: any;
     filterActions: any;
     extraFilters?: OptionalFilter[];
+    disabledDownload?: boolean;
 }
 
 export default function HeaderActions({
     title, path, fileName, filterValues, filterActions, createButton,
-    extraFilters = []
+    extraFilters = [], disabledDownload = false
 }: HeaderActionsProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
@@ -112,16 +113,18 @@ export default function HeaderActions({
                         </Button>
                     )}
 
-                    <DownloadButton
-                        path={path}
-                        fileName={fileName}
-                        selectedFilter={filterValues.selectedFilter}
-                        isCredit={show('credit') ? filterValues.isCredit : null}
-                        companyStatus={show('status') ? filterValues.companyStatus : null}
-                        clientId={show('company') ? filterValues.companyId : null}
-                        userId={show('user') ? filterValues.userId : null}
-                        dateRange={filterValues.dateRange ? [filterValues.dateRange[0].toDate(), filterValues.dateRange[1].toDate()] : null}
-                    />
+                    {!disabledDownload && (
+                        <DownloadButton
+                            path={path}
+                            fileName={fileName}
+                            selectedFilter={filterValues.selectedFilter}
+                            isCredit={show('credit') ? filterValues.isCredit : null}
+                            companyStatus={show('status') ? filterValues.companyStatus : null}
+                            clientId={show('company') ? filterValues.companyId : null}
+                            userId={show('user') ? filterValues.userId : null}
+                            dateRange={filterValues.dateRange ? [filterValues.dateRange[0].toDate(), filterValues.dateRange[1].toDate()] : null}
+                        />
+                    )}
 
                     <Button
                         icon={<FilterOutlined />}
@@ -145,7 +148,7 @@ export default function HeaderActions({
             </div>
 
             <ActiveTagsBar tags={activeTags} variant="header" />
-            
+
             <FilterModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}

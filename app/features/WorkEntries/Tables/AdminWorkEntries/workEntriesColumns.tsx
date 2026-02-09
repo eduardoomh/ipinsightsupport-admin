@@ -32,21 +32,37 @@ export const workEntriesColumns = (
     {
       title: "Hours",
       key: "hours",
-      render: (_: any, record: DataType) => (
-        <div className="leading-snug">
-          {
-            record?.billing_type === "MONTHLY_PLAN" ?
+      render: (_: any, record: DataType) => {
+        const isMonthly = record?.billing_type === "MONTHLY_PLAN";
+
+        return (
+          <div className="flex flex-col gap-1 py-1">
+            {!isMonthly ? (
               <>
-                <div className="text-gray-500 text-sm">{record.hours_spent} hrs spent</div>
-              </> : (
-                <>
-                  <div>{record.hours_billed} hrs billed</div>
-                  <div className="text-gray-500 text-sm">{record.hours_spent} hrs spent</div>
-                </>
-              )
-          }
-        </div>
-      ),
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm font-bold text-gray-800">
+                    {record.hours_billed} hrs
+                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border border-emerald-200 bg-emerald-50 text-emerald-600">
+                    Billed
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-1 text-gray-500">
+                  <span className="text-xs font-medium">{record.hours_spent} hrs spent</span>
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center gap-2">
+                <div className="flex flex-col">
+                  <span className="text-sm font-bold text-gray-800">{record.hours_spent} hrs</span>
+                  <span className="text-[10px] text-amber-600 font-semibold uppercase">Monthly Plan</span>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      }
     },
     {
       title: "Hourly rate",

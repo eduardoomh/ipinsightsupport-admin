@@ -18,7 +18,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const apiUrl = new URL(apiPath);
   apiUrl.searchParams.set("relations", "team_members,account_manager");
   apiUrl.searchParams.set("last_note", "true");
-
+console.log(apiUrl.toString(), "vemoooos 1")
   return withPaginationDefer({
     request,
     apiPath: apiUrl.toString(),
@@ -37,7 +37,7 @@ export default function AdminClients() {
   const { take, handlePageChange } = useCursorPagination("clientsData");
   
   const { filterValues, filterActions } = useFilters();
-
+ 
   const headerActions = (
     <TableFilters
       title="Companies"

@@ -1,7 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import { Link, useLocation } from "@remix-run/react";
 import {
-    ContainerOutlined,
     DesktopOutlined,
     MailOutlined,
     PieChartOutlined,
@@ -20,11 +19,6 @@ const items = (id: string): MenuItem[] => {
             label: <Link to="/">Home</Link>,
         },
         {
-            key: 'schedule',
-            icon: <DesktopOutlined />,
-            label: <Link to="/schedule">Schedule</Link>,
-        },
-        {
             key: 'companies',
             icon: <DesktopOutlined />,
             label: <Link to={`/companies/${id}`}>Companies</Link>,
@@ -40,7 +34,6 @@ const items = (id: string): MenuItem[] => {
 const pathToKey = (id: any): Record<string, string> => {
     return {
         "/": "home",
-        "/schedule": "schedule",
         [`/companies/${id}`]: "companies",
         [`/entries/${id}`]: "personal-entries",
         "/reports": "reports",

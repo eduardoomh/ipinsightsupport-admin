@@ -1,30 +1,220 @@
-import { LoaderFunction, MetaFunction } from "@remix-run/node";
-import { redirect } from "@remix-run/react";
-import NoData from "~/components/basics/NoData";
+import { json, type LoaderFunction } from "@remix-run/node";
+import {
+  useLoaderData,
+  useSearchParams,
+  useNavigation,
+} from "@remix-run/react";
+import {
+  Calendar,
+  Card,
+  Typography,
+  ConfigProvider,
+  Select,
+  Row,
+  Col,
+  Tooltip,
+  Skeleton,
+} from "antd";
+import dayjs, { Dayjs } from "dayjs";
+import { useMemo } from "react";
 import DashboardLayout from "~/components/layout/DashboardLayout";
-import { getSessionFromCookie } from "~/utils/sessions/getSessionFromCookie";
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const session = await getSessionFromCookie(request);
+const { Title, Text } = Typography;
 
-  if (!session) {
-    return redirect("/login");
-  }
+/* =========================
+   Tipos
+========================= */
 
-  return null;
+type Entry = {
+  hours_billed: number;
+  company: string;
 };
 
-export const meta: MetaFunction = () => [
-  { title: "Schedule | Sentinelux" },
-  { name: "description", content: "Schedule page from Sentinelux Admin" },
-];
+type Payment = {
+  amount: number;
+  company: string;
+};
 
-export default function AdminSchedule() {
+type Schedule = {
+  status: string;
+  company: string;
+};
+
+type DayData = {
+  entries: Entry[];
+  payments: Payment[];
+  schedule: Schedule[];
+};
+
+type LoaderData = {
+  calendarData: Record<string, DayData>;
+};
+
+/* =========================
+   Loader (SIN CAMBIOS)
+========================= */
+
+export const loader: LoaderFunction = async ({ request }) => {
+  const url = new URL(request.url);
+  const month = url.searchParams.get("month") || dayjs().format("YYYY-MM");
+
+  const response = await fetch(
+    `${process.env.APP_URL}/api/calendar/?month=${month}`,
+    { headers: request.headers }
+  );
+
+  return json(await response.json());
+};
+
+/* =========================
+   Vista
+========================= */
+
+export default function CalendarPage() {
+  const { calendarData } = useLoaderData<LoaderData>();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigation = useNavigation();
+
+  const isLoading = navigation.state === "loading";
+
+  /* -------------------------
+     Mes desde la URL
+  -------------------------- */
+  const monthParam = searchParams.get("month") ?? dayjs().format("YYYY-MM");
+
+  const calendarValue = useMemo(
+    () => dayjs(monthParam),
+    [monthParam]
+  );
+
+  /* -------------------------
+     Total horas
+  -------------------------- */
+  const totalHours = useMemo(() => {
+    return Object.values(calendarData).reduce((acc, day) => {
+      return acc + day.entries.reduce((s, e) => s + e.hours_billed, 0);
+    }, 0);
+  }, [calendarData]);
+
+  /* -------------------------
+     Render de día
+  -------------------------- */
+  const renderDateCell = (date: Dayjs) => {
+    if (isLoading) {
+      return <Skeleton active paragraph={{ rows: 2 }} />;
+    }
+
+    const key = date.format("YYYY-MM-DD");
+    const data = calendarData[key];
+    if (!data) return null;
+
+    return (
+      <div className="flex flex-col gap-1">
+        {data.entries.map((e, i) => (
+          <Tooltip
+            key={`e-${i}`}
+            title={`${e.company} · ${e.hours_billed}h`}
+          >
+            <div className="bg-sky-100 border-l-2 border-sky-500 text-[10px] px-1 py-0.5 truncate">
+              WORK · {e.company}
+            </div>
+          </Tooltip>
+        ))}
+
+        {data.payments.map((p, i) => (
+          <div
+            key={`p-${i}`}
+            className="bg-emerald-100 border-l-2 border-emerald-500 text-[10px] px-1 py-0.5 truncate"
+          >
+            PAYMENT · ${p.amount}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  /* =========================
+     Render
+  ========================= */
+
   return (
-        <DashboardLayout
-          title={`Schedule`}
-        >
-          <NoData />
-        </DashboardLayout>
+    <DashboardLayout title="Schedule">
+      <Card className="border-none shadow-md">
+        <ConfigProvider>
+          <Calendar
+            value={calendarValue}
+            cellRender={renderDateCell}
+            headerRender={({ value }) => {
+              const year = value.year();
+              const month = value.month();
+
+              const change = (y: number, m: number) => {
+                const next = value.year(y).month(m);
+                setSearchParams({ month: next.format("YYYY-MM") });
+              };
+
+              return (
+                <div className="p-4 border-b bg-white">
+                  <Row justify="space-between" align="middle">
+                    <Col>
+                      {isLoading ? (
+                        <Skeleton.Input active size="small" />
+                      ) : (
+                        <Title level={4} style={{ margin: 0 }}>
+                          {value.format("MMMM YYYY")}
+                        </Title>
+                      )}
+                    </Col>
+
+                    <Col>
+                      <Row gutter={8} align="middle">
+                        <Col>
+                          <Select
+                            size="small"
+                            value={year}
+                            onChange={(y) => change(y, month)}
+                            disabled={isLoading}
+                          >
+                            {Array.from({ length: 20 }).map((_, i) => {
+                              const y = year - 10 + i;
+                              return (
+                                <Select.Option key={y} value={y}>
+                                  {y}
+                                </Select.Option>
+                              );
+                            })}
+                          </Select>
+                        </Col>
+
+                        <Col>
+                          <Select
+                            size="small"
+                            value={month}
+                            onChange={(m) => change(year, m)}
+                            disabled={isLoading}
+                          >
+                            {Array.from({ length: 12 }).map((_, i) => (
+                              <Select.Option key={i} value={i}>
+                                {dayjs().month(i).format("MMMM")}
+                              </Select.Option>
+                            ))}
+                          </Select>
+                        </Col>
+
+                        <Col>
+                          <Text className="ml-3 font-bold text-emerald-700">
+                            {isLoading ? "…" : `Total: ${totalHours}h`}
+                          </Text>
+                        </Col>
+                      </Row>
+                    </Col>
+                  </Row>
+                </div>
+              );
+            }}
+          />
+        </ConfigProvider>
+      </Card>
+    </DashboardLayout>
   );
 }

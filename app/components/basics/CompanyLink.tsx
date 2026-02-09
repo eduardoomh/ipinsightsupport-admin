@@ -5,9 +5,10 @@ import { useNavigate } from "@remix-run/react";
 interface Props {
     company: string;
     id: string | number;
+    isAdmin?: boolean;
 }
 
-const CompanyLink: FC<Props> = ({ company, id }) => {
+const CompanyLink: FC<Props> = ({ company, id, isAdmin = true }) => {
     const navigate = useNavigate();
 
     return (
@@ -22,7 +23,7 @@ const CompanyLink: FC<Props> = ({ company, id }) => {
                 alignItems: "center",
                 gap: 8,
             }}
-            onClick={() => navigate(`/admin/company/dashboard/${id}`)}
+            onClick={() => navigate(`${isAdmin ? "/admin" : ""}/company/dashboard/${id}`)}
         >
             <ShopOutlined style={{ fontSize: 18, color: "#1677ff" }} />
             {company}
